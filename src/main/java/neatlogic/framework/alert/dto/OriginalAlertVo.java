@@ -28,6 +28,7 @@ public class OriginalAlertVo {
     private String content;
     private Date time;
     private String error;
+    private String status;
 
     public String getSource() {
         return source;
@@ -78,5 +79,13 @@ public class OriginalAlertVo {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
