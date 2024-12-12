@@ -47,7 +47,7 @@ public class AlertAttr {
         }}, new JSONObject() {{
             this.put("transfer", true);
             this.put("type", "datetimerange");
-            this.put("format", "yyyy-MM-dd HH:mm");
+            this.put("format", "yyyy-MM-dd HH:mm:ss");
         }}));
         attrList.add(new AlertAttrDefineVo("const_type", "类型", "select", new ArrayList<String>() {{
             this.add("like");
