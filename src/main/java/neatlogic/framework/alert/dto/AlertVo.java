@@ -21,16 +21,20 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.common.constvalue.ApiParamType;
+import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.Md5Util;
 import neatlogic.framework.util.SnowflakeUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
+import java.util.List;
 
-public class AlertVo {
+public class AlertVo extends BasePageVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
     private Long id;
+    @JSONField(serialize = false)
+    private List<Long> idList;
     @EntityField(name = "唯一值", type = ApiParamType.STRING)
     private String uniqueKey;
     @EntityField(name = "告警次数", type = ApiParamType.INTEGER)
@@ -63,6 +67,28 @@ public class AlertVo {
     private String ip;
     @EntityField(name = "端口", type = ApiParamType.STRING)
     private String port;
+    @JSONField(serialize = false)
+    private String viewName;//视图唯一标识
+    @JSONField(serialize = false)
+    private JSONObject rule;//高级搜索条件
+    @JSONField(serialize = false)
+    private String mode = "simple";//搜索模式
+
+    public JSONObject getRule() {
+        return rule;
+    }
+
+    public void setRule(JSONObject rule) {
+        this.rule = rule;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
 
     public Long getId() {
         if (id == null) {
@@ -75,6 +101,21 @@ public class AlertVo {
         this.id = id;
     }
 
+    public List<Long> getIdList() {
+        return idList;
+    }
+
+    public void setIdList(List<Long> idList) {
+        this.idList = idList;
+    }
+
+    public String getViewName() {
+        return viewName;
+    }
+
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
 
     public String getUniqueKey() {
         return uniqueKey;
@@ -215,7 +256,7 @@ public class AlertVo {
         if (attrObj == null && StringUtils.isNotBlank(attrObjStr)) {
             try {
                 attrObj = JSON.parseObject(attrObjStr);
-            } catch (Exception ex) {
+            } catch (Exception ignored) {
 
             }
         }

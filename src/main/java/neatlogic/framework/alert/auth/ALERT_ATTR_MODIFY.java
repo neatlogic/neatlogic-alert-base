@@ -5,15 +5,15 @@ import neatlogic.framework.auth.core.AuthBase;
 import java.util.Collections;
 import java.util.List;
 
-public class ALERT_TYPE_MODIFY extends AuthBase {
+public class ALERT_ATTR_MODIFY extends AuthBase {
     @Override
     public String getAuthDisplayName() {
-        return "告警类型管理权限";
+        return "告警扩展属性管理权限";
     }
 
     @Override
     public String getAuthIntroduction() {
-        return "新增、修改和修改告警类型";
+        return "新增、修改和修改告警扩展属性";
     }
 
     @Override
@@ -23,7 +23,7 @@ public class ALERT_TYPE_MODIFY extends AuthBase {
 
     @Override
     public Integer getSort() {
-        return 2;
+        return 3;
     }
 
     @Override
