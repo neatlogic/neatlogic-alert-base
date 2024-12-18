@@ -22,11 +22,15 @@ import neatlogic.framework.alert.dto.AlertAttrDefineVo;
 import neatlogic.framework.common.dto.ValueTextVo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AlertAttr {
-    public static List<AlertAttrDefineVo> getConstAttrList() {
+
+    public static List<AlertAttrDefineVo> getConstAttrList(String... excludeColumns) {
         List<AlertAttrDefineVo> attrList = new ArrayList<>();
+        attrList.add(new AlertAttrDefineVo("const_title", "标题"));
         attrList.add(new AlertAttrDefineVo("const_id", "id"));
         attrList.add(new AlertAttrDefineVo("const_level", "级别", "select", new ArrayList<String>() {{
             this.add("like");
@@ -39,7 +43,6 @@ public class AlertAttr {
             this.put("valueName", "level");
             this.put("textName", "label");
         }}));
-        attrList.add(new AlertAttrDefineVo("const_title", "标题"));
         attrList.add(new AlertAttrDefineVo("const_alertTime", "告警时间", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("is-null");
@@ -84,7 +87,9 @@ public class AlertAttr {
         attrList.add(new AlertAttrDefineVo("const_entityName", "实体名称"));
         attrList.add(new AlertAttrDefineVo("const_ip", "IP"));
         attrList.add(new AlertAttrDefineVo("const_port", "端口"));
-
+        if (excludeColumns != null && excludeColumns.length > 0) {
+            return attrList.stream().filter(d -> Arrays.stream(excludeColumns).noneMatch(ed -> ed.equals(d.getName()))).collect(Collectors.toList());
+        }
         return attrList;
     }
 }

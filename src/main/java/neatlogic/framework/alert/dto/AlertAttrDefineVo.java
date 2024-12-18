@@ -28,6 +28,7 @@ import java.util.List;
 public class AlertAttrDefineVo {
     private String name;
     private String label;
+    private String kind = "const";//const或attr
     private String type = "text";
     private List<String> expressionList;
     private JSONObject config;
@@ -36,20 +37,31 @@ public class AlertAttrDefineVo {
 
     }
 
+    public String getKind() {
+        return kind;
+    }
+
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
+
     public AlertAttrDefineVo(String name, String label) {
         this.name = name;
         this.label = label;
     }
 
-    public AlertAttrDefineVo(String name, String label, String type) {
+
+    public AlertAttrDefineVo(String name, String label, String kind, String type) {
         this.name = name;
         this.label = label;
+        this.kind = kind;
         this.type = type;
     }
 
     public AlertAttrDefineVo(String name, String label, String type, List<String> expressionList, JSONObject config) {
         this.name = name;
         this.label = label;
+        this.kind = kind;
         this.type = type;
         this.expressionList = expressionList;
         this.config = config;

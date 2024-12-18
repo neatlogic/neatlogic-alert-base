@@ -17,42 +17,13 @@
 
 package neatlogic.framework.alert.dto;
 
-import neatlogic.framework.common.constvalue.ApiParamType;
-import neatlogic.framework.restful.annotation.EntityField;
-import neatlogic.framework.util.SnowflakeUtil;
+import java.util.List;
 
-import java.io.Serializable;
-
-public class AlertLevelVo implements Serializable {
-    @EntityField(name = "id", type = ApiParamType.LONG)
-    private Long id;
-    @EntityField(name = "级别", type = ApiParamType.INTEGER)
-    private int level;
-    @EntityField(name = "唯一标识", type = ApiParamType.STRING)
+public class AlertEventVo {
     private String name;
-    @EntityField(name = "名称", type = ApiParamType.STRING)
     private String label;
-    @EntityField(name = "颜色", type = ApiParamType.STRING)
-    private String color;
-
-    public Long getId() {
-        if (id == null) {
-            id = SnowflakeUtil.uniqueLong();
-        }
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
+    private String description;
+    private List<AlertEventHandlerVo> handlerList;
 
     public String getName() {
         return name;
@@ -70,11 +41,19 @@ public class AlertLevelVo implements Serializable {
         this.label = label;
     }
 
-    public String getColor() {
-        return color;
+    public String getDescription() {
+        return description;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<AlertEventHandlerVo> getHandlerList() {
+        return handlerList;
+    }
+
+    public void setHandlerList(List<AlertEventHandlerVo> handlerList) {
+        this.handlerList = handlerList;
     }
 }

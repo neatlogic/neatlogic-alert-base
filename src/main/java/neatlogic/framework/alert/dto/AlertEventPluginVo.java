@@ -17,41 +17,17 @@
 
 package neatlogic.framework.alert.dto;
 
-import neatlogic.framework.common.constvalue.ApiParamType;
-import neatlogic.framework.restful.annotation.EntityField;
-import neatlogic.framework.util.SnowflakeUtil;
-
-import java.io.Serializable;
-
-public class AlertLevelVo implements Serializable {
-    @EntityField(name = "id", type = ApiParamType.LONG)
-    private Long id;
-    @EntityField(name = "级别", type = ApiParamType.INTEGER)
-    private int level;
-    @EntityField(name = "唯一标识", type = ApiParamType.STRING)
+public class AlertEventPluginVo {
     private String name;
-    @EntityField(name = "名称", type = ApiParamType.STRING)
     private String label;
-    @EntityField(name = "颜色", type = ApiParamType.STRING)
-    private String color;
 
-    public Long getId() {
-        if (id == null) {
-            id = SnowflakeUtil.uniqueLong();
-        }
-        return id;
+    public AlertEventPluginVo() {
+
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
+    public AlertEventPluginVo(String _name, String _label) {
+        this.name = _name;
+        this.label = _label;
     }
 
     public String getName() {
@@ -68,13 +44,5 @@ public class AlertLevelVo implements Serializable {
 
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 }

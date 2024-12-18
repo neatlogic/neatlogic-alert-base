@@ -35,6 +35,8 @@ public class AlertVo extends BasePageVo {
     private Long id;
     @JSONField(serialize = false)
     private List<Long> idList;
+    @EntityField(name = "来源告警id", type = ApiParamType.LONG)
+    private Long fromAlertId;
     @EntityField(name = "唯一值", type = ApiParamType.STRING)
     private String uniqueKey;
     @EntityField(name = "告警次数", type = ApiParamType.INTEGER)
@@ -73,6 +75,30 @@ public class AlertVo extends BasePageVo {
     private JSONObject rule;//高级搜索条件
     @JSONField(serialize = false)
     private String mode = "simple";//搜索模式
+    @EntityField(name = "告警级别", type = ApiParamType.JSONOBJECT)
+    private AlertLevelVo alertLevel;
+    @EntityField(name = "告警类型", type = ApiParamType.JSONOBJECT)
+    private AlertTypeVo alertType;
+    @EntityField(name = "告警关系信息", type = ApiParamType.JSONARRAY)
+    private List<AlertRelVo> alertRelList;
+    @EntityField(name = "子告警数量", type = ApiParamType.INTEGER)
+    private int childAlertCount;
+
+    public Long getFromAlertId() {
+        return fromAlertId;
+    }
+
+    public void setFromAlertId(Long fromAlertId) {
+        this.fromAlertId = fromAlertId;
+    }
+
+    public int getChildAlertCount() {
+        return childAlertCount;
+    }
+
+    public void setChildAlertCount(int childAlertCount) {
+        this.childAlertCount = childAlertCount;
+    }
 
     public JSONObject getRule() {
         return rule;
@@ -84,6 +110,14 @@ public class AlertVo extends BasePageVo {
 
     public String getMode() {
         return mode;
+    }
+
+    public AlertTypeVo getAlertType() {
+        return alertType;
+    }
+
+    public void setAlertType(AlertTypeVo alertType) {
+        this.alertType = alertType;
     }
 
     public void setMode(String mode) {
@@ -107,6 +141,14 @@ public class AlertVo extends BasePageVo {
 
     public void setIdList(List<Long> idList) {
         this.idList = idList;
+    }
+
+    public AlertLevelVo getAlertLevel() {
+        return alertLevel;
+    }
+
+    public void setAlertLevel(AlertLevelVo alertLevel) {
+        this.alertLevel = alertLevel;
     }
 
     public String getViewName() {
@@ -246,6 +288,14 @@ public class AlertVo extends BasePageVo {
 
     public Integer getIsDelete() {
         return isDelete;
+    }
+
+    public List<AlertRelVo> getAlertRelList() {
+        return alertRelList;
+    }
+
+    public void setAlertRelList(List<AlertRelVo> alertRelList) {
+        this.alertRelList = alertRelList;
     }
 
     public void setIsDelete(Integer isDelete) {

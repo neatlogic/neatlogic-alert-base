@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2024  深圳极向量科技有限公司 All Rights Reserved.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="neatlogic.framework.alert.dao.mapper.AlertEventMapper">
+    <select id="getAlertEventHandlerById" parameterType="java.lang.Long"
+            resultType="neatlogic.framework.alert.dto.AlertEventHandlerVo">
+        select id,
+               name,
+               uuid,
+               alert_type  as alertType,
+               parent_uuid as parentUuid,
+               parent_id   as parentId,
+               handler,
+               event,
+               sort,
+               is_active   as isActive,
+               config      as configStr
+        from alert_event_handler
+        where id = #{value}
+    </select>
+
+    <select id="getAlertEventHandlerByEvent" parameterType="java.lang.String"
+            resultType="neatlogic.framework.alert.dto.AlertEventHandlerVo">
+        select id,
+               name,
+               uuid,
+               alert_type  as alertType,
+               parent_uuid as parentUuid,
+               parent_id   as parentId,
+               handler,
+               event,
+               sort,
+               is_active   as isActive,
+               config      as configStr
+        from alert_event_handler
+        where event = #{value}
+        order by sort
+    </select>
+
+    <resultMap id="eventHandlerResultMap" type="neatlogic.framework.alert.dto.AlertEventHandlerVo">
+        <id column="id" property="id"/>
+        <result column="uuid" property="uuid"/>
+        <result column="alertType" property="alertType"/>
+        <result column="parentId" property="parentId"/>
+        <result column="parentUuid" property="parentUuid"/>
+        <result column="name" property="name"/>
+        <result column="handler" property="handler"/>
+        <result column="event" property="event"/>
+        <result column="sort" property="sort"/>
+        <result column="isActive" property="isActive"/>
+        <result column="configStr" property="configStr" typeHandler="neatlogic.framework.dao.plugin.CompressHandler"/>
+    </resultMap>
+
+    <select id="listEventHandler"
+            parameterType="neatlogic.framework.alert.dto.AlertEventHandlerVo"
+            resultMap="eventHandlerResultMap">
+        WITH RECURSIVE handler_cte AS (
+        SELECT
+        a.id,
+        a.uuid,
+        a.name,
+        a.alert_type as alertType,
+        a.parent_uuid as parentUuid,
+        a.parent_id as parentId,
+        a.handler,
+        a.event,
+        a.sort,
+        a.is_active as isActive,
+        a.config as configStr,
+        1 AS level
+        FROM alert_event_handler a
+        <where>
+            <choose>
+                <when test="parentId == null">
+                    and a.parent_id is null
+                </when>
+                <otherwise>
+                    and a.parent_id = #{parentId}
+                </otherwise>
+            </choose>
+            <if test="event != null and event != ''">
+                and a.event = #{event}
+            </if>
+        </where>
+        UNION ALL
+        SELECT
+        b.id,
+        b.uuid,
+        b.name,
+        b.alert_type as alertType,
+        b.parent_uuid as parentUuid,
+        b.parent_id as parentId,
+        b.handler,
+        b.event,
+        b.sort,
+        b.is_active as isActive,
+        b.config as configStr,
+        cte.level + 1 AS level
+        FROM alert_event_handler b
+        INNER JOIN handler_cte cte ON b.parent_id = cte.id
+        )
+        SELECT * FROM handler_cte
+        ORDER BY sort;
+    </select>
+
+    <select id="getAlertEventHandlerMaxSort" resultType="java.lang.Integer"
+            parameterType="neatlogic.framework.alert.dto.AlertEventHandlerVo">
+        select max(sort)
+        from alert_event_handler
+        where event = #{event}
+          and alert_type = #{alertType}
+    </select>
+
+    <insert id="saveAlertEventHandler" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerVo">
+        insert into alert_event_handler
+        (id,
+         uuid,
+         parent_id,
+         parent_uuid,
+         name,
+         alert_type,
+         handler,
+         event,
+         sort,
+         config,
+         is_active)
+        values (#{id},
+                #{uuid},
+                #{parentId},
+                #{parentUuid},
+                #{name},
+                #{alertType},
+                #{handler},
+                #{event},
+                #{sort},
+                #{configStr,typeHandler=CompressHandler},
+                #{isActive})
+        ON DUPLICATE KEY
+            UPDATE name      = #{name},
+                   parent_id = #{parentId},
+                   config    = #{configStr,typeHandler=CompressHandler},
+                   is_active = #{isActive}
+    </insert>
+
+
+    <delete id="deleteAlertEventHandlerById" parameterType="java.lang.Long">
+        delete
+        from alert_event_handler
+        where id = #{value}
+    </delete>
+
+</mapper>
