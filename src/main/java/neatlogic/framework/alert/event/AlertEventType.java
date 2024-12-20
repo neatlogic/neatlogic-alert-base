@@ -22,7 +22,6 @@ public enum AlertEventType {
     ALERT_DELETE("ALERT_DELETE", "删除告警", "告警删除时触发此事件");
 
     private final String name;
-
     private final String label;
     private final String description;
 
@@ -44,6 +43,14 @@ public enum AlertEventType {
         return description;
     }
 
+    public static AlertEventType get(String name) {
+        for (AlertEventType type : AlertEventType.values()) {
+            if (type.getName().equals(name)) {
+                return type;
+            }
+        }
+        return null;
+    }
 
     public static String getLabel(String name) {
         for (AlertEventType s : AlertEventType.values()) {

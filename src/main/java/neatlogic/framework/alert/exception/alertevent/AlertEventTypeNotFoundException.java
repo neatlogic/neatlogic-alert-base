@@ -15,26 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package neatlogic.framework.alert.dao.mapper;
+package neatlogic.framework.alert.exception.alertevent;
 
-import neatlogic.framework.alert.dto.AlertEventHandlerVo;
-import org.apache.ibatis.annotations.Param;
+import neatlogic.framework.exception.core.ApiRuntimeException;
 
-import java.util.List;
+public class AlertEventTypeNotFoundException extends ApiRuntimeException {
 
-public interface AlertEventMapper {
-    Integer getAlertEventHandlerMaxSort(AlertEventHandlerVo alertEventHandlerVo);
-
-    AlertEventHandlerVo getAlertEventHandlerById(Long id);
-
-    List<AlertEventHandlerVo> listEventHandler(AlertEventHandlerVo alertEventHandlerVo);
-
-    List<AlertEventHandlerVo> getAlertEventHandlerByEvent(String event);
-
-    void saveAlertEventHandler(AlertEventHandlerVo alertEventHandlerVo);
-
-    void updateAlertEventHandlerSort(@Param("id") Long id, @Param("sort") int sort);
-
-    void deleteAlertEventHandlerById(Long id);
-
+    public AlertEventTypeNotFoundException(String name) {
+        super("找不到事件类型“" + name + "”");
+    }
 }

@@ -15,26 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package neatlogic.framework.alert.dao.mapper;
+package neatlogic.framework.alert.exception.alertevent;
 
-import neatlogic.framework.alert.dto.AlertEventHandlerVo;
-import org.apache.ibatis.annotations.Param;
+import neatlogic.framework.exception.core.ApiRuntimeException;
 
-import java.util.List;
+public class AlertEventHandlerNotSupportException extends ApiRuntimeException {
 
-public interface AlertEventMapper {
-    Integer getAlertEventHandlerMaxSort(AlertEventHandlerVo alertEventHandlerVo);
-
-    AlertEventHandlerVo getAlertEventHandlerById(Long id);
-
-    List<AlertEventHandlerVo> listEventHandler(AlertEventHandlerVo alertEventHandlerVo);
-
-    List<AlertEventHandlerVo> getAlertEventHandlerByEvent(String event);
-
-    void saveAlertEventHandler(AlertEventHandlerVo alertEventHandlerVo);
-
-    void updateAlertEventHandlerSort(@Param("id") Long id, @Param("sort") int sort);
-
-    void deleteAlertEventHandlerById(Long id);
-
+    public AlertEventHandlerNotSupportException(String handlerName, String name) {
+        super("事件处理组件“{0}”不支持事件{1}", handlerName, name);
+    }
 }

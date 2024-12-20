@@ -158,11 +158,15 @@
                    is_active = #{isActive}
     </insert>
 
+    <update id="updateAlertEventHandlerSort">
+        update alert_event_handler
+        set sort = #{sort}
+        where id = #{id}
+    </update>
 
     <delete id="deleteAlertEventHandlerById" parameterType="java.lang.Long">
         delete
         from alert_event_handler
         where id = #{value}
     </delete>
-
 </mapper>

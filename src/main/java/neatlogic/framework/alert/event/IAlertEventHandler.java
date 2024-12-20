@@ -20,8 +20,7 @@ package neatlogic.framework.alert.event;
 import neatlogic.framework.alert.dto.AlertEventHandlerVo;
 import neatlogic.framework.alert.dto.AlertVo;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 public interface IAlertEventHandler {
     String getName();
@@ -29,9 +28,7 @@ public interface IAlertEventHandler {
     String getLabel();
 
     //定义哪些事件不能使用此插件
-    default List<AlertEventType> excludeEvent() {
-        return new ArrayList<>();
-    }
+    Set<String> supportEventTypes();
 
     //是否只能配置一次
     default boolean isUnique() {

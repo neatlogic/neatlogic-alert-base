@@ -22,18 +22,23 @@ import neatlogic.framework.bootstrap.NeatLogicWebApplicationContext;
 import neatlogic.framework.common.RootComponent;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RootComponent
 public class AlertEventHandlerFactory extends ModuleInitializedListenerBase {
     private static final Map<String, IAlertEventHandler> eventMap = new HashMap<>();
     private static final List<IAlertEventHandler> pluginList = new ArrayList<>();
 
-    public static IAlertEventHandler getHandler(String eventName) {
-        return eventMap.get(eventName);
+    public static IAlertEventHandler getHandler(String handlerName) {
+        return eventMap.get(handlerName);
     }
 
     public static List<IAlertEventHandler> getHandlerList() {
         return pluginList;
+    }
+
+    public static List<IAlertEventHandler> getHandlerList(String event) {
+        return pluginList.stream().filter(d -> d.supportEventTypes().contains(event)).collect(Collectors.toList());
     }
 
     @Override

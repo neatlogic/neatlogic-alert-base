@@ -20,6 +20,9 @@ package neatlogic.framework.alert.dto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import neatlogic.framework.alert.event.AlertEventHandlerFactory;
+import neatlogic.framework.alert.event.AlertEventType;
+import neatlogic.framework.alert.event.IAlertEventHandler;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.SnowflakeUtil;
@@ -42,8 +45,12 @@ public class AlertEventHandlerVo {
     private Long alertType;
     @EntityField(name = "处理器", type = ApiParamType.STRING)
     private String handler;
+    @EntityField(name = "处理器名称", type = ApiParamType.STRING)
+    private String handlerName;
     @EntityField(name = "事件", type = ApiParamType.STRING)
     private String event;
+    @EntityField(name = "事件名称", type = ApiParamType.STRING)
+    private String eventName;
     @EntityField(name = "排序", type = ApiParamType.INTEGER)
     private int sort;
     @EntityField(name = "是否激活", type = ApiParamType.INTEGER)
@@ -72,6 +79,31 @@ public class AlertEventHandlerVo {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getEventName() {
+        if (StringUtils.isNotBlank(event)) {
+            eventName = AlertEventType.getLabel(event);
+        }
+        return eventName;
+    }
+
+    public String getHandlerName() {
+        if (StringUtils.isNotBlank(handler)) {
+            IAlertEventHandler h = AlertEventHandlerFactory.getHandler(handler);
+            if (h != null) {
+                handlerName = h.getLabel();
+            }
+        }
+        return handlerName;
+    }
+
+    public void setHandlerName(String handlerName) {
+        this.handlerName = handlerName;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
     }
 
     public Long getAlertType() {
