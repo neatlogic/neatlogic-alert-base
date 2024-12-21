@@ -20,6 +20,7 @@ package neatlogic.framework.alert.dto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import neatlogic.framework.alert.enums.AlertStatus;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.restful.annotation.EntityField;
@@ -53,6 +54,8 @@ public class AlertVo extends BasePageVo {
     private String source;
     @EntityField(name = "状态", type = ApiParamType.STRING)
     private String status;
+    @EntityField(name = "状态名称", type = ApiParamType.STRING)
+    private String statusName;
     @EntityField(name = "告警日期", type = ApiParamType.LONG)
     private Date alertTime;
     @EntityField(name = "是否删除", type = ApiParamType.INTEGER)
@@ -118,6 +121,17 @@ public class AlertVo extends BasePageVo {
 
     public void setAlertType(AlertTypeVo alertType) {
         this.alertType = alertType;
+    }
+
+    public String getStatusName() {
+        if (StringUtils.isNotBlank(status)) {
+            statusName = AlertStatus.getText(status);
+        }
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
     }
 
     public void setMode(String mode) {
