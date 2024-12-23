@@ -35,6 +35,24 @@
         where id = #{value}
     </select>
 
+    <select id="getAlertEventHandlerByHandler" parameterType="java.lang.String"
+            resultType="neatlogic.framework.alert.dto.AlertEventHandlerVo">
+        select id,
+               name,
+               uuid,
+               alert_type  as alertType,
+               parent_uuid as parentUuid,
+               parent_id   as parentId,
+               handler,
+               event,
+               sort,
+               is_active   as isActive,
+               config      as configStr
+        from alert_event_handler
+        where handler = #{value}
+        order by sort
+    </select>
+
     <select id="getAlertEventHandlerByEvent" parameterType="java.lang.String"
             resultType="neatlogic.framework.alert.dto.AlertEventHandlerVo">
         select id,
@@ -127,6 +145,32 @@
           and alert_type = #{alertType}
     </select>
 
+    <select id="getAlertEventHandlerData" resultType="neatlogic.framework.alert.dto.AlertEventHandlerDataVo">
+        select alert_id               as alertId,
+               alert_event_handler_id as alertEventHandlerId,
+               data                   as dataStr
+        from alert_event_handler_data
+        where alert_id = #{alertId}
+          and alert_event_handler_id = #{alertEventHandlerId}
+    </select>
+
+    <select id="listAlertEventHandlerData" resultType="neatlogic.framework.alert.dto.AlertEventHandlerDataVo">
+        select alert_id               as alertId,
+               alert_event_handler_id as alertEventHandlerId,
+               data                   as dataStr
+        from alert_event_handler_data
+    </select>
+
+    <insert id="insertAlertEventHandlerData" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerDataVo">
+        insert into alert_event_handler_data
+        (alert_id,
+         alert_event_handler_id,
+         data)
+        values (#{alertId},
+                #{alertEventHandlerId},
+                #{dataStr, typeHandler=CompressHandler})
+    </insert>
+
     <insert id="saveAlertEventHandler" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerVo">
         insert into alert_event_handler
         (id,
@@ -168,5 +212,12 @@
         delete
         from alert_event_handler
         where id = #{value}
+    </delete>
+
+    <delete id="deleteAlertEventHandlerData" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerDataVo">
+        delete
+        from alert_event_handler_data
+        where alert_id = #{alertId}
+          and alert_event_handler_id = #{alertEventHandlerId}
     </delete>
 </mapper>
