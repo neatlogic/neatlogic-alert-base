@@ -56,6 +56,10 @@ public class AlertVo extends BasePageVo {
     private String status;
     @EntityField(name = "状态名称", type = ApiParamType.STRING)
     private String statusName;
+    @EntityField(name = "状态颜色", type = ApiParamType.STRING)
+    private String statusColor;
+    @EntityField(name = "状态状态", type = ApiParamType.STRING)
+    private String statusStatus;
     @EntityField(name = "告警日期", type = ApiParamType.LONG)
     private Date alertTime;
     @EntityField(name = "是否删除", type = ApiParamType.INTEGER)
@@ -86,6 +90,36 @@ public class AlertVo extends BasePageVo {
     private List<AlertRelVo> alertRelList;
     @EntityField(name = "子告警数量", type = ApiParamType.INTEGER)
     private int childAlertCount;
+    @EntityField(name = "评论", type = ApiParamType.STRING)
+    private String comment;
+    @JSONField(serialize = false)
+    private Integer isChangeChildAlertStatus;
+    @EntityField(name = "评论列表", type = ApiParamType.JSONARRAY)
+    private List<AlertCommentVo> commentList;
+
+    public Integer getIsChangeChildAlertStatus() {
+        return isChangeChildAlertStatus;
+    }
+
+    public void setIsChangeChildAlertStatus(Integer isChangeChildAlertStatus) {
+        this.isChangeChildAlertStatus = isChangeChildAlertStatus;
+    }
+
+    public List<AlertCommentVo> getCommentList() {
+        return commentList;
+    }
+
+    public void setCommentList(List<AlertCommentVo> commentList) {
+        this.commentList = commentList;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     public Long getFromAlertId() {
         return fromAlertId;
@@ -341,4 +375,20 @@ public class AlertVo extends BasePageVo {
     public void setAttrObjStr(String attrObjStr) {
         this.attrObjStr = attrObjStr;
     }
+
+    public String getStatusColor() {
+        if (StringUtils.isNotBlank(status)) {
+            statusColor = AlertStatus.getColor(status);
+        }
+        return statusColor;
+    }
+
+
+    public String getStatusStatus() {
+        if (StringUtils.isNotBlank(status)) {
+            statusStatus = AlertStatus.getStatus(status);
+        }
+        return statusStatus;
+    }
+
 }

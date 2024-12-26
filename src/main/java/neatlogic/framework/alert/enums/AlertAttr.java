@@ -73,12 +73,24 @@ public class AlertAttr {
             this.put("transfer", true);
             this.put("dataList", new ArrayList<ValueTextVo>() {{
                 this.add(new ValueTextVo() {{
-                    this.setValue("unresponded");
-                    this.setText("未响应");
+                    this.setValue("new");
+                    this.setText("新告警");
                 }});
                 this.add(new ValueTextVo() {{
-                    this.setValue("responded");
+                    this.setValue("confirmed");
                     this.setText("已响应");
+                }});
+                this.add(new ValueTextVo() {{
+                    this.setValue("processing");
+                    this.setText("处理中");
+                }});
+                this.add(new ValueTextVo() {{
+                    this.setValue("resolved");
+                    this.setText("已解决");
+                }});
+                this.add(new ValueTextVo() {{
+                    this.setValue("closed");
+                    this.setText("已关闭");
                 }});
             }});
         }}));
