@@ -34,6 +34,10 @@ public interface AlertEventMapper {
 
     List<AlertEventHandlerVo> getAlertEventHandlerByEvent(String event);
 
+    List<AlertEventHandlerVo> getAlertEventHandlerByParentId(Long parentId);
+
+    AlertEventHandlerVo getAlertEventHandlerByUuid(String uuid);
+
     List<AlertEventHandlerDataVo> listAlertEventHandlerData();
 
     AlertEventHandlerDataVo getAlertEventHandlerData(@Param("alertId") Long alertId, @Param("alertEventHandlerId") Long alertEventHandlerId);

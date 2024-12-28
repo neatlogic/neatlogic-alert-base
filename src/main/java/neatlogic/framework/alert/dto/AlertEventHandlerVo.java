@@ -28,7 +28,9 @@ import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.SnowflakeUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AlertEventHandlerVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
@@ -61,6 +63,26 @@ public class AlertEventHandlerVo {
     private String configStr;
     @EntityField(name = "子节点", type = ApiParamType.JSONARRAY)
     private List<AlertEventHandlerVo> handlerList;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AlertEventHandlerVo)) return false;
+        AlertEventHandlerVo that = (AlertEventHandlerVo) o;
+        return Objects.equals(uuid, that.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(uuid);
+    }
+
+    public void addHandler(AlertEventHandlerVo handler) {
+        if (handlerList == null) {
+            handlerList = new ArrayList<>();
+        }
+        handlerList.add(handler);
+    }
 
     public Long getId() {
         if (id == null) {

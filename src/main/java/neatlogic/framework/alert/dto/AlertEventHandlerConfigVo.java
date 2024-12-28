@@ -21,13 +21,20 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 
-public class AlertEventHandlerDataVo {
-    private Long alertId;
+public class AlertEventHandlerConfigVo {
     private Long alertEventHandlerId;
+    private String uuid;
     private String handler;
-    private JSONObject data;
-    private String dataStr;
+    private JSONObject config;
+    private String configStr;
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public String getHandler() {
         return handler;
@@ -37,13 +44,6 @@ public class AlertEventHandlerDataVo {
         this.handler = handler;
     }
 
-    public Long getAlertId() {
-        return alertId;
-    }
-
-    public void setAlertId(Long alertId) {
-        this.alertId = alertId;
-    }
 
     public Long getAlertEventHandlerId() {
         return alertEventHandlerId;
@@ -53,29 +53,29 @@ public class AlertEventHandlerDataVo {
         this.alertEventHandlerId = alertEventHandlerId;
     }
 
-    public JSONObject getData() {
-        if (data == null && StringUtils.isNotBlank(dataStr)) {
+    public JSONObject getConfig() {
+        if (config == null && StringUtils.isNotBlank(configStr)) {
             try {
-                data = JSON.parseObject(dataStr);
+                config = JSON.parseObject(configStr);
             } catch (Exception ignored) {
 
             }
         }
-        return data;
+        return config;
     }
 
-    public void setData(JSONObject data) {
-        this.data = data;
+    public void setConfig(JSONObject config) {
+        this.config = config;
     }
 
-    public String getDataStr() {
-        if (data != null) {
-            dataStr = JSON.toJSONString(data);
+    public String getConfigStr() {
+        if (config != null) {
+            configStr = JSON.toJSONString(config);
         }
-        return dataStr;
+        return configStr;
     }
 
-    public void setDataStr(String dataStr) {
-        this.dataStr = dataStr;
+    public void setConfigStr(String configStr) {
+        this.configStr = configStr;
     }
 }

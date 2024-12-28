@@ -17,9 +17,12 @@
 
 package neatlogic.framework.alert.event;
 
+import neatlogic.framework.alert.dto.AlertEventHandlerConfigVo;
 import neatlogic.framework.alert.dto.AlertEventHandlerVo;
 import neatlogic.framework.alert.dto.AlertVo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public interface IAlertEventHandler {
@@ -33,6 +36,16 @@ public interface IAlertEventHandler {
     //是否只能配置一次
     default boolean isUnique() {
         return false;
+    }
+
+    //某些组件可能有子组件，这时需要分拆出自组件的配置，方便调用，不是所有组件都需要返回
+    default List<AlertEventHandlerConfigVo> getHandlerConfig(AlertEventHandlerVo alertEventHandlerVo) {
+        return new ArrayList<>();
+    }
+
+    //根据配置组装子组件，如果一个组件有组件，需要覆盖此方法返回子组件信息
+    default void makeupChildHandler(AlertEventHandlerVo alertEventHandlerVo) {
+
     }
 
     AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo);
