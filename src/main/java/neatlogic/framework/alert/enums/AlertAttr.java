@@ -33,8 +33,12 @@ public class AlertAttr {
         attrList.add(new AlertAttrDefineVo("const_title", "标题"));
         attrList.add(new AlertAttrDefineVo("const_id", "id"));
         attrList.add(new AlertAttrDefineVo("const_level", "级别", "select", new ArrayList<String>() {{
-            this.add("like");
-            this.add("notlike");
+            this.add("equal");
+            this.add("notequal");
+            this.add("gt");
+            this.add("lt");
+            this.add("gte");
+            this.add("lte");
             this.add("is-null");
             this.add("is-not-null");
         }}, new JSONObject() {{
@@ -43,7 +47,16 @@ public class AlertAttr {
             this.put("valueName", "level");
             this.put("textName", "label");
         }}));
-        attrList.add(new AlertAttrDefineVo("const_alertTime", "告警时间", "datetime", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间", "datetime", new ArrayList<String>() {{
+            this.add("range");
+            this.add("is-null");
+            this.add("is-not-null");
+        }}, new JSONObject() {{
+            this.put("transfer", true);
+            this.put("type", "datetimerange");
+            this.put("format", "yyyy-MM-dd HH:mm:ss");
+        }}));
+        attrList.add(new AlertAttrDefineVo("const_updateTime", "更新时间", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("is-null");
             this.add("is-not-null");

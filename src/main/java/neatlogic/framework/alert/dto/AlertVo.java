@@ -60,7 +60,9 @@ public class AlertVo extends BasePageVo {
     private String statusColor;
     @EntityField(name = "状态状态", type = ApiParamType.STRING)
     private String statusStatus;
-    @EntityField(name = "告警日期", type = ApiParamType.LONG)
+    @EntityField(name = "更新时间", type = ApiParamType.LONG)
+    private Date updateTime;
+    @EntityField(name = "创建时间", type = ApiParamType.LONG)
     private Date alertTime;
     @EntityField(name = "是否删除", type = ApiParamType.INTEGER)
     private Integer isDelete;
@@ -96,6 +98,14 @@ public class AlertVo extends BasePageVo {
     private Integer isChangeChildAlertStatus;
     @EntityField(name = "评论列表", type = ApiParamType.JSONARRAY)
     private List<AlertCommentVo> commentList;
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 
     public Integer getIsChangeChildAlertStatus() {
         return isChangeChildAlertStatus;
