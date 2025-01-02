@@ -30,6 +30,8 @@ public interface IAlertEventHandler {
 
     String getLabel();
 
+    String getIcon();
+
     //定义哪些事件不能使用此插件
     Set<String> supportEventTypes();
 

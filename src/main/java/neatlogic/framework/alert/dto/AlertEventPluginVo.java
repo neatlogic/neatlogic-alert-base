@@ -20,14 +20,16 @@ package neatlogic.framework.alert.dto;
 public class AlertEventPluginVo {
     private String name;
     private String label;
+    private String icon;
 
     public AlertEventPluginVo() {
 
     }
 
-    public AlertEventPluginVo(String _name, String _label) {
+    public AlertEventPluginVo(String _name, String _label, String _icon) {
         this.name = _name;
         this.label = _label;
+        this.icon = _icon;
     }
 
     public String getName() {
@@ -44,5 +46,13 @@ public class AlertEventPluginVo {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

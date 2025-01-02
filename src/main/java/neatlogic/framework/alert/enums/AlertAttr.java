@@ -84,6 +84,7 @@ public class AlertAttr {
             this.add("is-not-null");
         }}, new JSONObject() {{
             this.put("transfer", true);
+            this.put("multiple", true);
             this.put("dataList", new ArrayList<ValueTextVo>() {{
                 this.add(new ValueTextVo() {{
                     this.setValue("new");

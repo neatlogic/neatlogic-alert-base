@@ -49,6 +49,8 @@ public class AlertEventHandlerVo {
     private String handler;
     @EntityField(name = "处理器名称", type = ApiParamType.STRING)
     private String handlerName;
+    @EntityField(name = "处理器图标", type = ApiParamType.STRING)
+    private String handlerIcon;
     @EntityField(name = "事件", type = ApiParamType.STRING)
     private String event;
     @EntityField(name = "事件名称", type = ApiParamType.STRING)
@@ -108,6 +110,16 @@ public class AlertEventHandlerVo {
             eventName = AlertEventType.getLabel(event);
         }
         return eventName;
+    }
+
+    public String getHandlerIcon() {
+        if (StringUtils.isNotBlank(handler)) {
+            IAlertEventHandler h = AlertEventHandlerFactory.getHandler(handler);
+            if (h != null) {
+                handlerIcon = h.getIcon();
+            }
+        }
+        return handlerIcon;
     }
 
     public String getHandlerName() {

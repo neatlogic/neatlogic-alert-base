@@ -16,8 +16,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 package neatlogic.framework.alert.event;
 
 public enum AlertEventType {
-    ALERT_INPUT("ALERT_INPUT", "输入告警", "告警输入时，经过转换插件转换后触发此事件，这个时刻可以决定告警是否需要保存到数据库"),
-    ALERT_SAVE("ALERT_SAVE", "保存告警", "告警保存时触发此事件"),
+    ALERT_INPUT("ALERT_INPUT", "接入告警", "告警接入时，经过转换插件转换后触发此事件，这个时刻可以决定告警是否需要保存到数据库"),
+    ALERT_SAVE("ALERT_SAVE", "创建告警", "告警保存时触发此事件"),
     ALERT_STATUE_CHANGE("ALERT_STATUS_CHANGE", "更新告警状态", "告警状态发生变化时触发此事件"),
     ALERT_DELETE("ALERT_DELETE", "删除告警", "告警删除时触发此事件");
 
