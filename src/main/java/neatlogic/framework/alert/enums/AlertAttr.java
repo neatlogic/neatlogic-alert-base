@@ -17,6 +17,7 @@
 
 package neatlogic.framework.alert.enums;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.alert.dto.AlertAttrDefineVo;
 import neatlogic.framework.common.dto.ValueTextVo;
@@ -106,6 +107,30 @@ public class AlertAttr {
                     this.setValue("closed");
                     this.setText("已关闭");
                 }});
+            }});
+        }}));
+        attrList.add(new AlertAttrDefineVo("const_userList", "处理人", "userselect", new ArrayList<String>() {{
+            this.add("like");
+            this.add("notlike");
+            this.add("is-null");
+            this.add("is-not-null");
+        }}, new JSONObject() {{
+            this.put("transfer", true);
+            this.put("multiple", true);
+            this.put("groupList", new JSONArray() {{
+                this.add("user");
+            }});
+        }}));
+        attrList.add(new AlertAttrDefineVo("const_teamList", "处理组", "userselect", new ArrayList<String>() {{
+            this.add("like");
+            this.add("notlike");
+            this.add("is-null");
+            this.add("is-not-null");
+        }}, new JSONObject() {{
+            this.put("transfer", true);
+            this.put("multiple", true);
+            this.put("groupList", new JSONArray() {{
+                this.add("team");
             }});
         }}));
         attrList.add(new AlertAttrDefineVo("const_source", "来源"));

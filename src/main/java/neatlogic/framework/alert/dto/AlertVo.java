@@ -26,10 +26,12 @@ import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.Md5Util;
 import neatlogic.framework.util.SnowflakeUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AlertVo extends BasePageVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
@@ -78,6 +80,10 @@ public class AlertVo extends BasePageVo {
     private String ip;
     @EntityField(name = "端口", type = ApiParamType.STRING)
     private String port;
+    @EntityField(name = "处理人", type = ApiParamType.JSONARRAY)
+    private List<AlertUserVo> userList;
+    @EntityField(name = "处理组", type = ApiParamType.JSONARRAY)
+    private List<AlertTeamVo> teamList;
     @JSONField(serialize = false)
     private String viewName;//视图唯一标识
     @JSONField(serialize = false)
@@ -121,6 +127,38 @@ public class AlertVo extends BasePageVo {
 
     public void setCommentList(List<AlertCommentVo> commentList) {
         this.commentList = commentList;
+    }
+
+    public List<AlertUserVo> getUserList() {
+        return userList;
+    }
+
+    @JSONField(serialize = false)
+    public List<String> getTeamIdList() {
+        if (CollectionUtils.isNotEmpty(teamList)) {
+            return teamList.stream().map(AlertTeamVo::getTeamUuid).collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    @JSONField(serialize = false)
+    public List<String> getUserIdList() {
+        if (CollectionUtils.isNotEmpty(userList)) {
+            return userList.stream().map(AlertUserVo::getUserId).collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    public void setUserList(List<AlertUserVo> userList) {
+        this.userList = userList;
+    }
+
+    public List<AlertTeamVo> getTeamList() {
+        return teamList;
+    }
+
+    public void setTeamList(List<AlertTeamVo> teamList) {
+        this.teamList = teamList;
     }
 
     public String getComment() {

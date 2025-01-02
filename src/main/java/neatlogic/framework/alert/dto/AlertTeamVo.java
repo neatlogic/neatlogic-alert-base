@@ -17,7 +17,9 @@
 
 package neatlogic.framework.alert.dto;
 
-public class AlertTeamVo {
+import java.io.Serializable;
+
+public class AlertTeamVo implements Serializable {
     private Long alertId;
     private String teamUuid;
     private String teamName;
