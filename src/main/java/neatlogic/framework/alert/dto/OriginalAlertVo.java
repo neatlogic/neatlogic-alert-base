@@ -17,11 +17,14 @@
 
 package neatlogic.framework.alert.dto;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.util.SnowflakeUtil;
 
 import java.util.Date;
+import java.util.List;
 
-public class OriginalAlertVo {
+public class OriginalAlertVo extends BasePageVo {
     private Long id;
     private String type;
     private String source;
@@ -29,6 +32,8 @@ public class OriginalAlertVo {
     private Date time;
     private String error;
     private String status;
+    @JSONField(serialize = false)
+    private List<String> timeRange;
 
     public String getSource() {
         return source;
@@ -44,6 +49,14 @@ public class OriginalAlertVo {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public List<String> getTimeRange() {
+        return timeRange;
+    }
+
+    public void setTimeRange(List<String> timeRange) {
+        this.timeRange = timeRange;
     }
 
     public String getContent() {
@@ -88,4 +101,5 @@ public class OriginalAlertVo {
     public void setStatus(String status) {
         this.status = status;
     }
+
 }

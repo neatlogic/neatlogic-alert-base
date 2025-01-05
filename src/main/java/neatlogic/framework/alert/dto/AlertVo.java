@@ -104,6 +104,46 @@ public class AlertVo extends BasePageVo {
     private Integer isChangeChildAlertStatus;
     @EntityField(name = "评论列表", type = ApiParamType.JSONARRAY)
     private List<AlertCommentVo> commentList;
+    @JSONField(serialize = false)
+    private String applyUserType;
+    @JSONField(serialize = false)
+    private String applyTeamType;
+    @JSONField(serialize = false)
+    private List<String> applyUserList;
+    @JSONField(serialize = false)
+    private List<String> applyTeamList;
+
+    public String getApplyUserType() {
+        return applyUserType;
+    }
+
+    public void setApplyUserType(String applyUserType) {
+        this.applyUserType = applyUserType;
+    }
+
+    public String getApplyTeamType() {
+        return applyTeamType;
+    }
+
+    public void setApplyTeamType(String applyTeamType) {
+        this.applyTeamType = applyTeamType;
+    }
+
+    public List<String> getApplyUserList() {
+        return applyUserList;
+    }
+
+    public void setApplyUserList(List<String> applyUserList) {
+        this.applyUserList = applyUserList;
+    }
+
+    public List<String> getApplyTeamList() {
+        return applyTeamList;
+    }
+
+    public void setApplyTeamList(List<String> applyTeamList) {
+        this.applyTeamList = applyTeamList;
+    }
 
     public Date getUpdateTime() {
         return updateTime;

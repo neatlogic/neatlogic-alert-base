@@ -17,14 +17,60 @@
 
 package neatlogic.framework.alert.event;
 
+import neatlogic.framework.alert.dao.mapper.AlertEventMapper;
+import neatlogic.framework.alert.dto.AlertEventHandlerAuditVo;
 import neatlogic.framework.alert.dto.AlertEventHandlerVo;
 import neatlogic.framework.alert.dto.AlertVo;
+import neatlogic.framework.alert.enums.AlertEventStatus;
+import neatlogic.framework.alert.exception.alertevent.AlertEventHandlerTriggerException;
+import neatlogic.framework.transaction.util.TransactionUtil;
+import org.springframework.transaction.TransactionStatus;
+
+import javax.annotation.Resource;
 
 public abstract class AlertEventHandlerBase implements IAlertEventHandler {
 
+    @Resource
+    private AlertEventMapper alertEventMapper;
+
     public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo) {
-        return this.myTrigger(alertEventHandlerVo, alertVo);
+        try {
+            //alertVo = this.myTrigger(alertEventHandlerVo, alertVo);
+            alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo);
+        } catch (AlertEventHandlerTriggerException e) {
+
+        }
+        return alertVo;
     }
 
-    protected abstract AlertVo myTrigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo);
+    private AlertVo executeWithTransaction(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo) {
+        /*
+        由于eventhandler存在嵌套调用的行为，例如condition，因此每次调用trigger都是调用新的事务
+         */
+        AlertEventHandlerAuditVo alertEventHandlerAuditVo = new AlertEventHandlerAuditVo();
+        alertEventHandlerAuditVo.setAlertId(alertVo.getId());
+        alertEventHandlerAuditVo.setEventHandlerId(alertEventHandlerVo.getId());
+        alertEventHandlerAuditVo.setEvent(alertEventHandlerVo.getEvent());
+        alertEventHandlerAuditVo.setHandler(alertEventHandlerVo.getHandler());
+        alertEventHandlerAuditVo.setHandlerName(alertEventHandlerVo.getHandlerName());
+        alertEventHandlerAuditVo.setStatus(AlertEventStatus.RUNNING.getValue());
+        alertEventMapper.insertAlertEventAudit(alertEventHandlerAuditVo);
+
+        TransactionStatus ts = TransactionUtil.openNewTx();
+        try {
+            alertVo = myTrigger(alertEventHandlerVo, alertVo);
+            TransactionUtil.commitTx(ts);
+            alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+        } catch (Exception e) {
+            TransactionUtil.rollbackTx(ts);
+            alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
+            alertEventHandlerAuditVo.setError(e.getMessage());
+            throw e; // 抛出异常以便上层处理
+        } finally {
+            alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);
+        }
+        return alertVo;
+    }
+
+    protected abstract AlertVo myTrigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo) throws AlertEventHandlerTriggerException;
 }

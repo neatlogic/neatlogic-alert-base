@@ -22,13 +22,13 @@
         select id,
                name,
                uuid,
-               alert_type  as alertType,
-               parent_id   as parentId,
+               alert_type as alertType,
+               parent_id  as parentId,
                handler,
                event,
                sort,
-               is_active   as isActive,
-               config      as configStr
+               is_active  as isActive,
+               config     as configStr
         from alert_event_handler
     </sql>
     <select id="getAlertEventHandlerById" parameterType="java.lang.Long"
@@ -195,6 +195,37 @@
                    is_active = #{isActive}
     </insert>
 
+    <insert id="insertAlertEventAudit" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerAuditVo">
+        insert into alert_event_handler_audit
+        (id,
+         alert_id,
+         event,
+         handler,
+         handler_name,
+         event_handler_id,
+         start_time,
+         status)
+        values (#{id},
+                #{alertId},
+                #{event},
+                #{handler},
+                #{handlerName},
+                #{eventHandlerId},
+                now(3),
+                #{status})
+    </insert>
+
+    <update id="updateAlertEventHandlerAudit" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerAuditVo">
+        update alert_event_handler_audit
+        set
+        status = #{status},
+        end_time = now(3)
+        <if test="error != null and error != ''">
+            ,error = #{error,typeHandler=CompressHandler}
+        </if>
+        where id = #{id}
+    </update>
+
     <update id="updateAlertEventHandlerSort">
         update alert_event_handler
         set sort = #{sort}
@@ -214,7 +245,4 @@
           and alert_event_handler_id = #{alertEventHandlerId}
     </delete>
 
-    <delete id="deleteAlertEventHandlerConfig" parameterType="java.lang.Long">
-
-    </delete>
 </mapper>
