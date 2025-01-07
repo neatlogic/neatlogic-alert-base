@@ -34,16 +34,16 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
     private AlertEventMapper alertEventMapper;
 
     public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo) {
-        try {
-            //alertVo = this.myTrigger(alertEventHandlerVo, alertVo);
-            alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo);
-        } catch (AlertEventHandlerTriggerException e) {
-
-        }
+        alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, null);
         return alertVo;
     }
 
-    private AlertVo executeWithTransaction(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo) {
+    public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo) {
+        alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo);
+        return alertVo;
+    }
+
+    private AlertVo executeWithTransaction(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo parentAlertEventHandlerAuditVo) {
         /*
         由于eventhandler存在嵌套调用的行为，例如condition，因此每次调用trigger都是调用新的事务
          */
@@ -54,11 +54,14 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         alertEventHandlerAuditVo.setHandler(alertEventHandlerVo.getHandler());
         alertEventHandlerAuditVo.setHandlerName(alertEventHandlerVo.getHandlerName());
         alertEventHandlerAuditVo.setStatus(AlertEventStatus.RUNNING.getValue());
+        if (parentAlertEventHandlerAuditVo != null) {
+            alertEventHandlerAuditVo.setParentId(parentAlertEventHandlerAuditVo.getId());
+        }
         alertEventMapper.insertAlertEventAudit(alertEventHandlerAuditVo);
 
         TransactionStatus ts = TransactionUtil.openNewTx();
         try {
-            alertVo = myTrigger(alertEventHandlerVo, alertVo);
+            alertVo = myTrigger(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo);
             TransactionUtil.commitTx(ts);
             alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
         } catch (Exception e) {
@@ -72,5 +75,5 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         return alertVo;
     }
 
-    protected abstract AlertVo myTrigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo) throws AlertEventHandlerTriggerException;
+    protected abstract AlertVo myTrigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo) throws AlertEventHandlerTriggerException;
 }

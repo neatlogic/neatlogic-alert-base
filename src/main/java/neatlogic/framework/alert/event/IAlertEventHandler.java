@@ -17,6 +17,7 @@
 
 package neatlogic.framework.alert.event;
 
+import neatlogic.framework.alert.dto.AlertEventHandlerAuditVo;
 import neatlogic.framework.alert.dto.AlertEventHandlerConfigVo;
 import neatlogic.framework.alert.dto.AlertEventHandlerVo;
 import neatlogic.framework.alert.dto.AlertVo;
@@ -47,4 +48,6 @@ public interface IAlertEventHandler {
     }
 
     AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo);
+
+    AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo);
 }

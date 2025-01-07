@@ -198,6 +198,7 @@
     <insert id="insertAlertEventAudit" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerAuditVo">
         insert into alert_event_handler_audit
         (id,
+         parent_id,
          alert_id,
          event,
          handler,
@@ -206,6 +207,7 @@
          start_time,
          status)
         values (#{id},
+                #{parentId},
                 #{alertId},
                 #{event},
                 #{handler},
@@ -220,6 +222,9 @@
         set
         status = #{status},
         end_time = now(3)
+        <if test="resultStr != null and resultStr != ''">
+            ,result = #{resultStr,typeHandler=CompressHandler}
+        </if>
         <if test="error != null and error != ''">
             ,error = #{error,typeHandler=CompressHandler}
         </if>

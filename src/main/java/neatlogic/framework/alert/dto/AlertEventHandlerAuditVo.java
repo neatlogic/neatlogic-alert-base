@@ -17,7 +17,11 @@
 
 package neatlogic.framework.alert.dto;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.alert.enums.AlertEventStatus;
+import neatlogic.framework.alert.event.AlertEventType;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.restful.annotation.EntityField;
@@ -25,14 +29,19 @@ import neatlogic.framework.util.SnowflakeUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
+import java.util.List;
 
 public class AlertEventHandlerAuditVo extends BasePageVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
     private Long id;
     @EntityField(name = "告警id", type = ApiParamType.LONG)
     private Long alertId;
+    @EntityField(name = "父id", type = ApiParamType.LONG)
+    private Long parentId;
     @EntityField(name = "事件", type = ApiParamType.STRING)
     private String event;
+    @EntityField(name = "事件名称", type = ApiParamType.STRING)
+    private String eventName;
     @EntityField(name = "事件处理器", type = ApiParamType.STRING)
     private String handler;
     @EntityField(name = "事件处理器名称", type = ApiParamType.STRING)
@@ -49,8 +58,14 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
     private String statusName;
     @EntityField(name = "异常", type = ApiParamType.STRING)
     private String error;
+    @EntityField(name = "结果", type = ApiParamType.JSONOBJECT)
+    private JSONObject result;
+    @JSONField(serialize = false)
+    private String resultStr;
     @EntityField(name = "耗时", type = ApiParamType.LONG)
     private long timeCost;
+    @EntityField(name = "子记录")
+    private List<AlertEventHandlerAuditVo> childAuditList;
 
     public Long getId() {
         if (id == null) {
@@ -61,6 +76,47 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getEventName() {
+        if (StringUtils.isNotBlank(event)) {
+            eventName = AlertEventType.getLabel(event);
+        }
+        return eventName;
+    }
+
+    public String getResultStr() {
+        if (result != null) {
+            resultStr = JSON.toJSONString(result);
+        }
+        return resultStr;
+    }
+
+    public void setResultStr(String resultStr) {
+        this.resultStr = resultStr;
+    }
+
+    public JSONObject getResult() {
+        if (result == null && StringUtils.isNotBlank(resultStr)) {
+            try {
+                result = JSON.parseObject(resultStr);
+            } catch (Exception ignored) {
+
+            }
+        }
+        return result;
+    }
+
+    public void setResult(JSONObject result) {
+        this.result = result;
     }
 
     public Long getAlertId() {
@@ -147,5 +203,13 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
             timeCost = this.endTime.getTime() - this.startTime.getTime();
         }
         return timeCost;
+    }
+
+    public List<AlertEventHandlerAuditVo> getChildAuditList() {
+        return childAuditList;
+    }
+
+    public void setChildAuditList(List<AlertEventHandlerAuditVo> childAuditList) {
+        this.childAuditList = childAuditList;
     }
 }
