@@ -23,6 +23,8 @@ import neatlogic.framework.common.dto.BaseEditorVo;
 import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.SnowflakeUtil;
 
+import java.util.List;
+
 public class AlertTypeVo extends BaseEditorVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
     private Long id;
@@ -36,6 +38,10 @@ public class AlertTypeVo extends BaseEditorVo {
     private Long fileId;
     @JSONField(serialize = false)
     private String filePath;
+    @EntityField(name = "属性类型列表", type = ApiParamType.JSONARRAY)
+    private List<AlertAttrTypeVo> attrTypeList;
+    @EntityField(name = "属性类型id列表", type = ApiParamType.JSONARRAY)
+    private List<Long> attrTypeIdList;
 
     public Long getId() {
         if (id == null) {
@@ -89,5 +95,21 @@ public class AlertTypeVo extends BaseEditorVo {
 
     public void setFileId(Long fileId) {
         this.fileId = fileId;
+    }
+
+    public List<AlertAttrTypeVo> getAttrTypeList() {
+        return attrTypeList;
+    }
+
+    public void setAttrTypeList(List<AlertAttrTypeVo> attrTypeList) {
+        this.attrTypeList = attrTypeList;
+    }
+
+    public List<Long> getAttrTypeIdList() {
+        return attrTypeIdList;
+    }
+
+    public void setAttrTypeIdList(List<Long> attrTypeIdList) {
+        this.attrTypeIdList = attrTypeIdList;
     }
 }

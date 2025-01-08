@@ -26,6 +26,7 @@ import java.util.List;
  * 告警属性定义，用于产生搜索条件的属性列表
  */
 public class AlertAttrDefineVo {
+    private Long id;//扩展属性有id,内置属性没有id
     private String name;
     private String label;
     private String kind = "const";//const或attr
@@ -50,6 +51,21 @@ public class AlertAttrDefineVo {
         this.label = label;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public AlertAttrDefineVo(Long id, String name, String label, String kind, String type) {
+        this.id = id;
+        this.name = name;
+        this.label = label;
+        this.kind = kind;
+        this.type = type;
+    }
 
     public AlertAttrDefineVo(String name, String label, String kind, String type) {
         this.name = name;
@@ -61,7 +77,6 @@ public class AlertAttrDefineVo {
     public AlertAttrDefineVo(String name, String label, String type, List<String> expressionList, JSONObject config) {
         this.name = name;
         this.label = label;
-        this.kind = kind;
         this.type = type;
         this.expressionList = expressionList;
         this.config = config;

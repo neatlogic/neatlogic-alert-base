@@ -112,6 +112,16 @@ public class AlertVo extends BasePageVo {
     private List<String> applyUserList;
     @JSONField(serialize = false)
     private List<String> applyTeamList;
+    @JSONField(serialize = false)
+    private AlertVo fromAlertVo;
+
+    public AlertVo getFromAlertVo() {
+        return fromAlertVo;
+    }
+
+    public void setFromAlertVo(AlertVo fromAlertVo) {
+        this.fromAlertVo = fromAlertVo;
+    }
 
     public String getApplyUserType() {
         return applyUserType;
