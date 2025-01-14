@@ -17,7 +17,6 @@
 
 package neatlogic.framework.alert.event;
 
-import neatlogic.framework.alert.dto.AlertEventHandlerAuditVo;
 import neatlogic.framework.alert.dto.AlertEventHandlerConfigVo;
 import neatlogic.framework.alert.dto.AlertEventHandlerVo;
 import neatlogic.framework.alert.dto.AlertVo;
@@ -33,8 +32,11 @@ public interface IAlertEventHandler {
 
     String getIcon();
 
-    //定义哪些事件不能使用此插件
+    //定义哪些事件可以使用此插件
     Set<String> supportEventTypes();
+
+    //定义哪些父插件可以添加此插件
+    Set<String> supportParentHandler();
 
 
     //某些组件可能有子组件，这时需要分拆出自组件的配置，方便调用，不是所有组件都需要返回
@@ -49,5 +51,5 @@ public interface IAlertEventHandler {
 
     AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo);
 
-    AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo);
+    AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long parentAuditId);
 }

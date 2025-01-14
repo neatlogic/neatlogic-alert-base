@@ -18,6 +18,8 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="neatlogic.framework.alert.dao.mapper.AlertEventMapper">
+
+
     <sql id="selectAlertEventHandlerCommonSql">
         select id,
                name,
@@ -136,35 +138,6 @@
           and alert_type = #{alertType}
     </select>
 
-    <select id="getAlertEventHandlerData" resultType="neatlogic.framework.alert.dto.AlertEventHandlerDataVo">
-        select alert_id               as alertId,
-               alert_event_handler_id as alertEventHandlerId,
-               handler,
-               data                   as dataStr
-        from alert_event_handler_data
-        where alert_id = #{alertId}
-          and alert_event_handler_id = #{alertEventHandlerId}
-    </select>
-
-    <select id="listAlertEventHandlerData" resultType="neatlogic.framework.alert.dto.AlertEventHandlerDataVo">
-        select alert_id               as alertId,
-               alert_event_handler_id as alertEventHandlerId,
-               handler                as handler,
-               data                   as dataStr
-        from alert_event_handler_data
-    </select>
-
-    <insert id="insertAlertEventHandlerData" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerDataVo">
-        insert into alert_event_handler_data
-        (alert_id,
-         alert_event_handler_id,
-         handler,
-         data)
-        values (#{alertId},
-                #{alertEventHandlerId},
-                #{handler},
-                #{dataStr, typeHandler=CompressHandler})
-    </insert>
 
     <insert id="saveAlertEventHandler" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerVo">
         insert into alert_event_handler
@@ -217,6 +190,12 @@
                 #{status})
     </insert>
 
+    <update id="updateAlertEventAuditResult" parameterType="neatlogic.framework.alert.dto.AlertAuditVo">
+        update alert_event_handler_audit
+        set result = #{resultStr, typeHandler=CompressHandler}
+        where id = #{id}
+    </update>
+
     <update id="updateAlertEventHandlerAudit" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerAuditVo">
         update alert_event_handler_audit
         set
@@ -227,6 +206,9 @@
         </if>
         <if test="error != null and error != ''">
             ,error = #{error,typeHandler=CompressHandler}
+        </if>
+        <if test="parentId != null">
+            ,parent_id = #{parentId}
         </if>
         where id = #{id}
     </update>
@@ -243,11 +225,5 @@
         where id = #{value}
     </delete>
 
-    <delete id="deleteAlertEventHandlerData" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerDataVo">
-        delete
-        from alert_event_handler_data
-        where alert_id = #{alertId}
-          and alert_event_handler_id = #{alertEventHandlerId}
-    </delete>
 
 </mapper>

@@ -18,7 +18,6 @@
 package neatlogic.framework.alert.dao.mapper;
 
 import neatlogic.framework.alert.dto.AlertEventHandlerAuditVo;
-import neatlogic.framework.alert.dto.AlertEventHandlerDataVo;
 import neatlogic.framework.alert.dto.AlertEventHandlerVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -39,22 +38,19 @@ public interface AlertEventMapper {
 
     AlertEventHandlerVo getAlertEventHandlerByUuid(String uuid);
 
-    List<AlertEventHandlerDataVo> listAlertEventHandlerData();
-
-    AlertEventHandlerDataVo getAlertEventHandlerData(@Param("alertId") Long alertId, @Param("alertEventHandlerId") Long alertEventHandlerId);
 
     void saveAlertEventHandler(AlertEventHandlerVo alertEventHandlerVo);
 
     void insertAlertEventAudit(AlertEventHandlerAuditVo alertEventHandlerAuditVo);
 
-    void insertAlertEventHandlerData(AlertEventHandlerDataVo alertEventHandlerDataVo);
 
     void updateAlertEventHandlerAudit(AlertEventHandlerAuditVo alertEventHandlerAuditVo);
+
+    void updateAlertEventAuditResult(AlertEventHandlerAuditVo alertEventHandlerAuditVo);
 
     void updateAlertEventHandlerSort(@Param("id") Long id, @Param("sort") int sort);
 
     void deleteAlertEventHandlerById(Long id);
 
-    void deleteAlertEventHandlerData(@Param("alertId") Long alertId, @Param("alertEventHandlerId") Long alertEventHandlerId);
 
 }

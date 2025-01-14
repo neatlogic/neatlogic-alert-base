@@ -38,12 +38,12 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         return alertVo;
     }
 
-    public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo) {
-        alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo);
+    public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long parentAuditId) {
+        alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, parentAuditId);
         return alertVo;
     }
 
-    private AlertVo executeWithTransaction(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo parentAlertEventHandlerAuditVo) {
+    private AlertVo executeWithTransaction(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long parentAuditId) {
         /*
         由于eventhandler存在嵌套调用的行为，例如condition，因此每次调用trigger都是调用新的事务
          */
@@ -54,8 +54,8 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         alertEventHandlerAuditVo.setHandler(alertEventHandlerVo.getHandler());
         alertEventHandlerAuditVo.setHandlerName(alertEventHandlerVo.getHandlerName());
         alertEventHandlerAuditVo.setStatus(AlertEventStatus.RUNNING.getValue());
-        if (parentAlertEventHandlerAuditVo != null) {
-            alertEventHandlerAuditVo.setParentId(parentAlertEventHandlerAuditVo.getId());
+        if (parentAuditId != null) {
+            alertEventHandlerAuditVo.setParentId(parentAuditId);
         }
         alertEventMapper.insertAlertEventAudit(alertEventHandlerAuditVo);
 

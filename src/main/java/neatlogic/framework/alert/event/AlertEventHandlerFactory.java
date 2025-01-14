@@ -20,6 +20,7 @@ package neatlogic.framework.alert.event;
 import neatlogic.framework.applicationlistener.core.ModuleInitializedListenerBase;
 import neatlogic.framework.bootstrap.NeatLogicWebApplicationContext;
 import neatlogic.framework.common.RootComponent;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,6 +40,13 @@ public class AlertEventHandlerFactory extends ModuleInitializedListenerBase {
 
     public static List<IAlertEventHandler> getHandlerList(String event) {
         return pluginList.stream().filter(d -> d.supportEventTypes().contains(event)).collect(Collectors.toList());
+    }
+
+    public static List<IAlertEventHandler> getHandlerList(String event, String parentPlugin) {
+        return pluginList.stream().filter(
+                d -> d.supportEventTypes().contains(event) &&
+                        (StringUtils.isBlank(parentPlugin) || d.supportParentHandler().contains(parentPlugin.toLowerCase()))
+        ).collect(Collectors.toList());
     }
 
     @Override
