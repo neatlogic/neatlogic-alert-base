@@ -31,8 +31,10 @@ public class AlertAttr {
 
     public static List<AlertAttrDefineVo> getConstAttrList(String... excludeColumns) {
         List<AlertAttrDefineVo> attrList = new ArrayList<>();
-        attrList.add(new AlertAttrDefineVo("const_title", "标题"));
-        attrList.add(new AlertAttrDefineVo("const_id", "id"));
+        //attrList.add(new AlertAttrDefineVo("const_id", "id"));
+        AlertAttrDefineVo titleDefineVo = new AlertAttrDefineVo("const_title", "标题");
+        titleDefineVo.setWholeRow(true);
+        attrList.add(titleDefineVo);
         attrList.add(new AlertAttrDefineVo("const_level", "级别", "select", new ArrayList<String>() {{
             this.add("equal");
             this.add("notequal");
@@ -47,24 +49,6 @@ public class AlertAttr {
             this.put("dynamicUrl", "/api/rest/alert/level/list");
             this.put("valueName", "level");
             this.put("textName", "label");
-        }}));
-        attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间", "datetime", new ArrayList<String>() {{
-            this.add("range");
-            this.add("is-null");
-            this.add("is-not-null");
-        }}, new JSONObject() {{
-            this.put("transfer", true);
-            this.put("type", "datetimerange");
-            this.put("format", "yyyy-MM-dd HH:mm:ss");
-        }}));
-        attrList.add(new AlertAttrDefineVo("const_updateTime", "更新时间", "datetime", new ArrayList<String>() {{
-            this.add("range");
-            this.add("is-null");
-            this.add("is-not-null");
-        }}, new JSONObject() {{
-            this.put("transfer", true);
-            this.put("type", "datetimerange");
-            this.put("format", "yyyy-MM-dd HH:mm:ss");
         }}));
         attrList.add(new AlertAttrDefineVo("const_type", "类型", "select", new ArrayList<String>() {{
             this.add("like");
@@ -109,6 +93,25 @@ public class AlertAttr {
                 }});
             }});
         }}));
+        attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间", "datetime", new ArrayList<String>() {{
+            this.add("range");
+            this.add("is-null");
+            this.add("is-not-null");
+        }}, new JSONObject() {{
+            this.put("transfer", true);
+            this.put("type", "datetimerange");
+            this.put("format", "yyyy-MM-dd HH:mm:ss");
+        }}));
+        attrList.add(new AlertAttrDefineVo("const_updateTime", "更新时间", "datetime", new ArrayList<String>() {{
+            this.add("range");
+            this.add("is-null");
+            this.add("is-not-null");
+        }}, new JSONObject() {{
+            this.put("transfer", true);
+            this.put("type", "datetimerange");
+            this.put("format", "yyyy-MM-dd HH:mm:ss");
+        }}));
+        attrList.add(new AlertAttrDefineVo("const_source", "来源"));
         attrList.add(new AlertAttrDefineVo("const_userList", "处理人", "userselect", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
@@ -133,11 +136,10 @@ public class AlertAttr {
                 this.add("team");
             }});
         }}));
-        attrList.add(new AlertAttrDefineVo("const_source", "来源"));
-        attrList.add(new AlertAttrDefineVo("const_entityType", "实体类型"));
+        /*attrList.add(new AlertAttrDefineVo("const_entityType", "实体类型"));
         attrList.add(new AlertAttrDefineVo("const_entityName", "实体名称"));
         attrList.add(new AlertAttrDefineVo("const_ip", "IP"));
-        attrList.add(new AlertAttrDefineVo("const_port", "端口"));
+        attrList.add(new AlertAttrDefineVo("const_port", "端口"));*/
         if (excludeColumns != null && excludeColumns.length > 0) {
             return attrList.stream().filter(d -> Arrays.stream(excludeColumns).noneMatch(ed -> ed.equals(d.getName()))).collect(Collectors.toList());
         }

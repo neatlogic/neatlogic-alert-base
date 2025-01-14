@@ -33,6 +33,15 @@ public class AlertAttrDefineVo {
     private String type = "text";
     private List<String> expressionList;
     private JSONObject config;
+    private boolean isWholeRow = false;
+
+    public boolean isWholeRow() {
+        return isWholeRow;
+    }
+
+    public void setWholeRow(boolean wholeRow) {
+        isWholeRow = wholeRow;
+    }
 
     public AlertAttrDefineVo() {
 

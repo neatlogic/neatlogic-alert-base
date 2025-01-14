@@ -29,6 +29,7 @@ import neatlogic.framework.util.SnowflakeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -188,7 +189,7 @@ public class AlertVo extends BasePageVo {
         if (CollectionUtils.isNotEmpty(teamList)) {
             return teamList.stream().map(AlertTeamVo::getTeamUuid).collect(Collectors.toList());
         }
-        return null;
+        return new ArrayList<>();
     }
 
     @JSONField(serialize = false)
@@ -196,7 +197,7 @@ public class AlertVo extends BasePageVo {
         if (CollectionUtils.isNotEmpty(userList)) {
             return userList.stream().map(AlertUserVo::getUserId).collect(Collectors.toList());
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public void setUserList(List<AlertUserVo> userList) {
