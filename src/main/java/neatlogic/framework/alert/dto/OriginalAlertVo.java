@@ -18,19 +18,32 @@
 package neatlogic.framework.alert.dto;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import neatlogic.framework.common.constvalue.ApiParamType;
+import neatlogic.framework.common.constvalue.InputFrom;
 import neatlogic.framework.common.dto.BasePageVo;
+import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.SnowflakeUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.List;
 
 public class OriginalAlertVo extends BasePageVo {
+    @EntityField(name = "id", type = ApiParamType.LONG)
     private Long id;
+    @EntityField(name = "类型", type = ApiParamType.STRING)
     private String type;
+    @EntityField(name = "来源", type = ApiParamType.STRING)
     private String source;
+    @EntityField(name = "来源名称", type = ApiParamType.STRING)
+    private String sourceName;
+    @EntityField(name = "内容", type = ApiParamType.STRING)
     private String content;
+    @EntityField(name = "时间", type = ApiParamType.STRING)
     private Date time;
+    @EntityField(name = "异常", type = ApiParamType.STRING)
     private String error;
+    @EntityField(name = "状态", type = ApiParamType.STRING)
     private String status;
     @JSONField(serialize = false)
     private List<String> timeRange;
@@ -42,6 +55,14 @@ public class OriginalAlertVo extends BasePageVo {
     public void setSource(String source) {
         this.source = source;
     }
+
+    public String getSourceName() {
+        if (StringUtils.isNotBlank(source)) {
+            sourceName = InputFrom.getText(source);
+        }
+        return sourceName;
+    }
+
 
     public String getType() {
         return type;

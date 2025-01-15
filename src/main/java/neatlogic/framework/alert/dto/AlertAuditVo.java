@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.common.constvalue.ApiParamType;
+import neatlogic.framework.common.constvalue.InputFrom;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.SnowflakeUtil;
@@ -47,8 +48,10 @@ public class AlertAuditVo extends BasePageVo {
     private String inputUser;
     @EntityField(name = "输入时间", type = ApiParamType.LONG)
     private Date inputTime;
-    @EntityField(name = "输入自", type = ApiParamType.STRING)
+    @EntityField(name = "更新源头", type = ApiParamType.STRING)
     private String inputFrom;
+    @EntityField(name = "更新源头名称", type = ApiParamType.STRING)
+    private String inputFromName;
 
     public void addNewValue(Object value) {
         if (newValueList == null) {
@@ -107,6 +110,17 @@ public class AlertAuditVo extends BasePageVo {
 
     public void setOldValueList(JSONArray oldValueList) {
         this.oldValueList = oldValueList;
+    }
+
+    public String getInputFromName() {
+        if (StringUtils.isNotBlank(inputFrom)) {
+            inputFromName = InputFrom.getText(inputFrom);
+        }
+        return inputFromName;
+    }
+
+    public void setInputFromName(String inputFromName) {
+        this.inputFromName = inputFromName;
     }
 
     public JSONArray getNewValueList() {
