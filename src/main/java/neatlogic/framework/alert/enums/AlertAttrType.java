@@ -19,7 +19,7 @@ import neatlogic.framework.util.$;
 
 public enum AlertAttrType {
     NUMBER("number", "数字"),
-    STRING("string", "文本"),
+    TEXT("text", "文本"),
     DATETIME("datetime", "日期时间"),
     JSONOBJ("jsonobj", "json对象"),
     JSONLIST("jsonlist", "json数组");

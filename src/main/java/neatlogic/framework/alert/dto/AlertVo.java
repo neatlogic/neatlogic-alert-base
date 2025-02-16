@@ -43,8 +43,6 @@ public class AlertVo extends BasePageVo {
     private Long fromAlertId;
     @EntityField(name = "唯一值", type = ApiParamType.STRING)
     private String uniqueKey;
-    @EntityField(name = "告警次数", type = ApiParamType.INTEGER)
-    private int alertCount = 1;
     @EntityField(name = "级别", type = ApiParamType.INTEGER)
     private Integer level;
     @EntityField(name = "标题", type = ApiParamType.STRING)
@@ -312,15 +310,6 @@ public class AlertVo extends BasePageVo {
 
     public void setUniqueKey(String uniqueKey) {
         this.uniqueKey = uniqueKey;
-    }
-
-
-    public int getAlertCount() {
-        return alertCount;
-    }
-
-    public void setAlertCount(int alertCount) {
-        this.alertCount = alertCount;
     }
 
 
