@@ -20,6 +20,8 @@ package neatlogic.framework.alert.dto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.annotation.JSONField;
+import neatlogic.framework.asynchronization.threadlocal.InputFromContext;
+import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.constvalue.InputFrom;
 import neatlogic.framework.common.dto.BasePageVo;
@@ -52,6 +54,17 @@ public class AlertAuditVo extends BasePageVo {
     private String inputFrom;
     @EntityField(name = "更新源头名称", type = ApiParamType.STRING)
     private String inputFromName;
+
+    public AlertAuditVo() {
+
+    }
+
+    public AlertAuditVo(Boolean isInit) {
+        if (isInit) {
+            this.setInputFrom(InputFromContext.get().getInputFrom());
+            this.setInputUser(UserContext.get().getUserUuid(true));
+        }
+    }
 
     public void addNewValue(Object value) {
         if (newValueList == null) {
