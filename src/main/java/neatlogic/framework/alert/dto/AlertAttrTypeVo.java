@@ -27,6 +27,8 @@ import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.SnowflakeUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
+
 public class AlertAttrTypeVo extends BasePageVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
     private Long id;
@@ -44,6 +46,7 @@ public class AlertAttrTypeVo extends BasePageVo {
     private JSONObject config;
     @JSONField(serialize = false)
     private String configStr;
+    private List<String> expressionList;
 
     public Long getId() {
         if (id == null) {
@@ -70,6 +73,14 @@ public class AlertAttrTypeVo extends BasePageVo {
         }
         return typeName;
     }
+
+    public List<String> getExpressionList() {
+        if (StringUtils.isNotBlank(type)) {
+            expressionList = AlertAttrType.getExpressionList(type);
+        }
+        return expressionList;
+    }
+
 
     public void setTypeName(String typeName) {
         this.typeName = typeName;

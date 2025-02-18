@@ -68,12 +68,14 @@ public class AlertAttrDefineVo {
         this.id = id;
     }
 
-    public AlertAttrDefineVo(Long id, String name, String label, String kind, String type) {
+    public AlertAttrDefineVo(Long id, String name, String label, String kind, String type,List<String> expressionList, JSONObject config) {
         this.id = id;
         this.name = name;
         this.label = label;
         this.kind = kind;
         this.type = type;
+        this.expressionList = expressionList;
+        this.config = config;
     }
 
     public AlertAttrDefineVo(String name, String label, String kind, String type) {

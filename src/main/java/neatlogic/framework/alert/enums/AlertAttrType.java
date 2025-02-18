@@ -17,19 +17,44 @@ package neatlogic.framework.alert.enums;
 
 import neatlogic.framework.util.$;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public enum AlertAttrType {
-    NUMBER("number", "数字"),
-    TEXT("text", "文本"),
-    DATETIME("datetime", "日期时间"),
-    JSONOBJ("jsonobj", "json对象"),
-    JSONLIST("jsonlist", "json数组");
+    NUMBER("number", "数字", new ArrayList<String>() {{
+        this.add("equal");
+        this.add("notequal");
+        this.add("gt");
+        this.add("lt");
+        this.add("gte");
+        this.add("lte");
+        this.add("is-null");
+        this.add("is-not-null");
+    }}),
+    TEXT("text", "文本", new ArrayList<String>() {{
+        this.add("equal");
+        this.add("notequal");
+        this.add("like");
+        this.add("notlike");
+        this.add("is-null");
+        this.add("is-not-null");
+    }}),
+    DATETIME("datetime", "日期时间", new ArrayList<String>() {{
+        this.add("range");
+        this.add("is-null");
+        this.add("is-not-null");
+    }});
+    //JSONOBJ("jsonobj", "json对象"),
+    //JSONLIST("jsonlist", "json数组");
 
     private final String value;
     private final String text;
+    private List<String> expressionList;
 
-    AlertAttrType(String _value, String _text) {
+    AlertAttrType(String _value, String _text, List<String> _expressionList) {
         this.value = _value;
         this.text = _text;
+        this.expressionList = _expressionList;
     }
 
     public String getValue() {
@@ -40,6 +65,18 @@ public enum AlertAttrType {
         return $.t(text);
     }
 
+    public List<String> getExpressionList() {
+        return expressionList;
+    }
+
+    public static List<String> getExpressionList(String name) {
+        for (AlertAttrType s : AlertAttrType.values()) {
+            if (s.getValue().equals(name)) {
+                return s.getExpressionList();
+            }
+        }
+        return new ArrayList<>();
+    }
 
     public static String getText(String name) {
         for (AlertAttrType s : AlertAttrType.values()) {
