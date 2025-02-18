@@ -32,7 +32,12 @@ public class AlertAttr {
     public static List<AlertAttrDefineVo> getConstAttrList(String... excludeColumns) {
         List<AlertAttrDefineVo> attrList = new ArrayList<>();
         //attrList.add(new AlertAttrDefineVo("const_id", "id"));
-        AlertAttrDefineVo titleDefineVo = new AlertAttrDefineVo("const_title", "标题");
+        AlertAttrDefineVo titleDefineVo = new AlertAttrDefineVo("const_title", "标题", "text", new ArrayList<String>() {{
+            this.add("like");
+            this.add("notlike");
+            this.add("is-null");
+            this.add("is-not-null");
+        }}, new JSONObject());
         titleDefineVo.setWholeRow(true);
         attrList.add(titleDefineVo);
         attrList.add(new AlertAttrDefineVo("const_level", "级别", "select", new ArrayList<String>() {{
