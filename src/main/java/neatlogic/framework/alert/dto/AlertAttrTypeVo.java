@@ -44,6 +44,9 @@ public class AlertAttrTypeVo extends BasePageVo {
     private Integer isActive;
     @EntityField(name = "配置", type = ApiParamType.JSONOBJECT)
     private JSONObject config;
+    @EntityField(name = "是否作为普通属性显示", type = ApiParamType.INTEGER)
+    private Integer isNormal;
+
     @JSONField(serialize = false)
     private String configStr;
     private List<String> expressionList;
@@ -134,5 +137,13 @@ public class AlertAttrTypeVo extends BasePageVo {
 
     public void setConfigStr(String configStr) {
         this.configStr = configStr;
+    }
+
+    public Integer getIsNormal() {
+        return isNormal;
+    }
+
+    public void setIsNormal(Integer isNormal) {
+        this.isNormal = isNormal;
     }
 }

@@ -109,6 +109,9 @@
             <if test="event != null and event != ''">
                 and a.event = #{event}
             </if>
+            <if test="alertType != null">
+                and a.alert_type = #{alertType}
+            </if>
         </where>
         UNION ALL
         SELECT
