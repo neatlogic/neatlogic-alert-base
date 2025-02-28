@@ -39,17 +39,17 @@
         where id = #{value}
     </select>
 
-    <select id="getAlertEventHandlerByHandler" parameterType="java.lang.String"
+    <!--<select id="getAlertEventHandlerByHandler" parameterType="java.lang.String"
             resultType="neatlogic.framework.alert.dto.AlertEventHandlerVo">
         <include refid="selectAlertEventHandlerCommonSql"></include>
         where handler = #{value}
         order by sort
-    </select>
+    </select>-->
 
-    <select id="getAlertEventHandlerByEvent" parameterType="java.lang.String"
+    <select id="getAlertEventHandlerByEvent"
             resultType="neatlogic.framework.alert.dto.AlertEventHandlerVo">
         <include refid="selectAlertEventHandlerCommonSql"></include>
-        where event = #{value}
+        where event = #{event} and alert_type = #{alertType}
         and parent_id is null
         order by sort
     </select>

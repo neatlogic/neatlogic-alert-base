@@ -24,7 +24,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface AlertEventMapper {
-    List<AlertEventHandlerVo> getAlertEventHandlerByHandler(String handler);
+    //List<AlertEventHandlerVo> getAlertEventHandlerByHandler(String handler);
 
     Integer getAlertEventHandlerMaxSort(AlertEventHandlerVo alertEventHandlerVo);
 
@@ -32,7 +32,7 @@ public interface AlertEventMapper {
 
     List<AlertEventHandlerVo> listEventHandler(AlertEventHandlerVo alertEventHandlerVo);
 
-    List<AlertEventHandlerVo> getAlertEventHandlerByEvent(String event);
+    List<AlertEventHandlerVo> getAlertEventHandlerByEvent(@Param("event") String event, @Param("alertType") Long alertType);
 
     List<AlertEventHandlerVo> getAlertEventHandlerByParentId(Long parentId);
 

@@ -129,7 +129,7 @@ public class AlertEventManager {
     public static void doEvent(AlertEventType alertEventType, AlertVo alertVo) {
         AfterTransactionJob<AlertEventType> job = new AfterTransactionJob<>("ALERT-EVENT-HANDLER-OFFER");
         job.execute(alertEventType, _alertEventType -> {
-            List<AlertEventHandlerVo> handlerList = alertEventMapper.getAlertEventHandlerByEvent(_alertEventType.getName());
+            List<AlertEventHandlerVo> handlerList = alertEventMapper.getAlertEventHandlerByEvent(_alertEventType.getName(), alertVo.getType());
             List<List<AlertEventHandlerVo>> eventHandlerList = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(handlerList)) {
                 int currentSort = -1;
