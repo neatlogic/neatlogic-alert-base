@@ -19,22 +19,37 @@ package neatlogic.framework.alert.adaptor.core;
 
 import com.alibaba.fastjson.JSONObject;
 import com.neatlogic.alert.plugin.adapter.core.IAdapter;
+import neatlogic.framework.alert.dto.AlertTypeAdaptorVo;
 import neatlogic.framework.alert.dto.AlertTypeVo;
 import neatlogic.framework.common.util.FileUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ServiceLoader;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AlertAdaptorManager {
-    static Map<String, IAdapter> adapterMap = new HashMap<>();
+    static Map<String, IAdapter> adapterMap = new ConcurrentHashMap<>();
+    static Map<String, Long> fileIdMap = new ConcurrentHashMap<>();
 
     public static void removeAdapter(String name) {
-        adapterMap.remove(name);
+        removeAdapter(name, null);
+    }
+
+    public static void removeAdapter(String name, String adaptor) {
+        String key;
+        if (StringUtils.isNotBlank(adaptor)) {
+            key = name + "#" + adaptor;
+            adapterMap.remove(key);
+        } else {
+            // 用迭代器的 remove 方法安全删除
+            adapterMap.entrySet().removeIf(entry -> entry.getKey().startsWith(name + "#"));
+        }
     }
 
     private static File downloadJar(InputStream is) throws IOException {
@@ -50,17 +65,23 @@ public class AlertAdaptorManager {
         return tempFile;
     }
 
-    public static JSONObject convert(AlertTypeVo alertTypeVo, String alertContent) throws Exception {
-        if (!adapterMap.containsKey(alertTypeVo.getName())) {
-            AlertAdapterLoader classLoader = new AlertAdapterLoader(downloadJar(FileUtil.getData(alertTypeVo.getFilePath())), IAdapter.class.getClassLoader());
+    public static JSONObject convert(AlertTypeVo alertTypeVo, AlertTypeAdaptorVo adaptorVo, String alertContent) throws Exception {
+        //如果fileId变了，代表附件已经更换，需要先清理缓存
+        if (fileIdMap.containsKey(alertTypeVo.getName() + "#" + adaptorVo.getName())
+                && !Objects.equals(fileIdMap.get(alertTypeVo.getName() + "#" + adaptorVo.getName()), adaptorVo.getFileId())) {
+            adapterMap.remove(alertTypeVo.getName() + "#" + adaptorVo.getName());
+        }
+
+        fileIdMap.put(alertTypeVo.getName() + "#" + adaptorVo.getName(), adaptorVo.getFileId());
+
+        if (!adapterMap.containsKey(alertTypeVo.getName() + "#" + adaptorVo.getName())) {
+            AlertAdapterLoader classLoader = new AlertAdapterLoader(downloadJar(FileUtil.getData(adaptorVo.getFilePath())), IAdapter.class.getClassLoader());
             ServiceLoader<IAdapter> loader = ServiceLoader.load(IAdapter.class, classLoader);
             for (IAdapter adapter : loader) {
-                adapterMap.put(alertTypeVo.getName(), adapter);
+                adapterMap.put(alertTypeVo.getName() + "#" + adaptorVo.getName(), adapter);
             }
         }
-        IAdapter adapter = adapterMap.get(alertTypeVo.getName());
+        IAdapter adapter = adapterMap.get(alertTypeVo.getName() + "#" + adaptorVo.getName());
         return adapter.convert(alertContent);
     }
-
-
 }

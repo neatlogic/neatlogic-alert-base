@@ -23,12 +23,15 @@ import neatlogic.framework.alert.dto.AlertEventHandlerVo;
 import neatlogic.framework.alert.dto.AlertVo;
 import neatlogic.framework.alert.enums.AlertEventStatus;
 import neatlogic.framework.alert.exception.alertevent.AlertEventHandlerTriggerException;
+import neatlogic.framework.asynchronization.thread.NeatLogicThread;
+import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
 import neatlogic.framework.transaction.util.TransactionUtil;
 import org.springframework.transaction.TransactionStatus;
 
 import javax.annotation.Resource;
 
 public abstract class AlertEventHandlerBase implements IAlertEventHandler {
+
 
     @Resource
     private AlertEventMapper alertEventMapper;
@@ -59,19 +62,45 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         }
         alertEventMapper.insertAlertEventAudit(alertEventHandlerAuditVo);
 
-        TransactionStatus ts = TransactionUtil.openNewTx();
-        try {
-            alertVo = myTrigger(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo);
-            TransactionUtil.commitTx(ts);
-            alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
-        } catch (Exception e) {
-            TransactionUtil.rollbackTx(ts);
-            alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
-            alertEventHandlerAuditVo.setError(e.getMessage());
-            throw e; // 抛出异常以便上层处理
-        } finally {
-            alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);
+        if (!this.isAsync()) {
+            //同步作业，可以修改alertVo信息
+            TransactionStatus ts = TransactionUtil.openNewTx();
+            try {
+                alertVo = myTrigger(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo);
+                TransactionUtil.commitTx(ts);
+                alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+            } catch (Exception e) {
+                TransactionUtil.rollbackTx(ts);
+                alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
+                alertEventHandlerAuditVo.setError(e.getMessage());
+                throw e; // 抛出异常以便上层处理
+            } finally {
+                alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);
+            }
+        } else {
+            //异步作业，不能修改alertVo信息
+            AlertVo finalAlertVo = alertVo;
+            CachedThreadPool.execute(new NeatLogicThread("ALERT-EVENT-HANDLER-" + finalAlertVo.getId()) {
+                @Override
+                protected void execute() {
+                    TransactionStatus ts = TransactionUtil.openNewTx();
+                    try {
+                        myTrigger(alertEventHandlerVo, finalAlertVo, alertEventHandlerAuditVo);
+                        TransactionUtil.commitTx(ts);
+                        alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+                    } catch (Exception e) {
+                        TransactionUtil.rollbackTx(ts);
+                        alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
+                        alertEventHandlerAuditVo.setError(e.getMessage());
+                        throw e; // 抛出异常以便上层处理
+                    } finally {
+                        alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);
+                    }
+                }
+            });
         }
+
+
         return alertVo;
     }
 

@@ -113,6 +113,7 @@ public class AlertEventManager {
                         IAlertEventHandler handler = AlertEventHandlerFactory.getHandler(h.getHandler());
                         if (handler != null) {
                             //不断修改alertVo的值，传递给下一个处理器
+                            //System.out.println("处理告警" + alertVo.getId()+",触发事件" + handler.getName());
                             alertVo = handler.trigger(h, alertVo);
                         } else {
                             logger.error("告警事件组件{}不存在", h.getHandler());

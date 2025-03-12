@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Set;
 
 public interface IAlertEventHandler {
+    //是否异步
+    boolean isAsync();
+
     String getName();
 
     String getLabel();

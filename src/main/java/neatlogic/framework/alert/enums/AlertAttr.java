@@ -31,7 +31,10 @@ public class AlertAttr {
 
     public static List<AlertAttrDefineVo> getConstAttrList(String... excludeColumns) {
         List<AlertAttrDefineVo> attrList = new ArrayList<>();
-        //attrList.add(new AlertAttrDefineVo("const_id", "id"));
+        attrList.add(new AlertAttrDefineVo("const_id", "id", "text", new ArrayList<String>() {{
+            this.add("equal");
+            this.add("notequal");
+        }}, null));
         AlertAttrDefineVo titleDefineVo = new AlertAttrDefineVo("const_title", "标题", "text", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
@@ -66,6 +69,24 @@ public class AlertAttr {
             this.put("rootName", "tbodyList");
             this.put("valueName", "id");
             this.put("textName", "label");
+        }}));
+        attrList.add(new AlertAttrDefineVo("const_isClose", "是否关闭", "select", new ArrayList<String>() {{
+            this.add("equal");
+            this.add("notequal");
+        }}, new JSONObject() {{
+            this.put("transfer", true);
+            this.put("dataList", new ArrayList<ValueTextVo>() {
+                {
+                    this.add(new ValueTextVo() {{
+                        this.setValue("1");
+                        this.setText("是");
+                    }});
+                    this.add(new ValueTextVo() {{
+                        this.setValue("0");
+                        this.setText("否");
+                    }});
+                }
+            });
         }}));
         attrList.add(new AlertAttrDefineVo("const_status", "状态", "select", new ArrayList<String>() {{
             this.add("like");

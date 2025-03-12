@@ -17,13 +17,13 @@
 
 package neatlogic.framework.alert.dto;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BaseEditorVo;
 import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.SnowflakeUtil;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AlertTypeVo extends BaseEditorVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
@@ -34,14 +34,13 @@ public class AlertTypeVo extends BaseEditorVo {
     private String label;
     @EntityField(name = "是否激活", type = ApiParamType.INTEGER)
     private Integer isActive;
-    @EntityField(name = "插件附件id", type = ApiParamType.LONG)
-    private Long fileId;
-    @JSONField(serialize = false)
-    private String filePath;
     @EntityField(name = "属性类型列表", type = ApiParamType.JSONARRAY)
     private List<AlertAttrTypeVo> attrTypeList;
     @EntityField(name = "属性类型id列表", type = ApiParamType.JSONARRAY)
     private List<Long> attrTypeIdList;
+    @EntityField(name = "转换器列表", type = ApiParamType.JSONARRAY)
+    private List<AlertTypeAdaptorVo> adaptorList;
+
 
     public Long getId() {
         if (id == null) {
@@ -58,14 +57,6 @@ public class AlertTypeVo extends BaseEditorVo {
         return name;
     }
 
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
 
     public void setName(String name) {
         this.name = name;
@@ -89,14 +80,6 @@ public class AlertTypeVo extends BaseEditorVo {
     }
 
 
-    public Long getFileId() {
-        return fileId;
-    }
-
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
-    }
-
     public List<AlertAttrTypeVo> getAttrTypeList() {
         return attrTypeList;
     }
@@ -106,10 +89,21 @@ public class AlertTypeVo extends BaseEditorVo {
     }
 
     public List<Long> getAttrTypeIdList() {
+        if (attrTypeIdList == null && attrTypeList != null) {
+            attrTypeIdList = attrTypeList.stream().map(AlertAttrTypeVo::getId).collect(Collectors.toList());
+        }
         return attrTypeIdList;
     }
 
     public void setAttrTypeIdList(List<Long> attrTypeIdList) {
         this.attrTypeIdList = attrTypeIdList;
+    }
+
+    public List<AlertTypeAdaptorVo> getAdaptorList() {
+        return adaptorList;
+    }
+
+    public void setAdaptorList(List<AlertTypeAdaptorVo> adaptorList) {
+        this.adaptorList = adaptorList;
     }
 }

@@ -33,6 +33,8 @@ public class OriginalAlertVo extends BasePageVo {
     private Long id;
     @EntityField(name = "类型", type = ApiParamType.STRING)
     private String type;
+    @EntityField(name = "转换器名称", type = ApiParamType.STRING)
+    private String adaptor;
     @EntityField(name = "来源", type = ApiParamType.STRING)
     private String source;
     @EntityField(name = "来源名称", type = ApiParamType.STRING)
@@ -63,6 +65,13 @@ public class OriginalAlertVo extends BasePageVo {
         return sourceName;
     }
 
+    public String getAdaptor() {
+        return adaptor;
+    }
+
+    public void setAdaptor(String adaptor) {
+        this.adaptor = adaptor;
+    }
 
     public String getType() {
         return type;

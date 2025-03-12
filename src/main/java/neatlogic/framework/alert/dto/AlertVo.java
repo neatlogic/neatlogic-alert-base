@@ -39,6 +39,8 @@ public class AlertVo extends BasePageVo {
     private Long id;
     @JSONField(serialize = false)
     private List<Long> idList;
+    @JSONField(serialize = false)//父告警
+    private AlertVo parentAlertVo;
     @EntityField(name = "来源告警id", type = ApiParamType.LONG)
     private Long fromAlertId;
     @EntityField(name = "唯一值", type = ApiParamType.STRING)
@@ -65,8 +67,8 @@ public class AlertVo extends BasePageVo {
     private Date updateTime;
     @EntityField(name = "创建时间", type = ApiParamType.LONG)
     private Date alertTime;
-    @EntityField(name = "是否删除", type = ApiParamType.INTEGER)
-    private Integer isDelete;
+    @EntityField(name = "是否关闭", type = ApiParamType.INTEGER)
+    private int isClose = 0;
     @EntityField(name = "扩展属性", type = ApiParamType.JSONOBJECT)
     private JSONObject attrObj;
     @JSONField(serialize = false)
@@ -113,6 +115,14 @@ public class AlertVo extends BasePageVo {
     private List<String> applyTeamList;
     @JSONField(serialize = false)
     private AlertVo fromAlertVo;
+
+    public AlertVo getParentAlertVo() {
+        return parentAlertVo;
+    }
+
+    public void setParentAlertVo(AlertVo parentAlertVo) {
+        this.parentAlertVo = parentAlertVo;
+    }
 
     public AlertVo getFromAlertVo() {
         return fromAlertVo;
@@ -422,9 +432,6 @@ public class AlertVo extends BasePageVo {
         this.alertTime = alertTime;
     }
 
-    public Integer getIsDelete() {
-        return isDelete;
-    }
 
     public List<AlertRelVo> getAlertRelList() {
         return alertRelList;
@@ -434,8 +441,12 @@ public class AlertVo extends BasePageVo {
         this.alertRelList = alertRelList;
     }
 
-    public void setIsDelete(Integer isDelete) {
-        this.isDelete = isDelete;
+    public int getIsClose() {
+        return isClose;
+    }
+
+    public void setIsClose(int isClose) {
+        this.isClose = isClose;
     }
 
     public JSONObject getAttrObj() {
