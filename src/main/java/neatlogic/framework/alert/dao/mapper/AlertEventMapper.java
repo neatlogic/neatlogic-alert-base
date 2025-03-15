@@ -25,6 +25,7 @@ import java.util.List;
 
 public interface AlertEventMapper {
     //List<AlertEventHandlerVo> getAlertEventHandlerByHandler(String handler);
+    AlertEventHandlerAuditVo getLastAlertEventHandlerAudit(AlertEventHandlerAuditVo alertEventHandlerAuditVo);
 
     Integer getAlertEventHandlerMaxSort(AlertEventHandlerVo alertEventHandlerVo);
 

@@ -20,6 +20,7 @@ package neatlogic.framework.alert.event;
 import neatlogic.framework.alert.dao.mapper.AlertEventMapper;
 import neatlogic.framework.alert.dto.AlertEventHandlerAuditVo;
 import neatlogic.framework.alert.dto.AlertEventHandlerVo;
+import neatlogic.framework.alert.dto.AlertEventStatusVo;
 import neatlogic.framework.alert.dto.AlertVo;
 import neatlogic.framework.alert.enums.AlertEventStatus;
 import neatlogic.framework.alert.exception.alertevent.AlertEventHandlerTriggerException;
@@ -34,7 +35,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
 
 
     @Resource
-    private AlertEventMapper alertEventMapper;
+    protected AlertEventMapper alertEventMapper;
 
     public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo) {
         alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, null);
@@ -61,14 +62,18 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
             alertEventHandlerAuditVo.setParentId(parentAuditId);
         }
         alertEventMapper.insertAlertEventAudit(alertEventHandlerAuditVo);
-
+        AlertEventStatusVo alertEventStatusVo = new AlertEventStatusVo();
         if (!this.isAsync()) {
             //同步作业，可以修改alertVo信息
             TransactionStatus ts = TransactionUtil.openNewTx();
             try {
-                alertVo = myTrigger(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo);
+                alertVo = myTrigger(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo, alertEventStatusVo);
                 TransactionUtil.commitTx(ts);
-                alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+                if (alertEventStatusVo.isSkipped()) {
+                    alertEventHandlerAuditVo.setStatus(AlertEventStatus.SKIPPED.getValue());
+                } else {
+                    alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+                }
             } catch (Exception e) {
                 TransactionUtil.rollbackTx(ts);
                 alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
@@ -85,9 +90,13 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                 protected void execute() {
                     TransactionStatus ts = TransactionUtil.openNewTx();
                     try {
-                        myTrigger(alertEventHandlerVo, finalAlertVo, alertEventHandlerAuditVo);
+                        myTrigger(alertEventHandlerVo, finalAlertVo, alertEventHandlerAuditVo, alertEventStatusVo);
                         TransactionUtil.commitTx(ts);
-                        alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+                        if (alertEventStatusVo.isSkipped()) {
+                            alertEventHandlerAuditVo.setStatus(AlertEventStatus.SKIPPED.getValue());
+                        } else {
+                            alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+                        }
                     } catch (Exception e) {
                         TransactionUtil.rollbackTx(ts);
                         alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
@@ -104,5 +113,5 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         return alertVo;
     }
 
-    protected abstract AlertVo myTrigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo) throws AlertEventHandlerTriggerException;
+    protected abstract AlertVo myTrigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo, AlertEventStatusVo alertEventStatusVo) throws AlertEventHandlerTriggerException;
 }

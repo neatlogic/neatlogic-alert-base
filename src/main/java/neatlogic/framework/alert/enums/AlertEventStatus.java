@@ -20,6 +20,7 @@ import neatlogic.framework.util.$;
 public enum AlertEventStatus {
     RUNNING("running", "执行中"),
     SUCCEED("succeed", "已成功"),
+    SKIPPED("skipped", "已跳过"),
     FAILED("failed", "已失败");
 
     private final String value;
