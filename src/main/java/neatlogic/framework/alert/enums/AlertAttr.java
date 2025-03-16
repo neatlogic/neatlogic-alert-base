@@ -65,6 +65,7 @@ public class AlertAttr {
             this.add("is-not-null");
         }}, new JSONObject() {{
             this.put("transfer", true);
+            this.put("multiple", true);
             this.put("dynamicUrl", "/api/rest/alert/alerttype/search");
             this.put("rootName", "tbodyList");
             this.put("valueName", "id");

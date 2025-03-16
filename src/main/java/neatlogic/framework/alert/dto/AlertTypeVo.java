@@ -40,6 +40,8 @@ public class AlertTypeVo extends BaseEditorVo {
     private List<Long> attrTypeIdList;
     @EntityField(name = "转换器列表", type = ApiParamType.JSONARRAY)
     private List<AlertTypeAdaptorVo> adaptorList;
+    @EntityField(name = "事件处理器列表", type = ApiParamType.JSONARRAY)
+    private List<AlertEventHandlerVo> alertEventHandlerList;
 
 
     public Long getId() {
@@ -57,6 +59,13 @@ public class AlertTypeVo extends BaseEditorVo {
         return name;
     }
 
+    public List<AlertEventHandlerVo> getAlertEventHandlerList() {
+        return alertEventHandlerList;
+    }
+
+    public void setAlertEventHandlerList(List<AlertEventHandlerVo> alertEventHandlerList) {
+        this.alertEventHandlerList = alertEventHandlerList;
+    }
 
     public void setName(String name) {
         this.name = name;
