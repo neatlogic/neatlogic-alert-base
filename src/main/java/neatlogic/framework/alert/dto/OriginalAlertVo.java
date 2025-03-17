@@ -27,10 +27,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class OriginalAlertVo extends BasePageVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
     private Long id;
+    @JSONField(serialize = false)
+    private List<Long> idList;
     @EntityField(name = "类型", type = ApiParamType.STRING)
     private String type;
     @EntityField(name = "转换器名称", type = ApiParamType.STRING)
@@ -49,6 +52,8 @@ public class OriginalAlertVo extends BasePageVo {
     private String status;
     @JSONField(serialize = false)
     private List<String> timeRange;
+    @EntityField(name = "高亮数据", type = ApiParamType.JSONOBJECT)
+    private Map<String, List<String>> highlightMap;
 
     public String getSource() {
         return source;
@@ -56,6 +61,22 @@ public class OriginalAlertVo extends BasePageVo {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public List<Long> getIdList() {
+        return idList;
+    }
+
+    public void setIdList(List<Long> idList) {
+        this.idList = idList;
+    }
+
+    public Map<String, List<String>> getHighlightMap() {
+        return highlightMap;
+    }
+
+    public void setHighlightMap(Map<String, List<String>> highlightMap) {
+        this.highlightMap = highlightMap;
     }
 
     public String getSourceName() {
