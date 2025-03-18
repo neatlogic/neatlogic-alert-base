@@ -35,6 +35,10 @@ public interface IAlertEventHandler {
 
     String getIcon();
 
+    default int getSort() {
+        return 99;
+    }
+
     //定义哪些事件可以使用此插件
     Set<String> supportEventTypes();
 
