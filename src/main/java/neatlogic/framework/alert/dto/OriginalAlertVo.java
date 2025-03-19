@@ -17,7 +17,10 @@
 
 package neatlogic.framework.alert.dto;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import neatlogic.framework.alert.enums.AlertOriginStatus;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.constvalue.InputFrom;
 import neatlogic.framework.common.dto.BasePageVo;
@@ -50,10 +53,16 @@ public class OriginalAlertVo extends BasePageVo {
     private String error;
     @EntityField(name = "状态", type = ApiParamType.STRING)
     private String status;
+    @EntityField(name = "状态名称", type = ApiParamType.STRING)
+    private String statusText;
     @JSONField(serialize = false)
     private List<String> timeRange;
     @EntityField(name = "高亮数据", type = ApiParamType.JSONOBJECT)
     private Map<String, List<String>> highlightMap;
+    @EntityField(name = "告警数据", type = ApiParamType.JSONOBJECT)
+    private JSONObject alertData;
+    @JSONField(serialize = false)
+    private String alertDataStr;
 
     public String getSource() {
         return source;
@@ -67,6 +76,32 @@ public class OriginalAlertVo extends BasePageVo {
         return idList;
     }
 
+    public JSONObject getAlertData() {
+        if (alertData == null && StringUtils.isNotBlank(alertDataStr)) {
+            try {
+                alertData = JSON.parseObject(alertDataStr);
+            } catch (Exception ignored) {
+
+            }
+        }
+        return alertData;
+    }
+
+    public void setAlertData(JSONObject alertData) {
+        this.alertData = alertData;
+    }
+
+    public String getAlertDataStr() {
+        if (alertData != null) {
+            alertDataStr = alertData.toJSONString();
+        }
+        return alertDataStr;
+    }
+
+    public void setAlertDataStr(String alertDataStr) {
+        this.alertDataStr = alertDataStr;
+    }
+
     public void setIdList(List<Long> idList) {
         this.idList = idList;
     }
@@ -77,6 +112,17 @@ public class OriginalAlertVo extends BasePageVo {
 
     public void setHighlightMap(Map<String, List<String>> highlightMap) {
         this.highlightMap = highlightMap;
+    }
+
+    public String getStatusText() {
+        if (StringUtils.isNotBlank(status)) {
+            statusText = AlertOriginStatus.getText(status);
+        }
+        return statusText;
+    }
+
+    public void setStatusText(String statusText) {
+        this.statusText = statusText;
     }
 
     public String getSourceName() {

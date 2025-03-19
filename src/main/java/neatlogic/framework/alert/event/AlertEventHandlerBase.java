@@ -56,7 +56,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         alertEventHandlerAuditVo.setEventHandlerId(alertEventHandlerVo.getId());
         alertEventHandlerAuditVo.setEvent(alertEventHandlerVo.getEvent());
         alertEventHandlerAuditVo.setHandler(alertEventHandlerVo.getHandler());
-        alertEventHandlerAuditVo.setHandlerName(alertEventHandlerVo.getHandlerName());
+        alertEventHandlerAuditVo.setHandlerName(alertEventHandlerVo.getName());//用事件配的的名称代替handler名称
         alertEventHandlerAuditVo.setStatus(AlertEventStatus.RUNNING.getValue());
         if (parentAuditId != null) {
             alertEventHandlerAuditVo.setParentId(parentAuditId);
