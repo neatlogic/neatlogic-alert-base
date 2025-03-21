@@ -35,6 +35,12 @@ public class AlertAttr {
             this.add("equal");
             this.add("notequal");
         }}, null));
+        attrList.add(new AlertAttrDefineVo("const_uniqueKey", "唯一键", "text", new ArrayList<String>() {{
+            this.add("equal");
+            this.add("notequal");
+            this.add("is-null");
+            this.add("is-not-null");
+        }}, null));
         AlertAttrDefineVo titleDefineVo = new AlertAttrDefineVo("const_title", "标题", "text", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
