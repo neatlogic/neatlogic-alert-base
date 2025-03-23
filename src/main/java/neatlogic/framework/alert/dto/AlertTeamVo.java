@@ -18,11 +18,24 @@
 package neatlogic.framework.alert.dto;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class AlertTeamVo implements Serializable {
     private Long alertId;
     private String teamUuid;
     private String teamName;
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof AlertTeamVo)) return false;
+        AlertTeamVo that = (AlertTeamVo) o;
+        return Objects.equals(teamUuid, that.teamUuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(teamUuid);
+    }
 
     public Long getAlertId() {
         return alertId;

@@ -34,17 +34,28 @@ public class AlertAttrDefineVo {
     private List<String> expressionList;
     private JSONObject config;
     private boolean isWholeRow = false;
+    private String freemarkerSnippet;
 
     public boolean isWholeRow() {
         return isWholeRow;
     }
 
-    public void setWholeRow(boolean wholeRow) {
+    public AlertAttrDefineVo setWholeRow(boolean wholeRow) {
         isWholeRow = wholeRow;
+        return this;
     }
 
     public AlertAttrDefineVo() {
 
+    }
+
+    public String getFreemarkerSnippet() {
+        return freemarkerSnippet;
+    }
+
+    public AlertAttrDefineVo setFreemarkerSnippet(String freemarkerSnippet) {
+        this.freemarkerSnippet = freemarkerSnippet;
+        return this;
     }
 
     public String getKind() {
@@ -64,11 +75,12 @@ public class AlertAttrDefineVo {
         return id;
     }
 
-    public void setId(Long id) {
+    public AlertAttrDefineVo setId(Long id) {
         this.id = id;
+        return this;
     }
 
-    public AlertAttrDefineVo(Long id, String name, String label, String kind, String type,List<String> expressionList, JSONObject config) {
+    public AlertAttrDefineVo(Long id, String name, String label, String kind, String type, List<String> expressionList, JSONObject config) {
         this.id = id;
         this.name = name;
         this.label = label;
@@ -104,24 +116,27 @@ public class AlertAttrDefineVo {
         return name;
     }
 
-    public void setName(String name) {
+    public AlertAttrDefineVo setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public void setLabel(String label) {
+    public AlertAttrDefineVo setLabel(String label) {
         this.label = label;
+        return this;
     }
 
     public String getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public AlertAttrDefineVo setType(String type) {
         this.type = type;
+        return this;
     }
 
     public List<String> getExpressionList() {
@@ -138,15 +153,17 @@ public class AlertAttrDefineVo {
         return expressionList;
     }
 
-    public void setExpressionList(List<String> expressionList) {
+    public AlertAttrDefineVo setExpressionList(List<String> expressionList) {
         this.expressionList = expressionList;
+        return this;
     }
 
     public JSONObject getConfig() {
         return config;
     }
 
-    public void setConfig(JSONObject config) {
+    public AlertAttrDefineVo setConfig(JSONObject config) {
         this.config = config;
+        return this;
     }
 }

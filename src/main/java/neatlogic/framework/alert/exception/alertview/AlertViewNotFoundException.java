@@ -24,4 +24,8 @@ public class AlertViewNotFoundException extends ApiRuntimeException {
     public AlertViewNotFoundException(String name) {
         super("告警视图“" + name + "”不存在");
     }
+
+    public AlertViewNotFoundException(Long id) {
+        super("告警视图“" + id + "”不存在");
+    }
 }

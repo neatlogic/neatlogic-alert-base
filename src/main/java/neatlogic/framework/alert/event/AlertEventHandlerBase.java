@@ -27,6 +27,7 @@ import neatlogic.framework.alert.exception.alertevent.AlertEventHandlerTriggerEx
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
 import neatlogic.framework.transaction.util.TransactionUtil;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.transaction.TransactionStatus;
 
 import javax.annotation.Resource;
@@ -77,7 +78,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
             } catch (Exception e) {
                 TransactionUtil.rollbackTx(ts);
                 alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
-                alertEventHandlerAuditVo.setError(e.getMessage());
+                alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
                 throw e; // 抛出异常以便上层处理
             } finally {
                 alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);
@@ -99,8 +100,9 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                         }
                     } catch (Exception e) {
                         TransactionUtil.rollbackTx(ts);
+                        e.printStackTrace();
                         alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
-                        alertEventHandlerAuditVo.setError(e.getMessage());
+                        alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
                         throw e; // 抛出异常以便上层处理
                     } finally {
                         alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);

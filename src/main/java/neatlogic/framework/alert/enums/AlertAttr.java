@@ -21,34 +21,39 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.alert.dto.AlertAttrDefineVo;
 import neatlogic.framework.common.dto.ValueTextVo;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AlertAttr {
+    public static List<AlertAttrDefineVo> getConstAttrList() {
+        return getConstAttrList(null, null, 0);
+    }
 
-    public static List<AlertAttrDefineVo> getConstAttrList(String... excludeColumns) {
+    public static List<AlertAttrDefineVo> getConstAttrList(int isExpand) {
+        return getConstAttrList(null, null, isExpand);
+    }
+
+    public static List<AlertAttrDefineVo> getConstAttrList(List<String> includeColumnList, List<String> excludeColumnList, int isExpand) {
         List<AlertAttrDefineVo> attrList = new ArrayList<>();
         attrList.add(new AlertAttrDefineVo("const_id", "id", "text", new ArrayList<String>() {{
             this.add("equal");
             this.add("notequal");
-        }}, null));
+        }}, null).setFreemarkerSnippet("${DATA.const_id}"));
         attrList.add(new AlertAttrDefineVo("const_uniqueKey", "唯一键", "text", new ArrayList<String>() {{
             this.add("equal");
             this.add("notequal");
             this.add("is-null");
             this.add("is-not-null");
-        }}, null));
-        AlertAttrDefineVo titleDefineVo = new AlertAttrDefineVo("const_title", "标题", "text", new ArrayList<String>() {{
+        }}, null).setFreemarkerSnippet("${DATA.const_uniqueKey}"));
+        attrList.add(new AlertAttrDefineVo("const_title", "标题", "text", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
             this.add("is-not-null");
-        }}, new JSONObject());
-        titleDefineVo.setWholeRow(true);
-        attrList.add(titleDefineVo);
+        }}, new JSONObject()).setWholeRow(true).setFreemarkerSnippet("${DATA.const_title}"));
         attrList.add(new AlertAttrDefineVo("const_level", "级别", "select", new ArrayList<String>() {{
             this.add("equal");
             this.add("notequal");
@@ -63,7 +68,7 @@ public class AlertAttr {
             this.put("dynamicUrl", "/api/rest/alert/level/list");
             this.put("valueName", "level");
             this.put("textName", "label");
-        }}));
+        }}).setFreemarkerSnippet("${DATA.const_level}"));
         attrList.add(new AlertAttrDefineVo("const_type", "类型", "select", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
@@ -76,7 +81,7 @@ public class AlertAttr {
             this.put("rootName", "tbodyList");
             this.put("valueName", "id");
             this.put("textName", "label");
-        }}));
+        }}).setFreemarkerSnippet("${DATA.const_typeName}"));
         attrList.add(new AlertAttrDefineVo("const_isClose", "是否关闭", "select", new ArrayList<String>() {{
             this.add("equal");
             this.add("notequal");
@@ -94,7 +99,7 @@ public class AlertAttr {
                     }});
                 }
             });
-        }}));
+        }}).setFreemarkerSnippet("${DATA.const_isCloseName}"));
         attrList.add(new AlertAttrDefineVo("const_status", "状态", "select", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
@@ -125,7 +130,7 @@ public class AlertAttr {
                     this.setText("已关闭");
                 }});
             }});
-        }}));
+        }}).setFreemarkerSnippet("${DATA.const_statusName}"));
         attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("is-null");
@@ -134,7 +139,7 @@ public class AlertAttr {
             this.put("transfer", true);
             this.put("type", "datetimerange");
             this.put("format", "yyyy-MM-dd HH:mm:ss");
-        }}));
+        }}).setFreemarkerSnippet("${DATA.const_alertTimeStr}"));
         attrList.add(new AlertAttrDefineVo("const_updateTime", "更新时间", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("is-null");
@@ -143,8 +148,8 @@ public class AlertAttr {
             this.put("transfer", true);
             this.put("type", "datetimerange");
             this.put("format", "yyyy-MM-dd HH:mm:ss");
-        }}));
-        attrList.add(new AlertAttrDefineVo("const_source", "来源"));
+        }}).setFreemarkerSnippet("${DATA.const_updateTimeStr}"));
+        attrList.add(new AlertAttrDefineVo("const_source", "来源").setFreemarkerSnippet("${DATA.const_source}"));
         attrList.add(new AlertAttrDefineVo("const_userList", "处理人", "userselect", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
@@ -156,7 +161,14 @@ public class AlertAttr {
             this.put("groupList", new JSONArray() {{
                 this.add("user");
             }});
-        }}));
+        }}).setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userName}\"<#if user_has_next>,</#if></#list>]"));
+        if (isExpand == 1) {
+            //扩展属性不需要提供控件和条件，一般只是给freemarker使用
+            attrList.add(new AlertAttrDefineVo().setName("const_userPhoneList").setLabel("处理人电话")
+                    .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userPhone}\"<#if user_has_next>,</#if></#list>]"));
+            attrList.add(new AlertAttrDefineVo().setName("const_userEmailList").setLabel("处理人邮箱")
+                    .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userEmail}\"<#if user_has_next>,</#if></#list>]"));
+        }
         attrList.add(new AlertAttrDefineVo("const_teamList", "处理组", "userselect", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
@@ -168,13 +180,9 @@ public class AlertAttr {
             this.put("groupList", new JSONArray() {{
                 this.add("team");
             }});
-        }}));
-        /*attrList.add(new AlertAttrDefineVo("const_entityType", "实体类型"));
-        attrList.add(new AlertAttrDefineVo("const_entityName", "实体名称"));
-        attrList.add(new AlertAttrDefineVo("const_ip", "IP"));
-        attrList.add(new AlertAttrDefineVo("const_port", "端口"));*/
-        if (excludeColumns != null && excludeColumns.length > 0) {
-            return attrList.stream().filter(d -> Arrays.stream(excludeColumns).noneMatch(ed -> ed.equals(d.getName()))).collect(Collectors.toList());
+        }}).setFreemarkerSnippet("[<#list DATA.const_teamList as team>\"${team.teamName}\"<#if team_has_next>,</#if></#list>]"));
+        if (CollectionUtils.isNotEmpty(excludeColumnList)) {
+            return attrList.stream().filter(d -> excludeColumnList.stream().noneMatch(ed -> ed.equals(d.getName()))).collect(Collectors.toList());
         }
         return attrList;
     }

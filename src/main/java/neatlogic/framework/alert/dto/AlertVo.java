@@ -29,6 +29,7 @@ import neatlogic.framework.util.SnowflakeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -65,10 +66,16 @@ public class AlertVo extends BasePageVo {
     private String statusStatus;
     @EntityField(name = "更新时间", type = ApiParamType.LONG)
     private Date updateTime;
+    @EntityField(name = "更新时间文本", type = ApiParamType.STRING)
+    private String updateTimeStr;
     @EntityField(name = "创建时间", type = ApiParamType.LONG)
     private Date alertTime;
+    @EntityField(name = "创建时间文本", type = ApiParamType.STRING)
+    private String alertTimeStr;
     @EntityField(name = "是否关闭", type = ApiParamType.INTEGER)
     private int isClose = 0;
+    @EntityField(name = "是否关闭文案", type = ApiParamType.STRING)
+    private String isCloseName;
     @EntityField(name = "扩展属性", type = ApiParamType.JSONOBJECT)
     private JSONObject attrObj;
     @JSONField(serialize = false)
@@ -116,6 +123,24 @@ public class AlertVo extends BasePageVo {
     @JSONField(serialize = false)
     private AlertVo fromAlertVo;
 
+    public void addTeam(AlertTeamVo team) {
+        if (teamList == null) {
+            teamList = new ArrayList<>();
+        }
+        if (!teamList.contains(team)) {
+            teamList.add(team);
+        }
+    }
+
+    public void addUser(AlertUserVo userVo) {
+        if (userList == null) {
+            userList = new ArrayList<>();
+        }
+        if (!userList.contains(userVo)) {
+            userList.add(userVo);
+        }
+    }
+
     public AlertVo getParentAlertVo() {
         return parentAlertVo;
     }
@@ -131,6 +156,15 @@ public class AlertVo extends BasePageVo {
     public void setFromAlertVo(AlertVo fromAlertVo) {
         this.fromAlertVo = fromAlertVo;
     }
+
+    public String getIsCloseName() {
+        if (this.isClose == 0) {
+            return "否";
+        } else {
+            return "是";
+        }
+    }
+
 
     public String getApplyUserType() {
         return applyUserType;
@@ -430,6 +464,22 @@ public class AlertVo extends BasePageVo {
 
     public void setAlertTime(Date alertTime) {
         this.alertTime = alertTime;
+    }
+
+    public String getAlertTimeStr() {
+        if (alertTime != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            alertTimeStr = sdf.format(alertTime);
+        }
+        return alertTimeStr;
+    }
+
+    public String getUpdateTimeStr() {
+        if (updateTime != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            updateTimeStr = sdf.format(updateTime);
+        }
+        return updateTimeStr;
     }
 
 
