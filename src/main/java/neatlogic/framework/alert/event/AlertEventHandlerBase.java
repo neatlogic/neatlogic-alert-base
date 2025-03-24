@@ -28,11 +28,14 @@ import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
 import neatlogic.framework.transaction.util.TransactionUtil;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 
 import javax.annotation.Resource;
 
 public abstract class AlertEventHandlerBase implements IAlertEventHandler {
+    private final Logger logger = LoggerFactory.getLogger(AlertEventHandlerBase.class);
 
 
     @Resource
@@ -49,8 +52,9 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
     }
 
     private AlertVo executeWithTransaction(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long parentAuditId) {
+
         /*
-        由于eventhandler存在嵌套调用的行为，例如condition，因此每次调用trigger都是调用新的事务
+        由于eventHandler存在嵌套调用的行为，例如condition，因此每次调用trigger都是调用新的事务
          */
         AlertEventHandlerAuditVo alertEventHandlerAuditVo = new AlertEventHandlerAuditVo();
         alertEventHandlerAuditVo.setAlertId(alertVo.getId());
@@ -100,7 +104,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                         }
                     } catch (Exception e) {
                         TransactionUtil.rollbackTx(ts);
-                        e.printStackTrace();
+                        logger.error(e.getMessage(), e);
                         alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
                         alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
                         throw e; // 抛出异常以便上层处理
