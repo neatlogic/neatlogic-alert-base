@@ -164,6 +164,8 @@ public class AlertAttr {
         }}).setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userName}\"<#if user_has_next>,</#if></#list>]"));
         if (isExpand == 1) {
             //扩展属性不需要提供控件和条件，一般只是给freemarker使用
+            attrList.add(new AlertAttrDefineVo().setName("const_userAccountList").setLabel("处理人账号")
+                    .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userAccount}\"<#if user_has_next>,</#if></#list>]"));
             attrList.add(new AlertAttrDefineVo().setName("const_userPhoneList").setLabel("处理人电话")
                     .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userPhone}\"<#if user_has_next>,</#if></#list>]"));
             attrList.add(new AlertAttrDefineVo().setName("const_userEmailList").setLabel("处理人邮箱")

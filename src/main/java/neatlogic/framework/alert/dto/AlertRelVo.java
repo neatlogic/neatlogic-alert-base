@@ -17,7 +17,9 @@
 
 package neatlogic.framework.alert.dto;
 
-public class AlertRelVo {
+import java.io.Serializable;
+
+public class AlertRelVo implements Serializable {
     private Long fromAlertId;
     private Long toAlertId;
 
