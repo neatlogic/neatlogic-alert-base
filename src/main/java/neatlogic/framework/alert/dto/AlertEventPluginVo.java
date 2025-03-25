@@ -17,19 +17,28 @@
 
 package neatlogic.framework.alert.dto;
 
+import neatlogic.framework.common.constvalue.ApiParamType;
+import neatlogic.framework.restful.annotation.EntityField;
+
 public class AlertEventPluginVo {
+    @EntityField(name = "唯一标识", type = ApiParamType.STRING)
     private String name;
+    @EntityField(name = "名称", type = ApiParamType.STRING)
     private String label;
+    @EntityField(name = "图标", type = ApiParamType.STRING)
     private String icon;
+    @EntityField(name = "描述", type = ApiParamType.STRING)
+    private String description;
 
     public AlertEventPluginVo() {
 
     }
 
-    public AlertEventPluginVo(String _name, String _label, String _icon) {
+    public AlertEventPluginVo(String _name, String _label, String _icon, String _description) {
         this.name = _name;
         this.label = _label;
         this.icon = _icon;
+        this.description = _description;
     }
 
     public String getName() {
@@ -54,5 +63,13 @@ public class AlertEventPluginVo {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

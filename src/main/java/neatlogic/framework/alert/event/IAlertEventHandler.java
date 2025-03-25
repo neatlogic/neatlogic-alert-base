@@ -35,6 +35,8 @@ public interface IAlertEventHandler {
 
     String getIcon();
 
+    String getDescription();
+
     default int getSort() {
         return 99;
     }
