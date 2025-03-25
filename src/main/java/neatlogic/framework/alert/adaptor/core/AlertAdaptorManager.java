@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.neatlogic.alert.plugin.adapter.core.IAdapter;
 import neatlogic.framework.alert.dto.AlertTypeAdaptorVo;
 import neatlogic.framework.alert.dto.AlertTypeVo;
+import neatlogic.framework.alert.exception.alertadaptor.AlertAdaptorNotFoundException;
 import neatlogic.framework.common.util.FileUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -67,21 +68,25 @@ public class AlertAdaptorManager {
 
     public static JSONObject convert(AlertTypeVo alertTypeVo, AlertTypeAdaptorVo adaptorVo, String alertContent) throws Exception {
         //如果fileId变了，代表附件已经更换，需要先清理缓存
-        if (fileIdMap.containsKey(alertTypeVo.getName() + "#" + adaptorVo.getName())
-                && !Objects.equals(fileIdMap.get(alertTypeVo.getName() + "#" + adaptorVo.getName()), adaptorVo.getFileId())) {
-            adapterMap.remove(alertTypeVo.getName() + "#" + adaptorVo.getName());
+        String key = alertTypeVo.getName().toLowerCase() + "#" + adaptorVo.getName().toLowerCase();
+        if (fileIdMap.containsKey(key)
+                && !Objects.equals(fileIdMap.get(key), adaptorVo.getFileId())) {
+            adapterMap.remove(key);
         }
 
-        fileIdMap.put(alertTypeVo.getName() + "#" + adaptorVo.getName(), adaptorVo.getFileId());
+        fileIdMap.put(key, adaptorVo.getFileId());
 
-        if (!adapterMap.containsKey(alertTypeVo.getName() + "#" + adaptorVo.getName())) {
+        if (!adapterMap.containsKey(key)) {
             AlertAdapterLoader classLoader = new AlertAdapterLoader(downloadJar(FileUtil.getData(adaptorVo.getFilePath())), IAdapter.class.getClassLoader());
             ServiceLoader<IAdapter> loader = ServiceLoader.load(IAdapter.class, classLoader);
             for (IAdapter adapter : loader) {
-                adapterMap.put(alertTypeVo.getName() + "#" + adaptorVo.getName(), adapter);
+                adapterMap.put(key, adapter);
             }
         }
-        IAdapter adapter = adapterMap.get(alertTypeVo.getName() + "#" + adaptorVo.getName());
+        IAdapter adapter = adapterMap.get(key);
+        if (adapter == null) {
+            throw new AlertAdaptorNotFoundException(key);
+        }
         return adapter.convert(alertContent);
     }
 }
