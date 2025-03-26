@@ -36,6 +36,10 @@ public class AlertAttr {
         return getConstAttrList(null, null, isExpand);
     }
 
+    public static List<AlertAttrDefineVo> getConstAttrList(List<String> excludeColumnList) {
+        return getConstAttrList(null, excludeColumnList, 0);
+    }
+
     public static List<AlertAttrDefineVo> getConstAttrList(List<String> includeColumnList, List<String> excludeColumnList, int isExpand) {
         List<AlertAttrDefineVo> attrList = new ArrayList<>();
         attrList.add(new AlertAttrDefineVo("const_id", "id", "text", new ArrayList<String>() {{
