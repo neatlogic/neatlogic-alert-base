@@ -112,7 +112,10 @@ public class AlertAttr {
         }}, new JSONObject() {{
             this.put("transfer", true);
             this.put("multiple", true);
-            this.put("dataList", new ArrayList<ValueTextVo>() {{
+            this.put("dynamicUrl", "/api/rest/alert/status/list");
+            this.put("valueName", "name");
+            this.put("textName", "label");
+            /*this.put("dataList", new ArrayList<ValueTextVo>() {{
                 this.add(new ValueTextVo() {{
                     this.setValue("new");
                     this.setText("新告警");
@@ -133,7 +136,7 @@ public class AlertAttr {
                     this.setValue("closed");
                     this.setText("已关闭");
                 }});
-            }});
+            }});*/
         }}).setFreemarkerSnippet("${DATA.const_statusName}"));
         attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间", "datetime", new ArrayList<String>() {{
             this.add("range");
@@ -142,7 +145,7 @@ public class AlertAttr {
         }}, new JSONObject() {{
             this.put("transfer", true);
             this.put("type", "datetimerange");
-            this.put("format", "yyyy-MM-dd HH:mm:ss");
+            this.put("format", "yyyy-MM-dd HH:mm");
         }}).setFreemarkerSnippet("${DATA.const_alertTimeStr}"));
         attrList.add(new AlertAttrDefineVo("const_updateTime", "更新时间", "datetime", new ArrayList<String>() {{
             this.add("range");
@@ -151,7 +154,7 @@ public class AlertAttr {
         }}, new JSONObject() {{
             this.put("transfer", true);
             this.put("type", "datetimerange");
-            this.put("format", "yyyy-MM-dd HH:mm:ss");
+            this.put("format", "yyyy-MM-dd HH:mm");
         }}).setFreemarkerSnippet("${DATA.const_updateTimeStr}"));
         attrList.add(new AlertAttrDefineVo("const_source", "来源").setFreemarkerSnippet("${DATA.const_source}"));
         attrList.add(new AlertAttrDefineVo("const_userList", "处理人", "userselect", new ArrayList<String>() {{

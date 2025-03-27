@@ -20,7 +20,6 @@ package neatlogic.framework.alert.dto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
-import neatlogic.framework.alert.enums.AlertStatus;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.restful.annotation.EntityField;
@@ -299,9 +298,6 @@ public class AlertVo extends BasePageVo {
     }
 
     public String getStatusName() {
-        if (StringUtils.isNotBlank(status)) {
-            statusName = AlertStatus.getText(status);
-        }
         return statusName;
     }
 
@@ -526,18 +522,12 @@ public class AlertVo extends BasePageVo {
     }
 
     public String getStatusColor() {
-        if (StringUtils.isNotBlank(status)) {
-            statusColor = AlertStatus.getColor(status);
-        }
         return statusColor;
     }
 
-
-    public String getStatusStatus() {
-        if (StringUtils.isNotBlank(status)) {
-            statusStatus = AlertStatus.getStatus(status);
-        }
-        return statusStatus;
+    public void setStatusColor(String statusColor) {
+        this.statusColor = statusColor;
     }
+
 
 }
