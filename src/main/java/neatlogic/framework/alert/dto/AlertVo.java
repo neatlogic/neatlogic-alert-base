@@ -121,6 +121,8 @@ public class AlertVo extends BasePageVo {
     private List<String> applyTeamList;
     @JSONField(serialize = false)
     private AlertVo fromAlertVo;
+    @JSONField(serialize = false)
+    private int updateTimeHour;//搜索条件
 
     public void addTeam(AlertTeamVo team) {
         if (teamList == null) {
@@ -138,6 +140,14 @@ public class AlertVo extends BasePageVo {
         if (!userList.contains(userVo)) {
             userList.add(userVo);
         }
+    }
+
+    public int getUpdateTimeHour() {
+        return updateTimeHour;
+    }
+
+    public void setUpdateTimeHour(int updateTimeHour) {
+        this.updateTimeHour = updateTimeHour;
     }
 
     public AlertVo getParentAlertVo() {
