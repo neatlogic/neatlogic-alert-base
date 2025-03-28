@@ -193,6 +193,7 @@
          handler_name,
          event_handler_id,
          start_time,
+         config,
          status)
         values (#{id},
                 #{parentId},
@@ -202,6 +203,7 @@
                 #{handlerName},
                 #{eventHandlerId},
                 now(3),
+                #{configStr,typeHandler=CompressHandler},
                 #{status})
     </insert>
 

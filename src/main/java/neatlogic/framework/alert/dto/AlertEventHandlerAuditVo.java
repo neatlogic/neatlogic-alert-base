@@ -62,6 +62,10 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
     private JSONObject result;
     @JSONField(serialize = false)
     private String resultStr;
+    @EntityField(name = "配置", type = ApiParamType.JSONOBJECT)
+    private JSONObject config;
+    @JSONField(serialize = false)
+    private String configStr;
     @EntityField(name = "耗时", type = ApiParamType.LONG)
     private long timeCost;
     @EntityField(name = "子记录")
@@ -211,5 +215,31 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
 
     public void setChildAuditList(List<AlertEventHandlerAuditVo> childAuditList) {
         this.childAuditList = childAuditList;
+    }
+
+    public JSONObject getConfig() {
+        if (config == null && StringUtils.isNotBlank(configStr)) {
+            try {
+                config = JSON.parseObject(configStr);
+            } catch (Exception ignored) {
+
+            }
+        }
+        return config;
+    }
+
+    public void setConfig(JSONObject config) {
+        this.config = config;
+    }
+
+    public String getConfigStr() {
+        if (config != null) {
+            configStr = JSON.toJSONString(config);
+        }
+        return configStr;
+    }
+
+    public void setConfigStr(String configStr) {
+        this.configStr = configStr;
     }
 }
