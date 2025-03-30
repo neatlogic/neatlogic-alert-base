@@ -114,12 +114,8 @@ public class AlertAttrTypeVo extends BasePageVo {
     }
 
     public JSONObject getConfig() {
-        if (config == null && StringUtils.isNotBlank(configStr)) {
-            try {
-                config = JSONObject.parseObject(configStr);
-            } catch (Exception ignored) {
-
-            }
+        if (StringUtils.isNotBlank(type)) {
+            config = AlertAttrType.getConfig(type,this);
         }
         return config;
     }
