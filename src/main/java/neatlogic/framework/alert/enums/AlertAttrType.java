@@ -15,12 +15,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.framework.alert.enums;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.alert.dto.AlertAttrTypeVo;
+import neatlogic.framework.common.constvalue.IEnum;
 import neatlogic.framework.util.$;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public enum AlertAttrType {
+public enum AlertAttrType implements IEnum<JSONObject> {
     NUMBER("number", "数字", new ArrayList<String>() {{
         this.add("equal");
         this.add("notequal");
@@ -30,7 +34,7 @@ public enum AlertAttrType {
         this.add("lte");
         this.add("is-null");
         this.add("is-not-null");
-    }}),
+    }}, null),
     TEXT("text", "文本", new ArrayList<String>() {{
         this.add("equal");
         this.add("notequal");
@@ -38,23 +42,53 @@ public enum AlertAttrType {
         this.add("notlike");
         this.add("is-null");
         this.add("is-not-null");
+    }}, null),
+
+    ENUM("enum", "枚举", new ArrayList<String>() {{
+        this.add("equal");
+        this.add("notequal");
+        this.add("is-null");
+        this.add("is-not-null");
+    }}, new JSONObject() {{
+        this.put("transfer", true);
+        this.put("dynamicUrl", "/api/rest/alert/attrenum/search");
+        this.put("params", new JSONObject() {{
+            this.put("attrType", "#{alertAttrTypeVo.id}");
+        }});
+        this.put("rootName", "tbodyList");
+        this.put("valueName", "value");
+        this.put("textName", "text");
     }}),
     DATETIME("datetime", "日期时间", new ArrayList<String>() {{
         this.add("range");
         this.add("is-null");
         this.add("is-not-null");
-    }});
+    }}, null);
     //JSONOBJ("jsonobj", "json对象"),
     //JSONLIST("jsonlist", "json数组");
 
     private final String value;
     private final String text;
     private List<String> expressionList;
+    private JSONObject config;
 
-    AlertAttrType(String _value, String _text, List<String> _expressionList) {
+    AlertAttrType(String _value, String _text, List<String> _expressionList, JSONObject _config) {
         this.value = _value;
         this.text = _text;
         this.expressionList = _expressionList;
+        this.config = _config;
+    }
+
+    @Override
+    public List<JSONObject> getValueTextList() {
+        List<JSONObject> resultList = new ArrayList<>();
+        for (AlertAttrType e : values()) {
+            JSONObject obj = new JSONObject();
+            obj.put("value", e.getValue());
+            obj.put("text", e.getText());
+            resultList.add(obj);
+        }
+        return resultList;
     }
 
     public String getValue() {
@@ -68,6 +102,25 @@ public enum AlertAttrType {
     public List<String> getExpressionList() {
         return expressionList;
     }
+
+    public JSONObject getConfig(AlertAttrTypeVo alertAttrTypeVo) {
+        if (alertAttrTypeVo != null && config != null) {
+            String configStr = JSON.toJSONString(config);
+            configStr = configStr.replace("#{alertAttrTypeVo.id}", alertAttrTypeVo.getId().toString());
+            config = JSON.parseObject(configStr);
+        }
+        return config;
+    }
+
+    public static JSONObject getConfig(String name, AlertAttrTypeVo alertAttrTypeVo) {
+        for (AlertAttrType s : AlertAttrType.values()) {
+            if (s.getValue().equals(name)) {
+                return s.getConfig(alertAttrTypeVo);
+            }
+        }
+        return null;
+    }
+
 
     public static List<String> getExpressionList(String name) {
         for (AlertAttrType s : AlertAttrType.values()) {

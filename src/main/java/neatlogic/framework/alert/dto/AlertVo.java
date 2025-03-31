@@ -109,6 +109,8 @@ public class AlertVo extends BasePageVo {
     private String comment;
     @JSONField(serialize = false)
     private Integer isChangeChildAlertStatus;
+    @JSONField(serialize = false)
+    private Integer isCloseChildAlert;
     @EntityField(name = "评论列表", type = ApiParamType.JSONARRAY)
     private List<AlertCommentVo> commentList;
     @JSONField(serialize = false)
@@ -221,6 +223,14 @@ public class AlertVo extends BasePageVo {
 
     public void setIsChangeChildAlertStatus(Integer isChangeChildAlertStatus) {
         this.isChangeChildAlertStatus = isChangeChildAlertStatus;
+    }
+
+    public Integer getIsCloseChildAlert() {
+        return isCloseChildAlert;
+    }
+
+    public void setIsCloseChildAlert(Integer isCloseChildAlert) {
+        this.isCloseChildAlert = isCloseChildAlert;
     }
 
     public List<AlertCommentVo> getCommentList() {

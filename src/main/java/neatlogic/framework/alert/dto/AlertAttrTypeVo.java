@@ -46,6 +46,8 @@ public class AlertAttrTypeVo extends BasePageVo {
     private JSONObject config;
     @EntityField(name = "是否作为普通属性显示", type = ApiParamType.INTEGER)
     private Integer isNormal;
+    @EntityField(name = "成员数量", type = ApiParamType.INTEGER)
+    private int enumCount;
 
     @JSONField(serialize = false)
     private String configStr;
@@ -56,6 +58,14 @@ public class AlertAttrTypeVo extends BasePageVo {
             id = SnowflakeUtil.uniqueLong();
         }
         return id;
+    }
+
+    public int getEnumCount() {
+        return enumCount;
+    }
+
+    public void setEnumCount(int enumCount) {
+        this.enumCount = enumCount;
     }
 
     public void setId(Long id) {
@@ -114,12 +124,8 @@ public class AlertAttrTypeVo extends BasePageVo {
     }
 
     public JSONObject getConfig() {
-        if (config == null && StringUtils.isNotBlank(configStr)) {
-            try {
-                config = JSONObject.parseObject(configStr);
-            } catch (Exception ignored) {
-
-            }
+        if (StringUtils.isNotBlank(type)) {
+            config = AlertAttrType.getConfig(type, this);
         }
         return config;
     }
