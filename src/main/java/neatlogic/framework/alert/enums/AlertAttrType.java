@@ -51,10 +51,11 @@ public enum AlertAttrType implements IEnum<JSONObject> {
         this.add("is-not-null");
     }}, new JSONObject() {{
         this.put("transfer", true);
-        this.put("dynamicUrl", "/api/rest/alert/attrenum/list");
+        this.put("dynamicUrl", "/api/rest/alert/attrenum/search");
         this.put("params", new JSONObject() {{
             this.put("attrType", "#{alertAttrTypeVo.id}");
         }});
+        this.put("rootName", "tbodyList");
         this.put("valueName", "value");
         this.put("textName", "text");
     }}),
