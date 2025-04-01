@@ -73,6 +73,10 @@ public class AlertAttr {
             this.put("valueName", "level");
             this.put("textName", "label");
         }}).setFreemarkerSnippet("${DATA.const_level}"));
+        if (isExpand == 1) {
+            attrList.add(new AlertAttrDefineVo().setName("const_levelLabel").setLabel("级别名称")
+                    .setFreemarkerSnippet("${DATA.const_levelLabel}"));
+        }
         attrList.add(new AlertAttrDefineVo("const_type", "类型", "select", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
@@ -115,28 +119,6 @@ public class AlertAttr {
             this.put("dynamicUrl", "/api/rest/alert/status/list");
             this.put("valueName", "name");
             this.put("textName", "label");
-            /*this.put("dataList", new ArrayList<ValueTextVo>() {{
-                this.add(new ValueTextVo() {{
-                    this.setValue("new");
-                    this.setText("新告警");
-                }});
-                this.add(new ValueTextVo() {{
-                    this.setValue("confirmed");
-                    this.setText("已响应");
-                }});
-                this.add(new ValueTextVo() {{
-                    this.setValue("processing");
-                    this.setText("处理中");
-                }});
-                this.add(new ValueTextVo() {{
-                    this.setValue("resolved");
-                    this.setText("已解决");
-                }});
-                this.add(new ValueTextVo() {{
-                    this.setValue("closed");
-                    this.setText("已关闭");
-                }});
-            }});*/
         }}).setFreemarkerSnippet("${DATA.const_statusName}"));
         attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间", "datetime", new ArrayList<String>() {{
             this.add("range");
