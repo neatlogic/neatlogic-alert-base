@@ -18,6 +18,8 @@
 package neatlogic.framework.alert.dto;
 
 import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.common.constvalue.ApiParamType;
+import neatlogic.framework.restful.annotation.EntityField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,14 +28,25 @@ import java.util.List;
  * 告警属性定义，用于产生搜索条件的属性列表
  */
 public class AlertAttrDefineVo {
+    @EntityField(name = "id", type = ApiParamType.LONG)
     private Long id;//扩展属性有id,内置属性没有id
+    @EntityField(name = "唯一标识", type = ApiParamType.STRING)
     private String name;
+    @EntityField(name = "显示名", type = ApiParamType.STRING)
     private String label;
+    @EntityField(name = "种类", type = ApiParamType.STRING)
     private String kind = "const";//const或attr
+    @EntityField(name = "类型", type = ApiParamType.STRING)
     private String type = "text";
+    @EntityField(name = "是否置顶", type = ApiParamType.INTEGER)
+    private Integer isTop = 0;
+    @EntityField(name = "条件表达式列表", type = ApiParamType.JSONARRAY)
     private List<String> expressionList;
+    @EntityField(name = "配置", type = ApiParamType.JSONOBJECT)
     private JSONObject config;
+    @EntityField(name = "是否用整行显示", type = ApiParamType.BOOLEAN)
     private boolean isWholeRow = false;
+    @EntityField(name = "freemarker代码片段", type = ApiParamType.STRING)
     private String freemarkerSnippet;
 
     public boolean isWholeRow() {
@@ -49,6 +62,10 @@ public class AlertAttrDefineVo {
 
     }
 
+    public Integer getIsTop() {
+        return isTop;
+    }
+
     public String getFreemarkerSnippet() {
         return freemarkerSnippet;
     }
@@ -62,8 +79,9 @@ public class AlertAttrDefineVo {
         return kind;
     }
 
-    public void setKind(String kind) {
+    public AlertAttrDefineVo setKind(String kind) {
         this.kind = kind;
+        return this;
     }
 
     public AlertAttrDefineVo(String name, String label) {
@@ -77,6 +95,11 @@ public class AlertAttrDefineVo {
 
     public AlertAttrDefineVo setId(Long id) {
         this.id = id;
+        return this;
+    }
+
+    public AlertAttrDefineVo setIsTop(Integer isTop) {
+        this.isTop = isTop;
         return this;
     }
 

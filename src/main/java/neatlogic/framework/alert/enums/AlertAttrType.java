@@ -107,7 +107,7 @@ public enum AlertAttrType implements IEnum<JSONObject> {
         if (alertAttrTypeVo != null && config != null) {
             String configStr = JSON.toJSONString(config);
             configStr = configStr.replace("#{alertAttrTypeVo.id}", alertAttrTypeVo.getId().toString());
-            config = JSON.parseObject(configStr);
+            return JSON.parseObject(configStr);
         }
         return config;
     }

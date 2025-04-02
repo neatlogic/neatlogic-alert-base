@@ -48,6 +48,10 @@ public class AlertAttrTypeVo extends BasePageVo {
     private Integer isNormal;
     @EntityField(name = "成员数量", type = ApiParamType.INTEGER)
     private int enumCount;
+    @EntityField(name = "是否置顶", type = ApiParamType.INTEGER)
+    private Integer isTop;
+    @EntityField(name = "排序", type = ApiParamType.INTEGER)
+    private int sort;
 
     @JSONField(serialize = false)
     private String configStr;
@@ -66,6 +70,22 @@ public class AlertAttrTypeVo extends BasePageVo {
 
     public void setEnumCount(int enumCount) {
         this.enumCount = enumCount;
+    }
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
+    }
+
+    public Integer getIsTop() {
+        return isTop;
+    }
+
+    public void setIsTop(Integer isTop) {
+        this.isTop = isTop;
     }
 
     public void setId(Long id) {
