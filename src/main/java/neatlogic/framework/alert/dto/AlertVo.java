@@ -47,6 +47,8 @@ public class AlertVo extends BasePageVo {
     private String uniqueKey;
     @EntityField(name = "级别", type = ApiParamType.INTEGER)
     private Integer level;
+    @EntityField(name = "级别名称", type = ApiParamType.STRING)
+    private String levelLabel;
     @EntityField(name = "标题", type = ApiParamType.STRING)
     private String title;
     @EntityField(name = "类型", type = ApiParamType.LONG)
@@ -147,6 +149,14 @@ public class AlertVo extends BasePageVo {
     public int getUpdateTimeHour() {
         return updateTimeHour;
     }
+
+    public String getLevelLabel() {
+        if (levelLabel == null && alertLevel != null) {
+            levelLabel = alertLevel.getLabel();
+        }
+        return levelLabel;
+    }
+
 
     public void setUpdateTimeHour(int updateTimeHour) {
         this.updateTimeHour = updateTimeHour;
