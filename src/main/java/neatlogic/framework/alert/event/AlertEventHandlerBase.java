@@ -42,23 +42,27 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
     protected AlertEventMapper alertEventMapper;
 
     public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo) {
+        //重新获取alertVo，避免alertVo缺失了某些关键属性
+        alertVo = alertEventMapper.getAlertById(alertVo.getId());
         alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, null);
         return alertVo;
     }
 
     public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long parentAuditId) {
+        //重新获取alertVo，避免alertVo缺失了某些关键属性
+        alertVo = alertEventMapper.getAlertById(alertVo.getId());
         alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, parentAuditId);
         return alertVo;
     }
 
 
     private AlertVo executeWithTransaction(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long parentAuditId) {
-
         /*
         由于eventHandler存在嵌套调用的行为，例如condition，因此每次调用trigger都是调用新的事务
          */
         AlertEventHandlerAuditVo alertEventHandlerAuditVo = new AlertEventHandlerAuditVo();
         alertEventHandlerAuditVo.setAlertId(alertVo.getId());
+        alertEventHandlerAuditVo.setUniqueKey(alertVo.getUniqueKey());
         alertEventHandlerAuditVo.setEventHandlerId(alertEventHandlerVo.getId());
         alertEventHandlerAuditVo.setEvent(alertEventHandlerVo.getEvent());
         alertEventHandlerAuditVo.setHandler(alertEventHandlerVo.getHandler());

@@ -77,7 +77,7 @@ public class AlertAttr {
             attrList.add(new AlertAttrDefineVo().setName("const_levelLabel").setLabel("级别名称")
                     .setFreemarkerSnippet("${DATA.const_levelLabel}"));
         }
-        attrList.add(new AlertAttrDefineVo("const_type", "类型", "select", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_type", "类型唯一标识", "select", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -89,7 +89,13 @@ public class AlertAttr {
             this.put("rootName", "tbodyList");
             this.put("valueName", "id");
             this.put("textName", "label");
-        }}).setFreemarkerSnippet("${DATA.const_typeName}"));
+        }}).setFreemarkerSnippet("${DATA.const_type}"));
+        if (isExpand == 1) {
+            attrList.add(new AlertAttrDefineVo()
+                    .setName("const_typeName")
+                    .setLabel("类型名称")
+                    .setFreemarkerSnippet("${DATA.const_typeName}"));
+        }
         attrList.add(new AlertAttrDefineVo("const_isClose", "是否关闭", "select", new ArrayList<String>() {{
             this.add("equal");
             this.add("notequal");
@@ -107,8 +113,14 @@ public class AlertAttr {
                     }});
                 }
             });
-        }}).setFreemarkerSnippet("${DATA.const_isCloseName}"));
-        attrList.add(new AlertAttrDefineVo("const_status", "状态", "select", new ArrayList<String>() {{
+        }}).setFreemarkerSnippet("${DATA.const_isClose}"));
+        if (isExpand == 1) {
+            attrList.add(new AlertAttrDefineVo()
+                    .setName("const_isCloseName")
+                    .setLabel("是否关闭名称")
+                    .setFreemarkerSnippet("${DATA.const_isCloseName}"));
+        }
+        attrList.add(new AlertAttrDefineVo("const_status", "状态唯一标识", "select", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -119,8 +131,14 @@ public class AlertAttr {
             this.put("dynamicUrl", "/api/rest/alert/status/list");
             this.put("valueName", "name");
             this.put("textName", "label");
-        }}).setFreemarkerSnippet("${DATA.const_statusName}"));
-        attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间", "datetime", new ArrayList<String>() {{
+        }}).setFreemarkerSnippet("${DATA.const_status}"));
+        if (isExpand == 1) {
+            attrList.add(new AlertAttrDefineVo()
+                    .setName("const_statusName")
+                    .setLabel("状态名称")
+                    .setFreemarkerSnippet("${DATA.const_statusName}"));
+        }
+        attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间（日期）", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("is-null");
             this.add("is-not-null");
@@ -129,7 +147,13 @@ public class AlertAttr {
             this.put("type", "datetimerange");
             this.put("format", "yyyy-MM-dd HH:mm");
         }}).setFreemarkerSnippet("${DATA.const_alertTimeStr}"));
-        attrList.add(new AlertAttrDefineVo("const_updateTime", "更新时间", "datetime", new ArrayList<String>() {{
+        if (isExpand == 1) {
+            attrList.add(new AlertAttrDefineVo()
+                    .setName("const_alertTimeStr")
+                    .setLabel("创建时间（文本）")
+                    .setFreemarkerSnippet("${DATA.const_alertTimeStr}"));
+        }
+        attrList.add(new AlertAttrDefineVo("const_updateTime", "更新时间（日期）", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("is-null");
             this.add("is-not-null");
@@ -137,7 +161,13 @@ public class AlertAttr {
             this.put("transfer", true);
             this.put("type", "datetimerange");
             this.put("format", "yyyy-MM-dd HH:mm");
-        }}).setFreemarkerSnippet("${DATA.const_updateTimeStr}"));
+        }}).setFreemarkerSnippet("${DATA.const_updateTime}"));
+        if (isExpand == 1) {
+            attrList.add(new AlertAttrDefineVo()
+                    .setName("const_updateTimeStr")
+                    .setLabel("更新时间（文本）")
+                    .setFreemarkerSnippet("${DATA.const_updateTimeStr}"));
+        }
         attrList.add(new AlertAttrDefineVo("const_source", "来源").setFreemarkerSnippet("${DATA.const_source}"));
         attrList.add(new AlertAttrDefineVo("const_userList", "处理人", "userselect", new ArrayList<String>() {{
             this.add("like");

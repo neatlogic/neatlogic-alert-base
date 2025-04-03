@@ -34,6 +34,8 @@ import java.util.List;
 public class AlertEventHandlerAuditVo extends BasePageVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
     private Long id;
+    @EntityField(name = "唯一键", type = ApiParamType.STRING)
+    private String uniqueKey;
     @EntityField(name = "告警id", type = ApiParamType.LONG)
     private Long alertId;
     @EntityField(name = "父id", type = ApiParamType.LONG)
@@ -95,6 +97,14 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
             eventName = AlertEventType.getLabel(event);
         }
         return eventName;
+    }
+
+    public String getUniqueKey() {
+        return uniqueKey;
+    }
+
+    public void setUniqueKey(String uniqueKey) {
+        this.uniqueKey = uniqueKey;
     }
 
     public String getResultStr() {

@@ -18,6 +18,91 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="neatlogic.framework.alert.dao.mapper.AlertEventMapper">
+    <resultMap id="alertResultMap" type="neatlogic.framework.alert.dto.AlertVo">
+        <id column="id" property="id"/>
+        <result column="fromAlertId" property="fromAlertId"/>
+        <result column="childAlertCount" property="childAlertCount"/>
+        <result column="level" property="level"/>
+        <result column="title" property="title"/>
+        <result column="updateTime" property="updateTime"/>
+        <result column="alertTime" property="alertTime"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
+        <result column="alertStatusName" property="statusName"/>
+        <result column="alertStatusColor" property="statusColor"/>
+        <result column="source" property="source"/>
+        <result column="uniqueKey" property="uniqueKey"/>
+        <result column="isClose" property="isClose"/>
+        <result column="entityType" property="entityType"/>
+        <result column="entityName" property="entityName"/>
+        <result column="ip" property="port"/>
+        <result column="content" property="attrObjStr"/>
+        <association property="alertType" javaType="neatlogic.framework.alert.dto.AlertTypeVo">
+            <result column="alertTypeName" property="name"/>
+            <result column="alertTypeLabel" property="label"/>
+            <result column="alertTypeId" property="id"/>
+        </association>
+        <association property="alertLevel" javaType="neatlogic.framework.alert.dto.AlertLevelVo">
+            <result column="alertLevel" property="level"/>
+            <result column="alertLevelName" property="name"/>
+            <result column="alertLevelColor" property="color"/>
+            <result column="alertLevelLabel" property="label"/>
+        </association>
+        <collection property="userList" ofType="neatlogic.framework.alert.dto.AlertUserVo">
+            <id column="alertUserId" property="userId"/>
+            <id column="alertUserAlertId" property="alertId"/>
+            <result column="alertUserName" property="userName"/>
+        </collection>
+        <collection property="teamList" ofType="neatlogic.framework.alert.dto.AlertTeamVo">
+            <id column="alertTeamUuid" property="teamUuid"/>
+            <id column="alertTeamAlertId" property="alertId"/>
+            <result column="alertTeamName" property="teamName"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="getAlertById" parameterType="java.lang.Long" resultMap="alertResultMap">
+        select a.id,
+               (SELECT count(x.to_alert_id) FROM alert_rel x WHERE x.from_alert_id = a.id LIMIT 100) AS childAlertCount,
+               (select x.from_alert_id from alert_rel x where x.to_alert_id = a.id limit 1)          as fromAlertId,
+               a.level,
+               a.title,
+               a.update_time                                                                         as updateTime,
+               a.alert_time                                                                          as alertTime,
+               a.type,
+               a.is_close                                                                            as isClose,
+               d.id                                                                                  as alertTypeId,
+               d.name                                                                                as alertTypeName,
+               d.label                                                                               as alertTypeLabel,
+               a.status,
+               als.label                                                                             as alertStatusName,
+               als.color                                                                             as alertStatusColor,
+               a.source,
+               a.unique_key                                                                          as uniqueKey,
+               a.entity_type                                                                         as entityType,
+               a.entity_name                                                                         as entityName,
+               a.ip,
+               a.port,
+               b.content,
+               c.level                                                                               as alertLevel,
+               c.name                                                                                as alertLevelName,
+               c.label                                                                               as alertLevelLabel,
+               c.color                                                                               as alertLevelColor,
+               au.user_id                                                                            as alertUserId,
+               au.alert_id                                                                           as alertUserAlertId,
+               at.team_uuid                                                                          as alertTeamUuid,
+               at.alert_id                                                                           as alertTeamAlertId,
+               (select name from team x where x.uuid = at.team_uuid)                                 as alertTeamName
+        from alert a
+                 left join alert_attr b on a.id = b.alert_id
+                 left join alert_level c on a.level = c.level
+                 left join alert_type d on a.type = d.id
+                 left join alert_user au on a.id = au.alert_id
+                 left join alert_team at on a.id = at.alert_id
+                 left join alert_status als on a.status = als.name
+        where a.id = #{value}
+    </select>
+
     <sql id="selectAlertEventHandlerCommonSql">
         select id,
                name,
@@ -41,6 +126,7 @@
     <select id="getLastAlertEventHandlerAudit" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerAuditVo"
             resultType="neatlogic.framework.alert.dto.AlertEventHandlerAuditVo">
         select id,
+               unique_key       as uniqueKey,
                parent_id        as parentId,
                alert_id         as alertId,
                event,
@@ -186,6 +272,7 @@
     <insert id="insertAlertEventAudit" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerAuditVo">
         insert into alert_event_handler_audit
         (id,
+         unique_key,
          parent_id,
          alert_id,
          event,
@@ -196,6 +283,7 @@
          config,
          status)
         values (#{id},
+                #{uniqueKey},
                 #{parentId},
                 #{alertId},
                 #{event},
