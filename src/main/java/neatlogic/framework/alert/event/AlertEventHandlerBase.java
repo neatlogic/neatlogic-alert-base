@@ -36,8 +36,6 @@ import javax.annotation.Resource;
 
 public abstract class AlertEventHandlerBase implements IAlertEventHandler {
     private final Logger logger = LoggerFactory.getLogger(AlertEventHandlerBase.class);
-
-
     @Resource
     protected AlertEventMapper alertEventMapper;
 
