@@ -22,6 +22,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.alert.enums.AlertEventStatus;
 import neatlogic.framework.alert.event.AlertEventType;
+import neatlogic.framework.common.config.Config;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.restful.annotation.EntityField;
@@ -72,12 +73,18 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
     private long timeCost;
     @EntityField(name = "子记录")
     private List<AlertEventHandlerAuditVo> childAuditList;
+    @JSONField(serialize = false)
+    private Integer serverId;
 
     public Long getId() {
         if (id == null) {
             id = SnowflakeUtil.uniqueLong();
         }
         return id;
+    }
+
+    public Integer getServerId() {
+        return Config.SCHEDULE_SERVER_ID;
     }
 
     public void setId(Long id) {

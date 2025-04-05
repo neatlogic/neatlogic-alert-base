@@ -17,15 +17,17 @@
 
 package neatlogic.framework.alert.dao.mapper;
 
-import neatlogic.framework.alert.dto.AlertEventHandlerAuditVo;
-import neatlogic.framework.alert.dto.AlertEventHandlerVo;
-import neatlogic.framework.alert.dto.AlertVo;
+import neatlogic.framework.alert.dto.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface AlertEventMapper {
     AlertVo getAlertById(Long id);
+
+    List<AlertTeamVo> getAlertTeamByAlertId(Long alertId);
+
+    List<AlertUserVo> getAlertUserByAlertId(Long alertId);
 
     //List<AlertEventHandlerVo> getAlertEventHandlerByHandler(String handler);
     AlertEventHandlerAuditVo getLastAlertEventHandlerAudit(AlertEventHandlerAuditVo alertEventHandlerAuditVo);

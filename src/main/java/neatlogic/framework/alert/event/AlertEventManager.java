@@ -33,8 +33,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 @RootComponent
 public class AlertEventManager {
@@ -113,7 +115,6 @@ public class AlertEventManager {
                         IAlertEventHandler handler = AlertEventHandlerFactory.getHandler(h.getHandler());
                         if (handler != null) {
                             //不断修改alertVo的值，传递给下一个处理器
-                            //System.out.println("处理告警" + alertVo.getId()+",触发事件" + handler.getName());
                             alertVo = handler.trigger(h, alertVo);
                         } else {
                             logger.error("告警事件组件{}不存在", h.getHandler());
@@ -131,6 +132,8 @@ public class AlertEventManager {
         AfterTransactionJob<AlertEventType> job = new AfterTransactionJob<>("ALERT-EVENT-HANDLER-OFFER");
         job.execute(alertEventType, _alertEventType -> {
             List<AlertEventHandlerVo> handlerList = alertEventMapper.getAlertEventHandlerByEvent(_alertEventType.getName(), alertVo.getType());
+            //只需要激活的插件
+            handlerList = handlerList.stream().filter(d -> Objects.equals(1, d.getIsActive())).collect(Collectors.toList());
             List<List<AlertEventHandlerVo>> eventHandlerList = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(handlerList)) {
                 int currentSort = -1;

@@ -39,16 +39,27 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
     @Resource
     protected AlertEventMapper alertEventMapper;
 
+    private AlertVo getAlertById(AlertVo alertVo) {
+        AlertVo newAlertVo = alertEventMapper.getAlertById(alertVo.getId());
+        if (newAlertVo != null) {
+            //创建告警前，告警不一定存在，不存在就返回原告警信息
+            newAlertVo.setUserList(alertEventMapper.getAlertUserByAlertId(alertVo.getId()));
+            newAlertVo.setTeamList(alertEventMapper.getAlertTeamByAlertId(alertVo.getId()));
+            return newAlertVo;
+        }
+        return alertVo;
+    }
+
     public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo) {
         //重新获取alertVo，避免alertVo缺失了某些关键属性
-        alertVo = alertEventMapper.getAlertById(alertVo.getId());
+        alertVo = getAlertById(alertVo);
         alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, null);
         return alertVo;
     }
 
     public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long parentAuditId) {
         //重新获取alertVo，避免alertVo缺失了某些关键属性
-        alertVo = alertEventMapper.getAlertById(alertVo.getId());
+        alertVo = getAlertById(alertVo);
         alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, parentAuditId);
         return alertVo;
     }
