@@ -77,7 +77,7 @@ public class AlertAttr {
             attrList.add(new AlertAttrDefineVo().setName("const_levelLabel").setLabel("级别名称")
                     .setFreemarkerSnippet("${DATA.const_levelLabel}"));
         }
-        attrList.add(new AlertAttrDefineVo("const_type", "类型唯一标识", "select", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_type", "类型", "select", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -120,7 +120,7 @@ public class AlertAttr {
                     .setLabel("是否关闭名称")
                     .setFreemarkerSnippet("${DATA.const_isCloseName}"));
         }
-        attrList.add(new AlertAttrDefineVo("const_status", "状态唯一标识", "select", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_status", "状态", "select", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -138,7 +138,7 @@ public class AlertAttr {
                     .setLabel("状态名称")
                     .setFreemarkerSnippet("${DATA.const_statusName}"));
         }
-        attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间（日期）", "datetime", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("is-null");
             this.add("is-not-null");
@@ -153,7 +153,7 @@ public class AlertAttr {
                     .setLabel("创建时间（文本）")
                     .setFreemarkerSnippet("${DATA.const_alertTimeStr}"));
         }
-        attrList.add(new AlertAttrDefineVo("const_updateTime", "更新时间（日期）", "datetime", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_updateTime", "更新时间", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("is-null");
             this.add("is-not-null");
