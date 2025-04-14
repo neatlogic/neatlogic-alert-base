@@ -146,6 +146,13 @@
         where id = #{value}
     </select>
 
+    <select id="getAlertEventExecuteCount" resultType="java.lang.Integer">
+        select count(1)
+        from alert_event_handler_audit
+        where handler = #{handler}
+          and start_time &gt; FROM_UNIXTIME(#{miniSecond} / 1000)
+    </select>
+
     <select id="getLastAlertEventHandlerAudit" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerAuditVo"
             resultType="neatlogic.framework.alert.dto.AlertEventHandlerAuditVo">
         select id,
@@ -262,6 +269,32 @@
           and alert_type = #{alertType}
     </select>
 
+    <select id="getAllAlertEventPluginConfig"
+            resultType="neatlogic.framework.alert.dto.AlertEventPluginVo">
+        select name,
+               config    as configStr,
+               is_active as isActive
+        from alert_event_plugin
+    </select>
+
+    <select id="getAlertEventPluginConfigByName" parameterType="java.lang.String"
+            resultType="neatlogic.framework.alert.dto.AlertEventPluginVo">
+        select name,
+               config    as configStr,
+               is_active as isActive
+        from alert_event_plugin
+        where name = #{value}
+    </select>
+
+    <update id="saveAlertEventPluginConfig" parameterType="neatlogic.framework.alert.dto.AlertEventPluginVo">
+        insert into alert_event_plugin
+            (name, config, is_active)
+        values (#{name},
+                #{configStr, typeHandler=CompressHandler},
+                #{isActive})
+        ON DUPLICATE KEY UPDATE is_active = #{isActive},
+                                config    = #{configStr, typeHandler=CompressHandler}
+    </update>
 
     <insert id="saveAlertEventHandler" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerVo">
         insert into alert_event_handler
@@ -348,6 +381,12 @@
         set sort = #{sort}
         where id = #{id}
     </update>
+
+    <delete id="deleteAlertEventPluginConfig" parameterType="java.lang.String">
+        delete
+        from alert_event_plugin
+        where name = #{value}
+    </delete>
 
     <delete id="deleteAlertEventHandlerById" parameterType="java.lang.Long">
         delete

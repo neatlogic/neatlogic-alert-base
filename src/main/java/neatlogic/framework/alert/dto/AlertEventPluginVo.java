@@ -17,8 +17,12 @@
 
 package neatlogic.framework.alert.dto;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.restful.annotation.EntityField;
+import org.apache.commons.lang3.StringUtils;
 
 public class AlertEventPluginVo {
     @EntityField(name = "唯一标识", type = ApiParamType.STRING)
@@ -29,6 +33,12 @@ public class AlertEventPluginVo {
     private String icon;
     @EntityField(name = "描述", type = ApiParamType.STRING)
     private String description;
+    @EntityField(name = "是否激活", type = ApiParamType.INTEGER)
+    private Integer isActive;
+    @EntityField(name = "配置", type = ApiParamType.JSONOBJECT)
+    private JSONObject config;
+    @JSONField(serialize = false)
+    private String configStr;
 
     public AlertEventPluginVo() {
 
@@ -39,6 +49,40 @@ public class AlertEventPluginVo {
         this.label = _label;
         this.icon = _icon;
         this.description = _description;
+    }
+
+    public JSONObject getConfig() {
+        if (config == null && StringUtils.isNotBlank(configStr)) {
+            try {
+                config = JSON.parseObject(configStr);
+            } catch (Exception ignored) {
+
+            }
+        }
+        return config;
+    }
+
+    public Integer getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Integer isActive) {
+        this.isActive = isActive;
+    }
+
+    public void setConfig(JSONObject config) {
+        this.config = config;
+    }
+
+    public String getConfigStr() {
+        if (config != null) {
+            configStr = JSON.toJSONString(config);
+        }
+        return configStr;
+    }
+
+    public void setConfigStr(String configStr) {
+        this.configStr = configStr;
     }
 
     public String getName() {

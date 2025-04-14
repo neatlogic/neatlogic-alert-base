@@ -18,12 +18,10 @@
 package neatlogic.framework.alert.event;
 
 import neatlogic.framework.alert.dao.mapper.AlertEventMapper;
-import neatlogic.framework.alert.dto.AlertEventHandlerAuditVo;
-import neatlogic.framework.alert.dto.AlertEventHandlerVo;
-import neatlogic.framework.alert.dto.AlertEventStatusVo;
-import neatlogic.framework.alert.dto.AlertVo;
+import neatlogic.framework.alert.dto.*;
 import neatlogic.framework.alert.enums.AlertEventStatus;
 import neatlogic.framework.alert.exception.alertevent.AlertEventHandlerTriggerException;
+import neatlogic.framework.alert.exception.alertevent.AlertEventPluginDisabledException;
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
 import neatlogic.framework.transaction.util.TransactionUtil;
@@ -33,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.Objects;
 
 public abstract class AlertEventHandlerBase implements IAlertEventHandler {
     private final Logger logger = LoggerFactory.getLogger(AlertEventHandlerBase.class);
@@ -81,13 +81,20 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         if (parentAuditId != null) {
             alertEventHandlerAuditVo.setParentId(parentAuditId);
         }
+        //记录当前时间的真正开始时间，后续可能需要使用
+        alertEventHandlerAuditVo.setStartTime(new Date());
         alertEventMapper.insertAlertEventAudit(alertEventHandlerAuditVo);
         AlertEventStatusVo alertEventStatusVo = new AlertEventStatusVo();
+        AlertEventPluginVo alertEventPluginVo = alertEventMapper.getAlertEventPluginConfigByName(alertEventHandlerVo.getHandler());
         if (!this.isAsync()) {
             //同步作业，可以修改alertVo信息
             TransactionStatus ts = TransactionUtil.openNewTx();
             try {
-                alertVo = myTrigger(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo, alertEventStatusVo);
+                //如果插件被禁用，直接结束执行
+                if (alertEventPluginVo != null && Objects.equals(0, alertEventPluginVo.getIsActive())) {
+                    throw new AlertEventPluginDisabledException(alertEventHandlerVo.getHandlerName());
+                }
+                alertVo = myTrigger(alertEventHandlerVo, alertEventPluginVo, alertVo, alertEventHandlerAuditVo, alertEventStatusVo);
                 TransactionUtil.commitTx(ts);
                 if (alertEventStatusVo.isSkipped()) {
                     alertEventHandlerAuditVo.setStatus(AlertEventStatus.SKIPPED.getValue());
@@ -110,7 +117,11 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                 protected void execute() {
                     TransactionStatus ts = TransactionUtil.openNewTx();
                     try {
-                        myTrigger(alertEventHandlerVo, finalAlertVo, alertEventHandlerAuditVo, alertEventStatusVo);
+                        //如果插件被禁用，直接结束执行
+                        if (alertEventPluginVo != null && Objects.equals(0, alertEventPluginVo.getIsActive())) {
+                            throw new AlertEventPluginDisabledException(alertEventHandlerVo.getHandlerName());
+                        }
+                        myTrigger(alertEventHandlerVo, alertEventPluginVo, finalAlertVo, alertEventHandlerAuditVo, alertEventStatusVo);
                         TransactionUtil.commitTx(ts);
                         if (alertEventStatusVo.isSkipped()) {
                             alertEventHandlerAuditVo.setStatus(AlertEventStatus.SKIPPED.getValue());
@@ -134,5 +145,5 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         return alertVo;
     }
 
-    protected abstract AlertVo myTrigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo, AlertEventStatusVo alertEventStatusVo) throws AlertEventHandlerTriggerException;
+    protected abstract AlertVo myTrigger(AlertEventHandlerVo alertEventHandlerVo, AlertEventPluginVo alertEventPluginVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo, AlertEventStatusVo alertEventStatusVo) throws AlertEventHandlerTriggerException;
 }

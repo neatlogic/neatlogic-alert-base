@@ -44,7 +44,7 @@ public class AlertEventHandlerFactory extends ModuleInitializedListenerBase {
 
     public static List<IAlertEventHandler> getHandlerList(String event, String parentPlugin) {
         return pluginList.stream().filter(
-                d -> d.supportEventTypes().contains(event) &&
+                d -> (StringUtils.isBlank(event) || d.supportEventTypes().contains(event)) &&
                         (StringUtils.isBlank(parentPlugin) || d.supportParentHandler().contains(parentPlugin.toLowerCase()))
         ).collect(Collectors.toList());
     }

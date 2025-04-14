@@ -29,10 +29,16 @@ public interface AlertEventMapper {
 
     List<AlertUserVo> getAlertUserByAlertId(Long alertId);
 
+    Integer getAlertEventExecuteCount(@Param("handler") String handler, @Param("miniSecond") Long miniSecond);
+
     //List<AlertEventHandlerVo> getAlertEventHandlerByHandler(String handler);
     AlertEventHandlerAuditVo getLastAlertEventHandlerAudit(AlertEventHandlerAuditVo alertEventHandlerAuditVo);
 
     Integer getAlertEventHandlerMaxSort(AlertEventHandlerVo alertEventHandlerVo);
+
+    List<AlertEventPluginVo> getAllAlertEventPluginConfig();
+
+    AlertEventPluginVo getAlertEventPluginConfigByName(String name);
 
     AlertEventHandlerVo getAlertEventHandlerById(Long id);
 
@@ -44,6 +50,7 @@ public interface AlertEventMapper {
 
     AlertEventHandlerVo getAlertEventHandlerByUuid(String uuid);
 
+    void saveAlertEventPluginConfig(AlertEventPluginVo alertEventPluginVo);
 
     void saveAlertEventHandler(AlertEventHandlerVo alertEventHandlerVo);
 
@@ -58,5 +65,6 @@ public interface AlertEventMapper {
 
     void deleteAlertEventHandlerById(Long id);
 
+    void deleteAlertEventPluginConfig(String name);
 
 }
