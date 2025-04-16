@@ -23,6 +23,7 @@ public enum AlertEventType {
     ALERT_CONVERGE_OUT("ALERT_CONVERGE_OUT", "子告警移除", "当父告警有子告警移出或被删除时，触发此事件"),
     ALERT_STATUE_CHANGE("ALERT_STATUS_CHANGE", "更新告警状态", "告警状态发生变化时，触发此事件"),
     ALERT_CLOSE("ALERT_CLOSE", "关闭告警", "告警关闭时触发此事件"),
+    ALERT_OPEN("ALERT_OPEN", "打开告警", "告警重新打开时触发此事件"),
     ALERT_DELETE("ALERT_DELETE", "删除告警", "告警删除时触发此事件");
 
     private final String name;
