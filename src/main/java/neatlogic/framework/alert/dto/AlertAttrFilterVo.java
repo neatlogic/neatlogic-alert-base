@@ -17,9 +17,10 @@
 
 package neatlogic.framework.alert.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class AlertAttrFilterVo {
+public class AlertAttrFilterVo implements Serializable {
     private String name;
     private List<String> valueList;
 

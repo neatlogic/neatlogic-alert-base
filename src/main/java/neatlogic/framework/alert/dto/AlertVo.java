@@ -128,6 +128,10 @@ public class AlertVo extends BasePageVo {
     @JSONField(serialize = false)
     private int updateTimeHour;//搜索条件
     private List<AlertAttrFilterVo> attrFilterList;
+    @EntityField(name = "处理人uuid列表", type = ApiParamType.JSONARRAY)
+    private List<String> userIdList;
+    @EntityField(name = "处理组uuid列表", type = ApiParamType.JSONARRAY)
+    private List<String> teamIdList;
 
     public void addTeam(AlertTeamVo team) {
         if (teamList == null) {
@@ -264,20 +268,26 @@ public class AlertVo extends BasePageVo {
         return userList;
     }
 
-    @JSONField(serialize = false)
     public List<String> getTeamIdList() {
         if (CollectionUtils.isNotEmpty(teamList)) {
-            return teamList.stream().map(AlertTeamVo::getTeamUuid).collect(Collectors.toList());
+            teamIdList = teamList.stream().map(AlertTeamVo::getTeamUuid).collect(Collectors.toList());
         }
-        return new ArrayList<>();
+        return teamIdList;
     }
 
-    @JSONField(serialize = false)
     public List<String> getUserIdList() {
         if (CollectionUtils.isNotEmpty(userList)) {
-            return userList.stream().map(AlertUserVo::getUserId).collect(Collectors.toList());
+            userIdList = userList.stream().map(AlertUserVo::getUserId).collect(Collectors.toList());
         }
-        return new ArrayList<>();
+        return userIdList;
+    }
+
+    public void setUserIdList(List<String> userIdList) {
+        this.userIdList = userIdList;
+    }
+
+    public void setTeamIdList(List<String> teamIdList) {
+        this.teamIdList = teamIdList;
     }
 
     public void setUserList(List<AlertUserVo> userList) {

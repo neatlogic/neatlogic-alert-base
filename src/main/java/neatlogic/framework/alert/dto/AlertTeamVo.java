@@ -24,6 +24,8 @@ public class AlertTeamVo implements Serializable {
     private Long alertId;
     private String teamUuid;
     private String teamName;
+    private String teamEmail;
+    private String teamPhone;
 
     @Override
     public boolean equals(Object o) {
@@ -59,5 +61,21 @@ public class AlertTeamVo implements Serializable {
 
     public void setTeamName(String teamName) {
         this.teamName = teamName;
+    }
+
+    public String getTeamEmail() {
+        return teamEmail;
+    }
+
+    public void setTeamEmail(String teamEmail) {
+        this.teamEmail = teamEmail;
+    }
+
+    public String getTeamPhone() {
+        return teamPhone;
+    }
+
+    public void setTeamPhone(String teamPhone) {
+        this.teamPhone = teamPhone;
     }
 }

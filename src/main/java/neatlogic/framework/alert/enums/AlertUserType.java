@@ -22,13 +22,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum AlertUserType implements IUserType {
-    WORKER("worker", "处理人", true);
+    WORKER("worker", "处理人", true),
+    WORKER_TEAM("workerteam", "处理组", true);
 
     private final String value;
     private final String text;
     private final boolean isShow;
 
-    private AlertUserType(String _value, String _text, boolean _isShow) {
+    AlertUserType(String _value, String _text, boolean _isShow) {
         this.value = _value;
         this.text = _text;
         this.isShow = _isShow;

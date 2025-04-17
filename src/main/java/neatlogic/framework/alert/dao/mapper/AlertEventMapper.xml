@@ -22,7 +22,9 @@
             resultType="neatlogic.framework.alert.dto.AlertTeamVo">
         select a.alert_id  as alertId,
                a.team_uuid as teamUuid,
-               b.name      as teamName
+               b.name      as teamName,
+               b.email     as teamEmail,
+               b.phone     as teamPhone
         from alert_team a
                  join team b on a.team_uuid = b.uuid
         where a.alert_id = #{value}
