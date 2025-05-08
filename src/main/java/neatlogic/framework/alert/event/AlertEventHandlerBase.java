@@ -42,9 +42,9 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
     private AlertVo getAlertById(AlertVo alertVo) {
         AlertVo newAlertVo = alertEventMapper.getAlertById(alertVo.getId());
         if (newAlertVo != null) {
-            //创建告警前，告警不一定存在，不存在就返回原告警信息
-            //newAlertVo.setUserList(alertEventMapper.getAlertUserByAlertId(alertVo.getId()));
-            //newAlertVo.setTeamList(alertEventMapper.getAlertTeamByAlertId(alertVo.getId()));
+            //补充完整的处理人信息和处理组信息
+            newAlertVo.setUserList(alertEventMapper.getAlertUserByAlertId(alertVo.getId()));
+            newAlertVo.setTeamList(alertEventMapper.getAlertTeamByAlertId(alertVo.getId()));
             return newAlertVo;
         }
         return alertVo;
