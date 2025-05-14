@@ -77,6 +77,8 @@ public class AlertVo extends BasePageVo {
     private int isClose = 0;
     @EntityField(name = "是否关闭文案", type = ApiParamType.STRING)
     private String isCloseName;
+    @EntityField(name = "是否删除中", type = ApiParamType.INTEGER)
+    private int isDelete = 0;
     @EntityField(name = "扩展属性", type = ApiParamType.JSONOBJECT)
     private JSONObject attrObj;
     @JSONField(serialize = false)
@@ -324,6 +326,14 @@ public class AlertVo extends BasePageVo {
 
     public void setChildAlertCount(int childAlertCount) {
         this.childAlertCount = childAlertCount;
+    }
+
+    public int getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(int isDelete) {
+        this.isDelete = isDelete;
     }
 
     public JSONObject getRule() {

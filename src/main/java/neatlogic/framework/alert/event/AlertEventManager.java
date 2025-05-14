@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
 @RootComponent
@@ -44,6 +45,7 @@ public class AlertEventManager {
     private static final NeatLogicBlockingQueue<AlertEventJob> eventHandlerQueue = new NeatLogicBlockingQueue<>(new LinkedBlockingQueue<>());
     private static final ConcurrentSkipListMap<Long, AlertEventJob> inQueueAlertMap = new ConcurrentSkipListMap<>();
     private static AlertEventMapper alertEventMapper;
+    private static final Semaphore semaphore = new Semaphore(5);//最多5个线程处理事件
 
     @Autowired
     public AlertEventManager(AlertEventMapper _alertEventMapper) {
@@ -60,6 +62,7 @@ public class AlertEventManager {
                     try {
                         alertEventJob = eventHandlerQueue.take();
                         if (alertEventJob != null && CollectionUtils.isNotEmpty(alertEventJob.getHandlerList())) {
+                            semaphore.acquire();
                             //把正在处理中的告警信息放入inQueueAlertMap，后续处理器在处理数据时在数据库查询不到可以从这里获取
                             inQueueAlertMap.put(alertEventJob.getAlertVo().getId(), alertEventJob);
                             CachedThreadPool.execute(alertEventJob);
@@ -123,6 +126,7 @@ public class AlertEventManager {
                 }
             } finally {
                 inQueueAlertMap.remove(alertVo.getId());
+                semaphore.release();
             }
         }
     }
