@@ -30,6 +30,18 @@
         where a.alert_id = #{value}
     </select>
 
+    <select id="getAlertUserByTeamId" parameterType="java.lang.String"
+            resultType="neatlogic.framework.alert.dto.AlertUserVo">
+        select b.uuid      as userId,
+               b.user_id   AS userAccount,
+               b.user_name AS userName,
+               b.phone     AS userPhone,
+               b.email     AS userEmail
+        from user_team a
+                 join user b on a.user_uuid = b.uuid
+        where a.team_uuid = #{value}
+    </select>
+
     <select id="getAlertUserByAlertId" parameterType="java.lang.Long"
             resultType="neatlogic.framework.alert.dto.AlertUserVo">
         select a.alert_id  AS alertId,

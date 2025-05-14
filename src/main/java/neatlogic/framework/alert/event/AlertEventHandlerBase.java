@@ -25,6 +25,7 @@ import neatlogic.framework.alert.exception.alertevent.AlertEventPluginDisabledEx
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
 import neatlogic.framework.transaction.util.TransactionUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,11 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
             //补充完整的处理人信息和处理组信息
             newAlertVo.setUserList(alertEventMapper.getAlertUserByAlertId(alertVo.getId()));
             newAlertVo.setTeamList(alertEventMapper.getAlertTeamByAlertId(alertVo.getId()));
+            if(CollectionUtils.isNotEmpty(newAlertVo.getTeamList())) {
+                for(AlertTeamVo team : newAlertVo.getTeamList()) {
+                    team.setUserList(alertEventMapper.getAlertUserByTeamId(team.getTeamUuid()));
+                }
+            }
             return newAlertVo;
         }
         return alertVo;

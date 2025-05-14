@@ -189,6 +189,31 @@ public class AlertAttr {
                     .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userPhone}\"<#if user_has_next>,</#if></#list>]"));
             attrList.add(new AlertAttrDefineVo().setName("const_userEmailList").setLabel("处理人邮箱")
                     .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userEmail}\"<#if user_has_next>,</#if></#list>]"));
+
+            attrList.add(new AlertAttrDefineVo().setName("const_teamUserEmailList").setLabel("处理组成员账号")
+                    .setFreemarkerSnippet("[" +
+                            "<#list DATA.const_teamList as team>" +
+                            "<#list team.userList?default([]) as user>" +
+                            "\"${user.userAccount}\"<#if !team?is_last || !user?is_last>,</#if>" +
+                            "</#list>" +
+                            "</#list>" +
+                            "]"));
+            attrList.add(new AlertAttrDefineVo().setName("const_teamUserPhoneList").setLabel("处理组成员电话")
+                    .setFreemarkerSnippet("[" +
+                            "<#list DATA.const_teamList as team>" +
+                            "<#list team.userList?default([]) as user>" +
+                            "\"${user.userPhone}\"<#if !team?is_last || !user?is_last>,</#if>" +
+                            "</#list>" +
+                            "</#list>" +
+                            "]"));
+            attrList.add(new AlertAttrDefineVo().setName("const_teamUserEmailList").setLabel("处理组成员邮箱")
+                    .setFreemarkerSnippet("[" +
+                            "<#list DATA.const_teamList as team>" +
+                            "<#list team.userList?default([]) as user>" +
+                            "\"${user.userEmail}\"<#if !team?is_last || !user?is_last>,</#if>" +
+                            "</#list>" +
+                            "</#list>" +
+                            "]"));
         }
         attrList.add(new AlertAttrDefineVo("const_teamList", "处理组", "userselect", new ArrayList<String>() {{
             this.add("like");

@@ -18,6 +18,7 @@
 package neatlogic.framework.alert.dto;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 public class AlertTeamVo implements Serializable {
@@ -26,6 +27,7 @@ public class AlertTeamVo implements Serializable {
     private String teamName;
     private String teamEmail;
     private String teamPhone;
+    private List<AlertUserVo> userList;
 
     @Override
     public boolean equals(Object o) {
@@ -77,5 +79,13 @@ public class AlertTeamVo implements Serializable {
 
     public void setTeamPhone(String teamPhone) {
         this.teamPhone = teamPhone;
+    }
+
+    public List<AlertUserVo> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<AlertUserVo> userList) {
+        this.userList = userList;
     }
 }
