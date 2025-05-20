@@ -214,6 +214,14 @@ public class AlertAttr {
                             "</#list>" +
                             "</#list>" +
                             "]"));
+            attrList.add(new AlertAttrDefineVo().setName("const_teamUserEmailList").setLabel("处理组成员名称")
+                    .setFreemarkerSnippet("[" +
+                            "<#list DATA.const_teamList as team>" +
+                            "<#list team.userList?default([]) as user>" +
+                            "\"${user.userName}\"<#if !team?is_last || !user?is_last>,</#if>" +
+                            "</#list>" +
+                            "</#list>" +
+                            "]"));
         }
         attrList.add(new AlertAttrDefineVo("const_teamList", "处理组", "userselect", new ArrayList<String>() {{
             this.add("like");
