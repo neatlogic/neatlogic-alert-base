@@ -134,6 +134,10 @@ public class AlertVo extends BasePageVo {
     private List<String> userIdList;
     @EntityField(name = "处理组uuid列表", type = ApiParamType.JSONARRAY)
     private List<String> teamIdList;
+    @JSONField(serialize = false)//删除批次，用于避免重复触发后台删除
+    private Long deleteBatch;
+    @JSONField(serialize = false)//搜索模式，决定是否按照fromAlertId来做过滤
+    private String searchMode;
 
     public void addTeam(AlertTeamVo team) {
         if (teamList == null) {
@@ -142,6 +146,22 @@ public class AlertVo extends BasePageVo {
         if (!teamList.contains(team)) {
             teamList.add(team);
         }
+    }
+
+    public Long getDeleteBatch() {
+        return deleteBatch;
+    }
+
+    public String getSearchMode() {
+        return searchMode;
+    }
+
+    public void setSearchMode(String searchMode) {
+        this.searchMode = searchMode;
+    }
+
+    public void setDeleteBatch(Long deleteBatch) {
+        this.deleteBatch = deleteBatch;
     }
 
     public List<AlertAttrFilterVo> getAttrFilterList() {
