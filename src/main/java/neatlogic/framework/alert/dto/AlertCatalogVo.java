@@ -17,36 +17,32 @@
 
 package neatlogic.framework.alert.dto;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BaseEditorVo;
 import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.SnowflakeUtil;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlertViewVo extends BaseEditorVo {
+public class AlertCatalogVo extends BaseEditorVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
     private Long id;
-    @EntityField(name = "唯一标识", type = ApiParamType.STRING)
-    private String name;
     @EntityField(name = "名称", type = ApiParamType.STRING)
-    private String label;
+    private String name;
     @EntityField(name = "是否激活", type = ApiParamType.INTEGER)
     private Integer isActive;
-    @EntityField(name = "配置", type = ApiParamType.JSONOBJECT)
-    private JSONObject config;
-    @JSONField(serialize = false)
-    private String configStr;
     @EntityField(name = "授权uuid列表", type = ApiParamType.JSONARRAY)
     private List<String> authList;
     @EntityField(name = "授权列表", type = ApiParamType.JSONARRAY)
-    private List<AlertViewAuthVo> alertViewAuthList;
+    private List<AlertCatalogAuthVo> alertCatalogAuthList;
+    @EntityField(name = "排序", type = ApiParamType.INTEGER)
+    private int sort;
+    @EntityField(name = "视图列表", type = ApiParamType.JSONARRAY)
+    private List<AlertViewVo> viewList;
+
     @JSONField(serialize = false)
     private String userId;
     @JSONField(serialize = false)
@@ -55,24 +51,12 @@ public class AlertViewVo extends BaseEditorVo {
     private List<String> roleUuidList;
     @JSONField(serialize = false)
     private boolean isAdmin = false;
-    @EntityField(name = "目录id", type = ApiParamType.LONG)
-    private Long catalogId;
-    @EntityField(name = "排序", type = ApiParamType.INTEGER)
-    private int sort;
 
     public Long getId() {
         if (id == null) {
             id = SnowflakeUtil.uniqueLong();
         }
         return id;
-    }
-
-    public int getSort() {
-        return sort;
-    }
-
-    public void setSort(int sort) {
-        this.sort = sort;
     }
 
     public void setId(Long id) {
@@ -87,20 +71,12 @@ public class AlertViewVo extends BaseEditorVo {
         this.name = name;
     }
 
-    public Long getCatalogId() {
-        return catalogId;
+    public int getSort() {
+        return sort;
     }
 
-    public void setCatalogId(Long catalogId) {
-        this.catalogId = catalogId;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
+    public void setSort(int sort) {
+        this.sort = sort;
     }
 
     public Integer getIsActive() {
@@ -111,36 +87,18 @@ public class AlertViewVo extends BaseEditorVo {
         this.isActive = isActive;
     }
 
-    public JSONObject getConfig() {
-        if (config == null && StringUtils.isNotBlank(configStr)) {
-            try {
-                config = JSON.parseObject(configStr);
-            } catch (Exception ignored) {
-
-            }
-        }
-        return config;
+    public List<AlertViewVo> getViewList() {
+        return viewList;
     }
 
-    public void setConfig(JSONObject config) {
-        this.config = config;
-    }
-
-    public String getConfigStr() {
-        if (config != null) {
-            configStr = JSON.toJSONString(config);
-        }
-        return configStr;
-    }
-
-    public void setConfigStr(String configStr) {
-        this.configStr = configStr;
+    public void setViewList(List<AlertViewVo> viewList) {
+        this.viewList = viewList;
     }
 
     public List<String> getAuthList() {
-        if (authList == null && alertViewAuthList != null) {
+        if (authList == null && alertCatalogAuthList != null) {
             authList = new ArrayList<>();
-            for (AlertViewAuthVo authVo : alertViewAuthList) {
+            for (AlertCatalogAuthVo authVo : alertCatalogAuthList) {
                 authList.add(authVo.getAuthType() + "#" + authVo.getAuthUuid());
             }
         }
@@ -151,22 +109,22 @@ public class AlertViewVo extends BaseEditorVo {
         this.authList = authList;
     }
 
-    public List<AlertViewAuthVo> getAlertViewAuthList() {
-        if (alertViewAuthList == null && authList != null) {
-            alertViewAuthList = new ArrayList<>();
+    public List<AlertCatalogAuthVo> getAlertCatalogAuthList() {
+        if (alertCatalogAuthList == null && authList != null) {
+            alertCatalogAuthList = new ArrayList<>();
             for (String auth : authList) {
-                AlertViewAuthVo authVo = new AlertViewAuthVo();
-                authVo.setViewId(this.id);
+                AlertCatalogAuthVo authVo = new AlertCatalogAuthVo();
+                authVo.setCatalogId(this.id);
                 authVo.setAuthType(auth.split("#")[0]);
                 authVo.setAuthUuid(auth.split("#")[1]);
-                alertViewAuthList.add(authVo);
+                alertCatalogAuthList.add(authVo);
             }
         }
-        return alertViewAuthList;
+        return alertCatalogAuthList;
     }
 
-    public void setAlertViewAuthList(List<AlertViewAuthVo> alertViewAuthList) {
-        this.alertViewAuthList = alertViewAuthList;
+    public void setAlertCatalogAuthList(List<AlertCatalogAuthVo> alertCatalogAuthList) {
+        this.alertCatalogAuthList = alertCatalogAuthList;
     }
 
     public String getUserId() {
@@ -176,7 +134,6 @@ public class AlertViewVo extends BaseEditorVo {
     public List<String> getTeamUuidList() {
         return UserContext.get().getTeamUuidList();
     }
-
 
     public List<String> getRoleUuidList() {
         return UserContext.get().getRoleUuidList();

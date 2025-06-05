@@ -22,20 +22,20 @@ import neatlogic.framework.restful.annotation.EntityField;
 
 import java.io.Serializable;
 
-public class AlertViewAuthVo implements Serializable {
-    @EntityField(name = "视图id", type = ApiParamType.LONG)
-    private Long viewId;
+public class AlertCatalogAuthVo implements Serializable {
+    @EntityField(name = "目录id", type = ApiParamType.LONG)
+    private Long catalogId;
     @EntityField(name = "授权类型", type = ApiParamType.STRING)
     private String authType;
     @EntityField(name = "授权UUID", type = ApiParamType.STRING)
     private String authUuid;
 
-    public Long getViewId() {
-        return viewId;
+    public Long getCatalogId() {
+        return catalogId;
     }
 
-    public void setViewId(Long viewId) {
-        this.viewId = viewId;
+    public void setCatalogId(Long catalogId) {
+        this.catalogId = catalogId;
     }
 
     public String getAuthType() {
