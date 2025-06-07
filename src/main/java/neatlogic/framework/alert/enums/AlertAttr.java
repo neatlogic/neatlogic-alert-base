@@ -140,6 +140,8 @@ public class AlertAttr {
         }
         attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间", "datetime", new ArrayList<String>() {{
             this.add("range");
+            this.add("inworktime");
+            this.add("outworktime");
             this.add("is-null");
             this.add("is-not-null");
         }}, new JSONObject() {{
