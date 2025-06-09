@@ -52,6 +52,7 @@ public class AlertEventManager {
         alertEventMapper = _alertEventMapper;
     }
 
+
     @PostConstruct
     public void init() {
         Thread t = new Thread(new NeatLogicThread("ALERT-EVENT-HANDLER") {
@@ -130,6 +131,14 @@ public class AlertEventManager {
             }
         }
     }
+
+    /*public static void doEvent(List<AlertEventHandlerVo> handlerList, AlertVo alertVo) {
+        if (CollectionUtils.isNotEmpty(handlerList)) {
+            List<List<AlertEventHandlerVo>> eventHandlerList = new ArrayList<>();
+            eventHandlerList.add(handlerList);
+            eventHandlerQueue.offer(new AlertEventJob(eventHandlerList, alertVo));
+        }
+    }*/
 
 
     public static void doEvent(AlertEventType alertEventType, AlertVo alertVo) {
