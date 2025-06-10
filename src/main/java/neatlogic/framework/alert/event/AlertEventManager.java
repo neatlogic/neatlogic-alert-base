@@ -23,12 +23,12 @@ import neatlogic.framework.alert.dto.AlertVo;
 import neatlogic.framework.asynchronization.queue.NeatLogicBlockingQueue;
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
-import neatlogic.framework.common.RootComponent;
 import neatlogic.framework.transaction.core.AfterTransactionJob;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
-@RootComponent
+@Service
 public class AlertEventManager {
     private static final Logger logger = LoggerFactory.getLogger(AlertEventManager.class.getName());
     private static final NeatLogicBlockingQueue<AlertEventJob> eventHandlerQueue = new NeatLogicBlockingQueue<>(new LinkedBlockingQueue<>());
