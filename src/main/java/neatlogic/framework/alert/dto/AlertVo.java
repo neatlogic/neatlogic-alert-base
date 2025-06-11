@@ -138,6 +138,8 @@ public class AlertVo extends BasePageVo {
     private Long deleteBatch;
     @JSONField(serialize = false)//搜索模式，决定是否按照fromAlertId来做过滤
     private String searchMode;
+    @JSONField(serialize = false)//用于存放上一个事件执行的结果
+    private Object prevEventResult;
 
     public void addTeam(AlertTeamVo team) {
         if (teamList == null) {
@@ -146,6 +148,14 @@ public class AlertVo extends BasePageVo {
         if (!teamList.contains(team)) {
             teamList.add(team);
         }
+    }
+
+    public Object getPrevEventResult() {
+        return prevEventResult;
+    }
+
+    public void setPrevEventResult(Object prevEventResult) {
+        this.prevEventResult = prevEventResult;
     }
 
     public Long getDeleteBatch() {

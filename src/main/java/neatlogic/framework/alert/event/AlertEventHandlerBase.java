@@ -51,6 +51,8 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                     team.setUserList(alertEventMapper.getAlertUserByTeamId(team.getTeamUuid()));
                 }
             }
+            //传递上一个事件的执行结果
+            newAlertVo.setPrevEventResult(alertVo.getPrevEventResult());
             return newAlertVo;
         }
         return alertVo;
@@ -135,7 +137,10 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                         if (alertEventStatusVo.isSkipped()) {
                             alertEventHandlerAuditVo.setStatus(AlertEventStatus.SKIPPED.getValue());
                         } else {
-                            alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+                            //如果审计记录状态不是RUNNING，代表已经在插件内部被修改，这里不再设置状态，以插件修改状态为准
+                            if (Objects.equals(alertEventHandlerAuditVo.getStatus(), AlertEventStatus.RUNNING.getValue())) {
+                                alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+                            }
                         }
                     } catch (Exception e) {
                         TransactionUtil.rollbackTx(ts);
