@@ -170,7 +170,24 @@ public class AlertAttr {
                     .setLabel("更新时间（文本）")
                     .setFreemarkerSnippet("${DATA.const_updateTimeStr}"));
         }
-        attrList.add(new AlertAttrDefineVo("const_source", "来源").setFreemarkerSnippet("${DATA.const_source}"));
+        attrList.add(new AlertAttrDefineVo("const_source", "来源")
+                .setType("select")
+                .setExpressionList(new ArrayList<String>() {{
+                    this.add("like");
+                    this.add("notlike");
+                    this.add("is-null");
+                    this.add("is-not-null");
+                }})
+                .setConfig(
+                        new JSONObject() {{
+                            this.put("transfer", true);
+                            this.put("dynamicUrl", "/api/rest/alert/source/search");
+                            this.put("rootName", "tbodyList");
+                            this.put("valueName", "name");
+                            this.put("textName", "label");
+                        }}
+                )
+                .setFreemarkerSnippet("${DATA.const_source}"));
         attrList.add(new AlertAttrDefineVo("const_userList", "处理人", "userselect", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");

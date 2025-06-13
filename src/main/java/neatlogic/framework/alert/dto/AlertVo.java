@@ -57,6 +57,8 @@ public class AlertVo extends BasePageVo {
     private String typeName;
     @EntityField(name = "来源", type = ApiParamType.STRING)
     private String source;
+    @EntityField(name = "来源名称", type = ApiParamType.STRING)
+    private String sourceName;
     @EntityField(name = "状态", type = ApiParamType.STRING)
     private String status;
     @EntityField(name = "状态名称", type = ApiParamType.STRING)
@@ -99,8 +101,6 @@ public class AlertVo extends BasePageVo {
     private String viewName;//视图唯一标识
     @JSONField(serialize = false)
     private JSONObject rule;//高级搜索条件
-    @JSONField(serialize = false)
-    private String mode = "simple";//搜索模式
     @EntityField(name = "告警级别", type = ApiParamType.JSONOBJECT)
     private AlertLevelVo alertLevel;
     @EntityField(name = "告警类型", type = ApiParamType.JSONOBJECT)
@@ -164,6 +164,14 @@ public class AlertVo extends BasePageVo {
 
     public String getSearchMode() {
         return searchMode;
+    }
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
     }
 
     public void setSearchMode(String searchMode) {
@@ -374,9 +382,6 @@ public class AlertVo extends BasePageVo {
         this.rule = rule;
     }
 
-    public String getMode() {
-        return mode;
-    }
 
     public AlertTypeVo getAlertType() {
         return alertType;
@@ -394,9 +399,6 @@ public class AlertVo extends BasePageVo {
         this.statusName = statusName;
     }
 
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
 
     public Long getId() {
         if (id == null) {
