@@ -66,6 +66,8 @@ public class AlertEventHandlerVo implements Serializable {
     private String configStr;
     @EntityField(name = "子节点", type = ApiParamType.JSONARRAY)
     private List<AlertEventHandlerVo> handlerList;
+    @EntityField(name = "是否异步插件", type = ApiParamType.BOOLEAN)
+    private boolean isAsync;
 
     @Override
     public boolean equals(Object o) {
@@ -78,6 +80,16 @@ public class AlertEventHandlerVo implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hashCode(uuid);
+    }
+
+    public boolean getIsAsync() {
+        if (StringUtils.isNotBlank(handler)) {
+            IAlertEventHandler h = AlertEventHandlerFactory.getHandler(handler);
+            if (h != null) {
+                isAsync = h.isAsync();
+            }
+        }
+        return isAsync;
     }
 
     public void addHandler(AlertEventHandlerVo handler) {
