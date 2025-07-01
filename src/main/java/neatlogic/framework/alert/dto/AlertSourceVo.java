@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024  深圳极向量科技有限公司 All Rights Reserved.
+ * Copyright (C) 2025  深圳极向量科技有限公司 All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,39 +18,28 @@
 package neatlogic.framework.alert.dto;
 
 import neatlogic.framework.common.constvalue.ApiParamType;
+import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.restful.annotation.EntityField;
 
-import java.io.Serializable;
+public class AlertSourceVo extends BasePageVo {
+    @EntityField(name = "唯一标识", type = ApiParamType.STRING)
+    private String name;
+    @EntityField(name = "名称", type = ApiParamType.STRING)
+    private String label;
 
-public class AlertViewAuthVo implements Serializable {
-    @EntityField(name = "视图id", type = ApiParamType.LONG)
-    private Long viewId;
-    @EntityField(name = "授权类型", type = ApiParamType.STRING)
-    private String authType;
-    @EntityField(name = "授权UUID", type = ApiParamType.STRING)
-    private String authUuid;
-
-    public Long getViewId() {
-        return viewId;
+    public String getName() {
+        return name;
     }
 
-    public void setViewId(Long viewId) {
-        this.viewId = viewId;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getAuthType() {
-        return authType;
+    public String getLabel() {
+        return label;
     }
 
-    public void setAuthType(String authType) {
-        this.authType = authType;
-    }
-
-    public String getAuthUuid() {
-        return authUuid;
-    }
-
-    public void setAuthUuid(String authUuid) {
-        this.authUuid = authUuid;
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

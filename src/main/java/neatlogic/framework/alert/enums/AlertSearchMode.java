@@ -15,17 +15,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.framework.alert.enums;
 
-import neatlogic.framework.util.$;
-
-public enum AlertOriginStatus {
-    IGNORED("ignored", "已忽略"),
-    SUCCEED("succeed", "上报成功"),
-    FAILED("failed", "上报失败");
+public enum AlertSearchMode {
+    TREE("tree", "树型模式"),
+    FLAT("flat", "扁平模式");
 
     private final String value;
     private final String text;
 
-    AlertOriginStatus(String _value, String _text) {
+    AlertSearchMode(String _value, String _text) {
         this.value = _value;
         this.text = _text;
     }
@@ -35,13 +32,22 @@ public enum AlertOriginStatus {
     }
 
     public String getText() {
-        return $.t(text);
+        return text;
     }
 
 
-    public static String getText(String name) {
-        for (AlertOriginStatus s : AlertOriginStatus.values()) {
-            if (s.getValue().equals(name)) {
+    public static String getValue(String _status) {
+        for (AlertSearchMode s : AlertSearchMode.values()) {
+            if (s.getValue().equals(_status)) {
+                return s.getValue();
+            }
+        }
+        return null;
+    }
+
+    public static String getText(String _value) {
+        for (AlertSearchMode s : AlertSearchMode.values()) {
+            if (s.getValue().equals(_value)) {
                 return s.getText();
             }
         }

@@ -25,6 +25,7 @@ import neatlogic.framework.alert.exception.alertevent.AlertEventPluginDisabledEx
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
 import neatlogic.framework.transaction.util.TransactionUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,13 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
             //补充完整的处理人信息和处理组信息
             newAlertVo.setUserList(alertEventMapper.getAlertUserByAlertId(alertVo.getId()));
             newAlertVo.setTeamList(alertEventMapper.getAlertTeamByAlertId(alertVo.getId()));
+            if (CollectionUtils.isNotEmpty(newAlertVo.getTeamList())) {
+                for (AlertTeamVo team : newAlertVo.getTeamList()) {
+                    team.setUserList(alertEventMapper.getAlertUserByTeamId(team.getTeamUuid()));
+                }
+            }
+            //传递上一个事件的执行结果
+            newAlertVo.setPrevEventResult(alertVo.getPrevEventResult());
             return newAlertVo;
         }
         return alertVo;
@@ -99,7 +107,10 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                 if (alertEventStatusVo.isSkipped()) {
                     alertEventHandlerAuditVo.setStatus(AlertEventStatus.SKIPPED.getValue());
                 } else {
-                    alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+                    //如果审计记录状态不是RUNNING，代表已经在插件内部被修改，这里不再设置状态，以插件修改状态为准
+                    if (Objects.equals(alertEventHandlerAuditVo.getStatus(), AlertEventStatus.RUNNING.getValue())) {
+                        alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+                    }
                 }
             } catch (Exception e) {
                 TransactionUtil.rollbackTx(ts);
@@ -126,11 +137,14 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                         if (alertEventStatusVo.isSkipped()) {
                             alertEventHandlerAuditVo.setStatus(AlertEventStatus.SKIPPED.getValue());
                         } else {
-                            alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+                            //如果审计记录状态不是RUNNING，代表已经在插件内部被修改，这里不再设置状态，以插件修改状态为准
+                            if (Objects.equals(alertEventHandlerAuditVo.getStatus(), AlertEventStatus.RUNNING.getValue())) {
+                                alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+                            }
                         }
                     } catch (Exception e) {
                         TransactionUtil.rollbackTx(ts);
-                        logger.error(e.getMessage(), e);
+                        logger.warn(e.getMessage(), e);
                         alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
                         alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
                         throw e; // 抛出异常以便上层处理

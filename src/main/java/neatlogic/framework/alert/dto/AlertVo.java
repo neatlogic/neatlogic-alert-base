@@ -57,6 +57,8 @@ public class AlertVo extends BasePageVo {
     private String typeName;
     @EntityField(name = "来源", type = ApiParamType.STRING)
     private String source;
+    @EntityField(name = "来源名称", type = ApiParamType.STRING)
+    private String sourceName;
     @EntityField(name = "状态", type = ApiParamType.STRING)
     private String status;
     @EntityField(name = "状态名称", type = ApiParamType.STRING)
@@ -77,6 +79,8 @@ public class AlertVo extends BasePageVo {
     private int isClose = 0;
     @EntityField(name = "是否关闭文案", type = ApiParamType.STRING)
     private String isCloseName;
+    @EntityField(name = "是否删除中", type = ApiParamType.INTEGER)
+    private int isDelete = 0;
     @EntityField(name = "扩展属性", type = ApiParamType.JSONOBJECT)
     private JSONObject attrObj;
     @JSONField(serialize = false)
@@ -97,8 +101,6 @@ public class AlertVo extends BasePageVo {
     private String viewName;//视图唯一标识
     @JSONField(serialize = false)
     private JSONObject rule;//高级搜索条件
-    @JSONField(serialize = false)
-    private String mode = "simple";//搜索模式
     @EntityField(name = "告警级别", type = ApiParamType.JSONOBJECT)
     private AlertLevelVo alertLevel;
     @EntityField(name = "告警类型", type = ApiParamType.JSONOBJECT)
@@ -132,6 +134,12 @@ public class AlertVo extends BasePageVo {
     private List<String> userIdList;
     @EntityField(name = "处理组uuid列表", type = ApiParamType.JSONARRAY)
     private List<String> teamIdList;
+    @JSONField(serialize = false)//删除批次，用于避免重复触发后台删除
+    private Long deleteBatch;
+    @JSONField(serialize = false)//搜索模式，决定是否按照fromAlertId来做过滤
+    private String searchMode;
+    @JSONField(serialize = false)//用于存放上一个事件执行的结果
+    private Object prevEventResult;
 
     public void addTeam(AlertTeamVo team) {
         if (teamList == null) {
@@ -140,6 +148,38 @@ public class AlertVo extends BasePageVo {
         if (!teamList.contains(team)) {
             teamList.add(team);
         }
+    }
+
+    public Object getPrevEventResult() {
+        return prevEventResult;
+    }
+
+    public void setPrevEventResult(Object prevEventResult) {
+        this.prevEventResult = prevEventResult;
+    }
+
+    public Long getDeleteBatch() {
+        return deleteBatch;
+    }
+
+    public String getSearchMode() {
+        return searchMode;
+    }
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
+    }
+
+    public void setSearchMode(String searchMode) {
+        this.searchMode = searchMode;
+    }
+
+    public void setDeleteBatch(Long deleteBatch) {
+        this.deleteBatch = deleteBatch;
     }
 
     public List<AlertAttrFilterVo> getAttrFilterList() {
@@ -326,6 +366,14 @@ public class AlertVo extends BasePageVo {
         this.childAlertCount = childAlertCount;
     }
 
+    public int getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(int isDelete) {
+        this.isDelete = isDelete;
+    }
+
     public JSONObject getRule() {
         return rule;
     }
@@ -334,9 +382,6 @@ public class AlertVo extends BasePageVo {
         this.rule = rule;
     }
 
-    public String getMode() {
-        return mode;
-    }
 
     public AlertTypeVo getAlertType() {
         return alertType;
@@ -354,9 +399,6 @@ public class AlertVo extends BasePageVo {
         this.statusName = statusName;
     }
 
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
 
     public Long getId() {
         if (id == null) {

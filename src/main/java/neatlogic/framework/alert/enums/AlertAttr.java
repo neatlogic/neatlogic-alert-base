@@ -140,6 +140,8 @@ public class AlertAttr {
         }
         attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间", "datetime", new ArrayList<String>() {{
             this.add("range");
+            this.add("inworktime");
+            this.add("outworktime");
             this.add("is-null");
             this.add("is-not-null");
         }}, new JSONObject() {{
@@ -168,7 +170,24 @@ public class AlertAttr {
                     .setLabel("更新时间（文本）")
                     .setFreemarkerSnippet("${DATA.const_updateTimeStr}"));
         }
-        attrList.add(new AlertAttrDefineVo("const_source", "来源").setFreemarkerSnippet("${DATA.const_source}"));
+        attrList.add(new AlertAttrDefineVo("const_source", "来源")
+                .setType("select")
+                .setExpressionList(new ArrayList<String>() {{
+                    this.add("like");
+                    this.add("notlike");
+                    this.add("is-null");
+                    this.add("is-not-null");
+                }})
+                .setConfig(
+                        new JSONObject() {{
+                            this.put("transfer", true);
+                            this.put("dynamicUrl", "/api/rest/alert/source/search");
+                            this.put("rootName", "tbodyList");
+                            this.put("valueName", "name");
+                            this.put("textName", "label");
+                        }}
+                )
+                .setFreemarkerSnippet("${DATA.const_source}"));
         attrList.add(new AlertAttrDefineVo("const_userList", "处理人", "userselect", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
@@ -189,6 +208,39 @@ public class AlertAttr {
                     .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userPhone}\"<#if user_has_next>,</#if></#list>]"));
             attrList.add(new AlertAttrDefineVo().setName("const_userEmailList").setLabel("处理人邮箱")
                     .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userEmail}\"<#if user_has_next>,</#if></#list>]"));
+
+            attrList.add(new AlertAttrDefineVo().setName("const_teamUserEmailList").setLabel("处理组成员账号")
+                    .setFreemarkerSnippet("[" +
+                            "<#list DATA.const_teamList as team>" +
+                            "<#list team.userList?default([]) as user>" +
+                            "\"${user.userAccount}\"<#if !team?is_last || !user?is_last>,</#if>" +
+                            "</#list>" +
+                            "</#list>" +
+                            "]"));
+            attrList.add(new AlertAttrDefineVo().setName("const_teamUserPhoneList").setLabel("处理组成员电话")
+                    .setFreemarkerSnippet("[" +
+                            "<#list DATA.const_teamList as team>" +
+                            "<#list team.userList?default([]) as user>" +
+                            "\"${user.userPhone}\"<#if !team?is_last || !user?is_last>,</#if>" +
+                            "</#list>" +
+                            "</#list>" +
+                            "]"));
+            attrList.add(new AlertAttrDefineVo().setName("const_teamUserEmailList").setLabel("处理组成员邮箱")
+                    .setFreemarkerSnippet("[" +
+                            "<#list DATA.const_teamList as team>" +
+                            "<#list team.userList?default([]) as user>" +
+                            "\"${user.userEmail}\"<#if !team?is_last || !user?is_last>,</#if>" +
+                            "</#list>" +
+                            "</#list>" +
+                            "]"));
+            attrList.add(new AlertAttrDefineVo().setName("const_teamUserEmailList").setLabel("处理组成员名称")
+                    .setFreemarkerSnippet("[" +
+                            "<#list DATA.const_teamList as team>" +
+                            "<#list team.userList?default([]) as user>" +
+                            "\"${user.userName}\"<#if !team?is_last || !user?is_last>,</#if>" +
+                            "</#list>" +
+                            "</#list>" +
+                            "]"));
         }
         attrList.add(new AlertAttrDefineVo("const_teamList", "处理组", "userselect", new ArrayList<String>() {{
             this.add("like");

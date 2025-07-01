@@ -27,6 +27,8 @@ public interface AlertEventMapper {
 
     List<AlertTeamVo> getAlertTeamByAlertId(Long alertId);
 
+    List<AlertUserVo> getAlertUserByTeamId(String teamUuid);
+
     List<AlertUserVo> getAlertUserByAlertId(Long alertId);
 
     Integer getAlertEventExecuteCount(@Param("handler") String handler, @Param("miniSecond") Long miniSecond);

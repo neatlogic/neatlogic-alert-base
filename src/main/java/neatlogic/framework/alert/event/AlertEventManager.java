@@ -23,12 +23,12 @@ import neatlogic.framework.alert.dto.AlertVo;
 import neatlogic.framework.asynchronization.queue.NeatLogicBlockingQueue;
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
-import neatlogic.framework.common.RootComponent;
 import neatlogic.framework.transaction.core.AfterTransactionJob;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -36,19 +36,22 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
-@RootComponent
+@Service
 public class AlertEventManager {
     private static final Logger logger = LoggerFactory.getLogger(AlertEventManager.class.getName());
     private static final NeatLogicBlockingQueue<AlertEventJob> eventHandlerQueue = new NeatLogicBlockingQueue<>(new LinkedBlockingQueue<>());
     private static final ConcurrentSkipListMap<Long, AlertEventJob> inQueueAlertMap = new ConcurrentSkipListMap<>();
     private static AlertEventMapper alertEventMapper;
+    private static final Semaphore semaphore = new Semaphore(5);//最多5个线程处理事件
 
     @Autowired
     public AlertEventManager(AlertEventMapper _alertEventMapper) {
         alertEventMapper = _alertEventMapper;
     }
+
 
     @PostConstruct
     public void init() {
@@ -60,6 +63,7 @@ public class AlertEventManager {
                     try {
                         alertEventJob = eventHandlerQueue.take();
                         if (alertEventJob != null && CollectionUtils.isNotEmpty(alertEventJob.getHandlerList())) {
+                            semaphore.acquire();
                             //把正在处理中的告警信息放入inQueueAlertMap，后续处理器在处理数据时在数据库查询不到可以从这里获取
                             inQueueAlertMap.put(alertEventJob.getAlertVo().getId(), alertEventJob);
                             CachedThreadPool.execute(alertEventJob);
@@ -123,9 +127,18 @@ public class AlertEventManager {
                 }
             } finally {
                 inQueueAlertMap.remove(alertVo.getId());
+                semaphore.release();
             }
         }
     }
+
+    /*public static void doEvent(List<AlertEventHandlerVo> handlerList, AlertVo alertVo) {
+        if (CollectionUtils.isNotEmpty(handlerList)) {
+            List<List<AlertEventHandlerVo>> eventHandlerList = new ArrayList<>();
+            eventHandlerList.add(handlerList);
+            eventHandlerQueue.offer(new AlertEventJob(eventHandlerList, alertVo));
+        }
+    }*/
 
 
     public static void doEvent(AlertEventType alertEventType, AlertVo alertVo) {
