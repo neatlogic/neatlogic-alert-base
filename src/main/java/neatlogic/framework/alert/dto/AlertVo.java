@@ -150,6 +150,7 @@ public class AlertVo extends BasePageVo {
         }
     }
 
+
     public Object getPrevEventResult() {
         return prevEventResult;
     }
