@@ -23,7 +23,8 @@ import java.util.Map;
 
 public enum AlertUserType implements IUserType {
     WORKER("worker", "处理人", true),
-    WORKER_TEAM("workerteam", "处理组", true);
+    WORKER_TEAM("workerteam", "处理组", true),
+    WORKER_TEAM_USER("workerteamuser", "处理组成员", true);
 
     private final String value;
     private final String text;
@@ -41,6 +42,15 @@ public enum AlertUserType implements IUserType {
 
     public String getText() {
         return text;
+    }
+
+    public static AlertUserType get(String value) {
+        for (AlertUserType s : AlertUserType.values()) {
+            if (s.getValue().equals(value)) {
+                return s;
+            }
+        }
+        return null;
     }
 
     public boolean getIsShow() {
