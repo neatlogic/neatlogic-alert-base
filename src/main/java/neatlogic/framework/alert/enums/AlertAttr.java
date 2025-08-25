@@ -208,6 +208,10 @@ public class AlertAttr {
                     .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userPhone}\"<#if user_has_next>,</#if></#list>]"));
             attrList.add(new AlertAttrDefineVo().setName("const_userEmailList").setLabel("处理人邮箱")
                     .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userEmail}\"<#if user_has_next>,</#if></#list>]"));
+            attrList.add(new AlertAttrDefineVo().setName("const_userEmailList").setLabel("处理组邮箱")
+                    .setFreemarkerSnippet("[<#list DATA.const_teamList as team>\"${team.teamEmail}\"<#if team_has_next>,</#if></#list>]"));
+            attrList.add(new AlertAttrDefineVo().setName("const_userEmailList").setLabel("处理组电话")
+                    .setFreemarkerSnippet("[<#list DATA.const_teamList as team>\"${team.teamPhone}\"<#if team_has_next>,</#if></#list>]"));
 
             attrList.add(new AlertAttrDefineVo().setName("const_teamUserEmailList").setLabel("处理组成员账号")
                     .setFreemarkerSnippet("[" +
