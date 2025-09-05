@@ -20,10 +20,10 @@ package neatlogic.framework.alert.dto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.restful.annotation.EntityField;
-import neatlogic.framework.util.Md5Util;
 import neatlogic.framework.util.SnowflakeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,13 +34,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AlertVo extends BasePageVo {
+public class AlertTrashVo extends BasePageVo {
     @EntityField(name = "id", type = ApiParamType.LONG)
     private Long id;
     @JSONField(serialize = false)
     private List<Long> idList;
     @JSONField(serialize = false)//父告警
-    private AlertVo parentAlertVo;
+    private AlertTrashVo parentAlertVo;
     @EntityField(name = "来源告警id", type = ApiParamType.LONG)
     private Long fromAlertId;
     @EntityField(name = "唯一值", type = ApiParamType.STRING)
@@ -69,6 +69,8 @@ public class AlertVo extends BasePageVo {
     private String statusStatus;
     @EntityField(name = "更新时间", type = ApiParamType.LONG)
     private Date updateTime;
+    @EntityField(name = "删除时间", type = ApiParamType.LONG)
+    private Date deleteTime;
     @EntityField(name = "更新时间文本", type = ApiParamType.STRING)
     private String updateTimeStr;
     @EntityField(name = "创建时间", type = ApiParamType.LONG)
@@ -85,14 +87,6 @@ public class AlertVo extends BasePageVo {
     private JSONObject attrObj;
     @JSONField(serialize = false)
     private String attrObjStr;
-    /*@EntityField(name = "对象类型", type = ApiParamType.STRING)
-    private String entityType;
-    @EntityField(name = "对象名称", type = ApiParamType.STRING)
-    private String entityName;
-    @EntityField(name = "IP", type = ApiParamType.STRING)
-    private String ip;
-    @EntityField(name = "端口", type = ApiParamType.STRING)
-    private String port;*/
     @EntityField(name = "处理人", type = ApiParamType.JSONARRAY)
     private List<AlertUserVo> userList;
     @EntityField(name = "处理组", type = ApiParamType.JSONARRAY)
@@ -111,10 +105,6 @@ public class AlertVo extends BasePageVo {
     private int childAlertCount;
     @EntityField(name = "评论", type = ApiParamType.STRING)
     private String comment;
-    @JSONField(serialize = false)
-    private Integer isChangeChildAlertStatus;
-    @JSONField(serialize = false)
-    private Integer isCloseChildAlert;
     @EntityField(name = "评论列表", type = ApiParamType.JSONARRAY)
     private List<AlertCommentVo> commentList;
     @JSONField(serialize = false)
@@ -126,20 +116,37 @@ public class AlertVo extends BasePageVo {
     @JSONField(serialize = false)
     private List<String> applyTeamList;
     @JSONField(serialize = false)
-    private AlertVo fromAlertVo;
+    private AlertTrashVo fromAlertVo;
     @JSONField(serialize = false)
     private int updateTimeHour;//搜索条件
+    @JSONField(serialize = false)
+    private int deleteTimeHour;//搜索条件
     private List<AlertAttrFilterVo> attrFilterList;
     @EntityField(name = "处理人uuid列表", type = ApiParamType.JSONARRAY)
     private List<String> userIdList;
     @EntityField(name = "处理组uuid列表", type = ApiParamType.JSONARRAY)
     private List<String> teamIdList;
-    @JSONField(serialize = false)//删除批次，用于避免重复触发后台删除
-    private Long deleteBatch;
-    @JSONField(serialize = false)//搜索模式，决定是否按照fromAlertId来做过滤
-    private String searchMode;
-    @JSONField(serialize = false)//用于存放上一个事件执行的结果
-    private Object prevEventResult;
+    @EntityField(name = "删除用户uuid", type = ApiParamType.STRING)
+    private String deleteUser;
+
+    public AlertTrashVo() {
+
+    }
+
+    public AlertTrashVo(AlertVo alertVo) {
+        this.id = alertVo.getId();
+        this.title = alertVo.getTitle();
+        this.level = alertVo.getLevel();
+        this.updateTime = alertVo.getUpdateTime();
+        this.alertTime = alertVo.getAlertTime();
+        this.type = alertVo.getType();
+        this.source = alertVo.getSource();
+        this.status = alertVo.getStatus();
+        this.isClose = alertVo.getIsClose();
+        this.uniqueKey = alertVo.getUniqueKey();
+        this.attrObj = alertVo.getAttrObj();
+        this.deleteUser = UserContext.get().getUserUuid();
+    }
 
     public void addTeam(AlertTeamVo team) {
         if (teamList == null) {
@@ -150,21 +157,12 @@ public class AlertVo extends BasePageVo {
         }
     }
 
-
-    public Object getPrevEventResult() {
-        return prevEventResult;
+    public String getDeleteUser() {
+        return deleteUser;
     }
 
-    public void setPrevEventResult(Object prevEventResult) {
-        this.prevEventResult = prevEventResult;
-    }
-
-    public Long getDeleteBatch() {
-        return deleteBatch;
-    }
-
-    public String getSearchMode() {
-        return searchMode;
+    public void setDeleteUser(String deleteUser) {
+        this.deleteUser = deleteUser;
     }
 
     public String getSourceName() {
@@ -175,13 +173,6 @@ public class AlertVo extends BasePageVo {
         this.sourceName = sourceName;
     }
 
-    public void setSearchMode(String searchMode) {
-        this.searchMode = searchMode;
-    }
-
-    public void setDeleteBatch(Long deleteBatch) {
-        this.deleteBatch = deleteBatch;
-    }
 
     public List<AlertAttrFilterVo> getAttrFilterList() {
         return attrFilterList;
@@ -204,6 +195,10 @@ public class AlertVo extends BasePageVo {
         return updateTimeHour;
     }
 
+    public int getDeleteTimeHour() {
+        return deleteTimeHour;
+    }
+
     public String getLevelLabel() {
         if (levelLabel == null && alertLevel != null) {
             levelLabel = alertLevel.getLabel();
@@ -211,24 +206,31 @@ public class AlertVo extends BasePageVo {
         return levelLabel;
     }
 
+    public Date getDeleteTime() {
+        return deleteTime;
+    }
+
+    public void setDeleteTime(Date deleteTime) {
+        this.deleteTime = deleteTime;
+    }
 
     public void setUpdateTimeHour(int updateTimeHour) {
         this.updateTimeHour = updateTimeHour;
     }
 
-    public AlertVo getParentAlertVo() {
+    public AlertTrashVo getParentAlertVo() {
         return parentAlertVo;
     }
 
-    public void setParentAlertVo(AlertVo parentAlertVo) {
+    public void setParentAlertVo(AlertTrashVo parentAlertVo) {
         this.parentAlertVo = parentAlertVo;
     }
 
-    public AlertVo getFromAlertVo() {
+    public AlertTrashVo getFromAlertVo() {
         return fromAlertVo;
     }
 
-    public void setFromAlertVo(AlertVo fromAlertVo) {
+    public void setFromAlertVo(AlertTrashVo fromAlertVo) {
         this.fromAlertVo = fromAlertVo;
     }
 
@@ -281,21 +283,6 @@ public class AlertVo extends BasePageVo {
         this.updateTime = updateTime;
     }
 
-    public Integer getIsChangeChildAlertStatus() {
-        return isChangeChildAlertStatus;
-    }
-
-    public void setIsChangeChildAlertStatus(Integer isChangeChildAlertStatus) {
-        this.isChangeChildAlertStatus = isChangeChildAlertStatus;
-    }
-
-    public Integer getIsCloseChildAlert() {
-        return isCloseChildAlert;
-    }
-
-    public void setIsCloseChildAlert(Integer isCloseChildAlert) {
-        this.isCloseChildAlert = isCloseChildAlert;
-    }
 
     public List<AlertCommentVo> getCommentList() {
         return commentList;
@@ -523,27 +510,6 @@ public class AlertVo extends BasePageVo {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public void generateUniqueKey() {
-        String c = "";
-        if (StringUtils.isNotBlank(this.title)) {
-            c += this.title + "_";
-        }
-        /*if (StringUtils.isNotBlank(this.ip)) {
-            c += this.ip + "_";
-        }
-        if (StringUtils.isNotBlank(this.port)) {
-            c += this.port + "_";
-        }
-        if (StringUtils.isNotBlank(this.entityType)) {
-            c += this.entityType + "_";
-        }
-        if (StringUtils.isNotBlank(this.entityName)) {
-            c += this.entityName + "_";
-        }*/
-        c += this.level;
-        this.uniqueKey = Md5Util.encryptMD5(c);
     }
 
     public Date getAlertTime() {
