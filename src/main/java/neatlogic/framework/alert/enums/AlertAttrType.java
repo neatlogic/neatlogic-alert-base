@@ -63,14 +63,23 @@ public enum AlertAttrType implements IEnum<JSONObject> {
         this.add("range");
         this.add("is-null");
         this.add("is-not-null");
-    }}, null);
-    //JSONOBJ("jsonobj", "json对象"),
+    }}, null),
+    HTML("html", "html内容", new ArrayList<String>() {
+        {
+            this.add("equal");
+            this.add("notequal");
+            this.add("like");
+            this.add("notlike");
+            this.add("is-null");
+            this.add("is-not-null");
+        }
+    }, null);
     //JSONLIST("jsonlist", "json数组");
 
     private final String value;
     private final String text;
-    private List<String> expressionList;
-    private JSONObject config;
+    private final List<String> expressionList;
+    private final JSONObject config;
 
     AlertAttrType(String _value, String _text, List<String> _expressionList, JSONObject _config) {
         this.value = _value;

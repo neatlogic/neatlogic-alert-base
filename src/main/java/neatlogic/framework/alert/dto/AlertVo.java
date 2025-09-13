@@ -132,8 +132,12 @@ public class AlertVo extends BasePageVo {
     private List<AlertAttrFilterVo> attrFilterList;
     @EntityField(name = "处理人uuid列表", type = ApiParamType.JSONARRAY)
     private List<String> userIdList;
+    @EntityField(name = "处理人uuid列表（带前缀）", type = ApiParamType.JSONARRAY)
+    private List<String> userUuidList;
     @EntityField(name = "处理组uuid列表", type = ApiParamType.JSONARRAY)
     private List<String> teamIdList;
+    @EntityField(name = "处理组uuid列表（带前缀）", type = ApiParamType.JSONARRAY)
+    private List<String> teamUuidList;
     @JSONField(serialize = false)//删除批次，用于避免重复触发后台删除
     private Long deleteBatch;
     @JSONField(serialize = false)//搜索模式，决定是否按照fromAlertId来做过滤
@@ -309,11 +313,25 @@ public class AlertVo extends BasePageVo {
         return userList;
     }
 
+    public List<String> getTeamUuidList() {
+        if (CollectionUtils.isNotEmpty(teamList)) {
+            teamUuidList = teamList.stream().map(d -> "team#" + d.getTeamUuid()).collect(Collectors.toList());
+        }
+        return teamUuidList;
+    }
+
     public List<String> getTeamIdList() {
         if (CollectionUtils.isNotEmpty(teamList)) {
             teamIdList = teamList.stream().map(AlertTeamVo::getTeamUuid).collect(Collectors.toList());
         }
         return teamIdList;
+    }
+
+    public List<String> getUserUuidList() {
+        if (CollectionUtils.isNotEmpty(userList)) {
+            userUuidList = userList.stream().map(d -> "user#" + d.getUserId()).collect(Collectors.toList());
+        }
+        return userUuidList;
     }
 
     public List<String> getUserIdList() {

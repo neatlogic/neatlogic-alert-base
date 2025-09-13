@@ -18,6 +18,7 @@
 package neatlogic.framework.alert.dto;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.restful.annotation.EntityField;
 
@@ -48,18 +49,48 @@ public class AlertAttrDefineVo {
     private boolean isWholeRow = false;
     @EntityField(name = "freemarker代码片段", type = ApiParamType.STRING)
     private String freemarkerSnippet;
+    @JSONField(serialize = false)
+    private boolean isCondition = false;//是否能用在条件判断
+    @JSONField(serialize = false)
+    private boolean isTemplate = false;//是否能用在freemarker模板
+    @JSONField(serialize = false)
+    private boolean isSearch = false;//是否能用作搜索条件
+    @EntityField(name = "是否用单独页签显示", type = ApiParamType.BOOLEAN)
+    private boolean isTab = false;
 
     public boolean isWholeRow() {
         return isWholeRow;
     }
 
+    public boolean getIsTab() {
+        return isTab;
+    }
+
+    public AlertAttrDefineVo setIsTab(boolean isTab) {
+        this.isTab = isTab;
+        return this;
+    }
+
     public AlertAttrDefineVo setWholeRow(boolean wholeRow) {
-        isWholeRow = wholeRow;
+        this.isWholeRow = wholeRow;
         return this;
     }
 
     public AlertAttrDefineVo() {
 
+    }
+
+    public boolean isCondition() {
+        return isCondition;
+    }
+
+
+    public boolean isTemplate() {
+        return isTemplate;
+    }
+
+    public boolean isSearch() {
+        return isSearch;
     }
 
     public Integer getIsTop() {
@@ -141,6 +172,21 @@ public class AlertAttrDefineVo {
 
     public AlertAttrDefineVo setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public AlertAttrDefineVo setIsCondition(boolean isCondition) {
+        this.isCondition = isCondition;
+        return this;
+    }
+
+    public AlertAttrDefineVo setIsSearch(boolean isSearch) {
+        this.isSearch = isSearch;
+        return this;
+    }
+
+    public AlertAttrDefineVo setIsTemplate(boolean isTemplate) {
+        this.isTemplate = isTemplate;
         return this;
     }
 

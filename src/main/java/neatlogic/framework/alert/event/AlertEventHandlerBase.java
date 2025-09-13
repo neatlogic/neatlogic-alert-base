@@ -24,6 +24,7 @@ import neatlogic.framework.alert.exception.alertevent.AlertEventHandlerTriggerEx
 import neatlogic.framework.alert.exception.alertevent.AlertEventPluginDisabledException;
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
+import neatlogic.framework.exception.core.ApiRuntimeException;
 import neatlogic.framework.transaction.util.TransactionUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -113,6 +114,11 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                     }
                 }
             } catch (Exception e) {
+                if (e instanceof ApiRuntimeException) {
+                    logger.warn(e.getMessage(), e);
+                } else {
+                    logger.error(e.getMessage(), e);
+                }
                 TransactionUtil.rollbackTx(ts);
                 alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
                 alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());

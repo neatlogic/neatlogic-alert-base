@@ -50,8 +50,12 @@ public class AlertAttrTypeVo extends BasePageVo {
     private int enumCount;
     @EntityField(name = "是否置顶", type = ApiParamType.INTEGER)
     private Integer isTop;
+    @EntityField(name = "是否独立一行展示", type = ApiParamType.INTEGER)
+    private Integer isRow;
     @EntityField(name = "排序", type = ApiParamType.INTEGER)
     private int sort;
+    @EntityField(name = "是否独立页签展示", type = ApiParamType.INTEGER)
+    private Integer isTab;
 
     @JSONField(serialize = false)
     private String configStr;
@@ -88,6 +92,14 @@ public class AlertAttrTypeVo extends BasePageVo {
         this.isTop = isTop;
     }
 
+    public Integer getIsTab() {
+        return isTab;
+    }
+
+    public void setIsTab(Integer isTab) {
+        this.isTab = isTab;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -98,6 +110,14 @@ public class AlertAttrTypeVo extends BasePageVo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getIsRow() {
+        return isRow;
+    }
+
+    public void setIsRow(Integer isRow) {
+        this.isRow = isRow;
     }
 
     public String getTypeName() {
