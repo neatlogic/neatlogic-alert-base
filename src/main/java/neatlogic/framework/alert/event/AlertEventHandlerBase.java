@@ -41,14 +41,17 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
     @Resource
     protected AlertEventMapper alertEventMapper;
 
+
     private AlertVo getAlertById(AlertVo alertVo) {
         AlertVo newAlertVo = alertEventMapper.getAlertById(alertVo.getId());
         if (newAlertVo != null) {
             //补充完整的处理人信息和处理组信息
+            //补充分组领导
             newAlertVo.setUserList(alertEventMapper.getAlertUserByAlertId(alertVo.getId()));
             newAlertVo.setTeamList(alertEventMapper.getAlertTeamByAlertId(alertVo.getId()));
             if (CollectionUtils.isNotEmpty(newAlertVo.getTeamList())) {
                 for (AlertTeamVo team : newAlertVo.getTeamList()) {
+                    team.setLeaderList(alertEventMapper.getAlertLeaderByTeamId(team.getTeamUuid()));
                     team.setUserList(alertEventMapper.getAlertUserByTeamId(team.getTeamUuid()));
                 }
             }

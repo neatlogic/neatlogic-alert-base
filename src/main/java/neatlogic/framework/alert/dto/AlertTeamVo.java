@@ -28,12 +28,21 @@ public class AlertTeamVo implements Serializable {
     private String teamEmail;
     private String teamPhone;
     private List<AlertUserVo> userList;
+    private List<AlertUserVo> leaderList;//领导用户列表
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof AlertTeamVo)) return false;
         AlertTeamVo that = (AlertTeamVo) o;
         return Objects.equals(teamUuid, that.teamUuid);
+    }
+
+    public List<AlertUserVo> getLeaderList() {
+        return leaderList;
+    }
+
+    public void setLeaderList(List<AlertUserVo> leaderList) {
+        this.leaderList = leaderList;
     }
 
     @Override

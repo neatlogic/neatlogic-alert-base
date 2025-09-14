@@ -27,6 +27,8 @@ public interface AlertEventMapper {
 
     List<AlertTeamVo> getAlertTeamByAlertId(Long alertId);
 
+    List<AlertUserVo> getAlertLeaderByTeamId(String teamUuid);
+
     List<AlertUserVo> getAlertUserByTeamId(String teamUuid);
 
     List<AlertUserVo> getAlertUserByAlertId(Long alertId);
