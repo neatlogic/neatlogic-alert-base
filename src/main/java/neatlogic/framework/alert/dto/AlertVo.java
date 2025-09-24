@@ -144,6 +144,8 @@ public class AlertVo extends BasePageVo {
     private String searchMode;
     @JSONField(serialize = false)//用于存放上一个事件执行的结果
     private Object prevEventResult;
+    @EntityField(name = "是否子告警", type = ApiParamType.INTEGER)
+    private int isChild;
 
     public void addTeam(AlertTeamVo team) {
         if (teamList == null) {
@@ -154,6 +156,12 @@ public class AlertVo extends BasePageVo {
         }
     }
 
+    public int getIsChild() {
+        if (this.fromAlertId != null) {
+            return 1;
+        }
+        return 0;
+    }
 
     public Object getPrevEventResult() {
         return prevEventResult;

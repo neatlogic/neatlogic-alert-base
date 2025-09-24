@@ -25,6 +25,7 @@ public class AlertConfig implements IConfigListener {
 
     private static int ORIGINAL_ALERT_THREAD_COUNT;
     private static int ALERT_EVENT_THREAD_COUNT;
+    private static int ALERT_SUBSCRIBE_THREAD_COUNT;
 
     public static int ORIGINAL_ALERT_THREAD_COUNT() {
         return ORIGINAL_ALERT_THREAD_COUNT;
@@ -34,10 +35,15 @@ public class AlertConfig implements IConfigListener {
         return ALERT_EVENT_THREAD_COUNT;
     }
 
+    public static int ALERT_SUBSCRIBE_THREAD_COUNT() {
+        return ALERT_SUBSCRIBE_THREAD_COUNT;
+    }
+
 
     @Override
     public void loadConfig(Properties prop) {
         ORIGINAL_ALERT_THREAD_COUNT = Integer.parseInt(prop.getProperty("alert.original.thread.count", "5"));
         ALERT_EVENT_THREAD_COUNT = Integer.parseInt(prop.getProperty("alert.events.thread.count", "5"));
+        ALERT_SUBSCRIBE_THREAD_COUNT = Integer.parseInt(prop.getProperty("alert.subscribe.thread.count", "3"));
     }
 }

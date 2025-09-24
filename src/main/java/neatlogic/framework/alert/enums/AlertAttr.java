@@ -99,6 +99,26 @@ public class AlertAttr {
                 .setIsTemplate(true)
                 .setIsCondition(true));
 
+        attrList.add(new AlertAttrDefineVo("const_isChild", "是否子告警", "select", new ArrayList<String>() {{
+            this.add("equal");
+            this.add("notequal");
+        }}, new JSONObject() {{
+            this.put("transfer", true);
+            this.put("dataList", new ArrayList<ValueTextVo>() {
+                {
+                    this.add(new ValueTextVo() {{
+                        this.setValue("1");
+                        this.setText("是");
+                    }});
+                    this.add(new ValueTextVo() {{
+                        this.setValue("0");
+                        this.setText("否");
+                    }});
+                }
+            });
+        }}).setFreemarkerSnippet("${DATA.const_isChild}")
+                .setIsCondition(true));
+
         attrList.add(new AlertAttrDefineVo().setName("const_levelLabel").setLabel("级别名称")
                 .setFreemarkerSnippet("${DATA.const_levelLabel}")
                 .setIsTemplate(true));
