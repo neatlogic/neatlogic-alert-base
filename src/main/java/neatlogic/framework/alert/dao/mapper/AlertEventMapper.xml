@@ -30,7 +30,8 @@
         where a.alert_id = #{value}
     </select>
 
-    <select id="getAlertLeaderByTeamId" parameterType="java.lang.String" resultType="neatlogic.framework.alert.dto.AlertUserVo">
+    <select id="getAlertLeaderByTeamId" parameterType="java.lang.String"
+            resultType="neatlogic.framework.alert.dto.AlertUserVo">
         select b.uuid      as userId,
                b.user_id   AS userAccount,
                b.user_name AS userName,
@@ -83,9 +84,6 @@
         <result column="source" property="source"/>
         <result column="uniqueKey" property="uniqueKey"/>
         <result column="isClose" property="isClose"/>
-        <result column="entityType" property="entityType"/>
-        <result column="entityName" property="entityName"/>
-        <result column="ip" property="port"/>
         <result column="content" property="attrObjStr"/>
         <association property="alertType" javaType="neatlogic.framework.alert.dto.AlertTypeVo">
             <result column="alertTypeName" property="name"/>
@@ -108,6 +106,11 @@
             <id column="alertTeamAlertId" property="alertId"/>
             <result column="alertTeamName" property="teamName"/>
         </collection>
+        <collection property="markList" ofType="neatlogic.framework.alert.dto.AlertMarkVo">
+            <id column="alertMarkUuid" property="uuid"/>
+            <result column="alertMarkName" property="name"/>
+            <result column="alertMarkStyle" property="style"/>
+        </collection>
     </resultMap>
 
 
@@ -129,10 +132,6 @@
                als.color                                                                             as alertStatusColor,
                a.source,
                a.unique_key                                                                          as uniqueKey,
-               a.entity_type                                                                         as entityType,
-               a.entity_name                                                                         as entityName,
-               a.ip,
-               a.port,
                b.content,
                c.level                                                                               as alertLevel,
                c.name                                                                                as alertLevelName,
@@ -142,7 +141,10 @@
                au.alert_id                                                                           as alertUserAlertId,
                at.team_uuid                                                                          as alertTeamUuid,
                at.alert_id                                                                           as alertTeamAlertId,
-               (select name from team x where x.uuid = at.team_uuid)                                 as alertTeamName
+               (select name from team x where x.uuid = at.team_uuid)                                 as alertTeamName,
+               am.name                                                                               as alertMarkName,
+               am.uuid                                                                               as alertMarkUuid,
+               am.style                                                                              as alertMarkStyle
         from alert a
                  left join alert_attr b on a.id = b.alert_id
                  left join alert_level c on a.level = c.level
@@ -150,6 +152,8 @@
                  left join alert_user au on a.id = au.alert_id
                  left join alert_team at on a.id = at.alert_id
                  left join alert_status als on a.status = als.name
+                 left join alert_alert_mark aam on a.id = aam.alert_id
+                 left join alert_mark am on aam.mark_uuid = am.uuid
         where a.id = #{value}
     </select>
 

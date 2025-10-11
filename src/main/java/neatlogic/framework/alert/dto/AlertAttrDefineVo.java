@@ -57,6 +57,8 @@ public class AlertAttrDefineVo {
     private boolean isSearch = false;//是否能用作搜索条件
     @EntityField(name = "是否用单独页签显示", type = ApiParamType.BOOLEAN)
     private boolean isTab = false;
+    @EntityField(name = "是否支持排序", type = ApiParamType.BOOLEAN)
+    private boolean isSort = false;
 
     public boolean isWholeRow() {
         return isWholeRow;
@@ -64,6 +66,15 @@ public class AlertAttrDefineVo {
 
     public boolean getIsTab() {
         return isTab;
+    }
+
+    public boolean getIsSort() {
+        return isSort;
+    }
+
+    public AlertAttrDefineVo setIsSort(boolean isSort) {
+        this.isSort = isSort;
+        return this;
     }
 
     public AlertAttrDefineVo setIsTab(boolean isTab) {

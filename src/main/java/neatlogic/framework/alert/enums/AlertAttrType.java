@@ -15,7 +15,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.framework.alert.enums;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.alert.dto.AlertAttrTypeVo;
 import neatlogic.framework.common.constvalue.IEnum;
@@ -73,8 +72,15 @@ public enum AlertAttrType implements IEnum<JSONObject> {
             this.add("is-null");
             this.add("is-not-null");
         }
-    }, null);
-    //JSONLIST("jsonlist", "json数组");
+    }, null),
+    JSON("json", "json内容", new ArrayList<String>() {{
+        this.add("equal");
+        this.add("notequal");
+        this.add("like");
+        this.add("notlike");
+        this.add("is-null");
+        this.add("is-not-null");
+    }}, null);
 
     private final String value;
     private final String text;
@@ -114,9 +120,9 @@ public enum AlertAttrType implements IEnum<JSONObject> {
 
     public JSONObject getConfig(AlertAttrTypeVo alertAttrTypeVo) {
         if (alertAttrTypeVo != null && config != null) {
-            String configStr = JSON.toJSONString(config);
+            String configStr = com.alibaba.fastjson.JSON.toJSONString(config);
             configStr = configStr.replace("#{alertAttrTypeVo.id}", alertAttrTypeVo.getId().toString());
-            return JSON.parseObject(configStr);
+            return com.alibaba.fastjson.JSON.parseObject(configStr);
         }
         return config;
     }

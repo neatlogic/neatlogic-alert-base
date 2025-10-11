@@ -17,13 +17,16 @@
 
 package neatlogic.framework.alert.event;
 
+import neatlogic.framework.alert.crossover.IAlertSuppressionCrossoverService;
 import neatlogic.framework.alert.dao.mapper.AlertEventMapper;
 import neatlogic.framework.alert.dto.*;
 import neatlogic.framework.alert.enums.AlertEventStatus;
 import neatlogic.framework.alert.exception.alertevent.AlertEventHandlerTriggerException;
 import neatlogic.framework.alert.exception.alertevent.AlertEventPluginDisabledException;
+import neatlogic.framework.alert.exception.alertevent.AlertEventPluginSuppressException;
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
+import neatlogic.framework.crossover.CrossoverServiceFactory;
 import neatlogic.framework.exception.core.ApiRuntimeException;
 import neatlogic.framework.transaction.util.TransactionUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -98,6 +101,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         alertEventMapper.insertAlertEventAudit(alertEventHandlerAuditVo);
         AlertEventStatusVo alertEventStatusVo = new AlertEventStatusVo();
         AlertEventPluginVo alertEventPluginVo = alertEventMapper.getAlertEventPluginConfigByName(alertEventHandlerVo.getHandler());
+
         if (!this.isAsync()) {
             //同步作业，可以修改alertVo信息
             TransactionStatus ts = TransactionUtil.openNewTx();
@@ -106,6 +110,15 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                 if (alertEventPluginVo != null && Objects.equals(0, alertEventPluginVo.getIsActive())) {
                     throw new AlertEventPluginDisabledException(alertEventHandlerVo.getHandlerName());
                 }
+                //商业版功能：告警屏蔽
+                IAlertSuppressionCrossoverService suppressionService = CrossoverServiceFactory.tryToGetApi(IAlertSuppressionCrossoverService.class);
+                if (suppressionService != null) {
+                    if (suppressionService.doSuppression(alertVo, alertEventHandlerVo)) {
+                        throw new AlertEventPluginSuppressException(alertEventHandlerVo.getHandlerName());
+                    }
+                }
+
+
                 alertVo = myTrigger(alertEventHandlerVo, alertEventPluginVo, alertVo, alertEventHandlerAuditVo, alertEventStatusVo);
                 TransactionUtil.commitTx(ts);
                 if (alertEventStatusVo.isSkipped()) {
@@ -116,6 +129,11 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                         alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
                     }
                 }
+            } catch (AlertEventPluginSuppressException e) {
+                TransactionUtil.rollbackTx(ts);
+                alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUPPRESS.getValue());
+                alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
+                throw e; // 抛出异常以便上层处理
             } catch (Exception e) {
                 if (e instanceof ApiRuntimeException) {
                     logger.warn(e.getMessage(), e);
@@ -141,6 +159,13 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                         if (alertEventPluginVo != null && Objects.equals(0, alertEventPluginVo.getIsActive())) {
                             throw new AlertEventPluginDisabledException(alertEventHandlerVo.getHandlerName());
                         }
+                        //商业版功能：告警屏蔽
+                        IAlertSuppressionCrossoverService suppressionService = CrossoverServiceFactory.tryToGetApi(IAlertSuppressionCrossoverService.class);
+                        if (suppressionService != null) {
+                            if (suppressionService.doSuppression(finalAlertVo, alertEventHandlerVo)) {
+                                throw new AlertEventPluginSuppressException(alertEventHandlerVo.getHandlerName());
+                            }
+                        }
                         myTrigger(alertEventHandlerVo, alertEventPluginVo, finalAlertVo, alertEventHandlerAuditVo, alertEventStatusVo);
                         TransactionUtil.commitTx(ts);
                         if (alertEventStatusVo.isSkipped()) {
@@ -151,6 +176,12 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                                 alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
                             }
                         }
+
+                    } catch (AlertEventPluginSuppressException e) {
+                        TransactionUtil.rollbackTx(ts);
+                        alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUPPRESS.getValue());
+                        alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
+                        throw e; // 抛出异常以便上层处理
                     } catch (Exception e) {
                         TransactionUtil.rollbackTx(ts);
                         logger.warn(e.getMessage(), e);

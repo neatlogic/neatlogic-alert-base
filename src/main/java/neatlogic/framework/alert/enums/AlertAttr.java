@@ -97,7 +97,8 @@ public class AlertAttr {
         }}).setFreemarkerSnippet("${DATA.const_level}")
                 .setIsSearch(true)
                 .setIsTemplate(true)
-                .setIsCondition(true));
+                .setIsCondition(true)
+                .setIsSort(true));
 
         attrList.add(new AlertAttrDefineVo("const_isChild", "是否子告警", "select", new ArrayList<String>() {{
             this.add("equal");
@@ -138,14 +139,14 @@ public class AlertAttr {
         }}).setFreemarkerSnippet("${DATA.const_type}")
                 .setIsSearch(true)
                 .setIsTemplate(true)
-                .setIsCondition(true));
-        //if (isExpand == 1) {
+                .setIsCondition(true)
+                .setIsSort(true));
 
         attrList.add(new AlertAttrDefineVo()
                 .setName("const_typeName")
                 .setLabel("类型名称")
                 .setFreemarkerSnippet("${DATA.const_typeName}").setIsTemplate(true));
-        //}
+
         attrList.add(new AlertAttrDefineVo("const_isClose", "是否关闭", "select", new ArrayList<String>() {{
             this.add("equal");
             this.add("notequal");
@@ -187,13 +188,14 @@ public class AlertAttr {
         }}).setFreemarkerSnippet("${DATA.const_status}")
                 .setIsSearch(true)
                 .setIsTemplate(true)
-                .setIsCondition(true));
-        //if (isExpand == 1) {
+                .setIsCondition(true)
+                .setIsSort(true));
+
         attrList.add(new AlertAttrDefineVo()
                 .setName("const_statusName")
                 .setLabel("状态名称")
                 .setFreemarkerSnippet("${DATA.const_statusName}").setIsTemplate(true));
-        //}
+
         attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("inworktime");
@@ -207,14 +209,16 @@ public class AlertAttr {
         }}).setFreemarkerSnippet("${DATA.const_alertTimeStr}")
                 .setIsSearch(true)
                 .setIsTemplate(true)
-                .setIsCondition(true));
-        //if (isExpand == 1) {
+                .setIsCondition(true)
+                .setIsSort(true));
+
         attrList.add(new AlertAttrDefineVo()
                 .setName("const_alertTimeStr")
                 .setLabel("创建时间（文本）")
                 .setFreemarkerSnippet("${DATA.const_alertTimeStr}")
-                .setIsTemplate(true));
-        //}
+                .setIsTemplate(true)
+        );
+
         attrList.add(new AlertAttrDefineVo("const_updateTime", "更新时间", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("is-null");
@@ -226,7 +230,8 @@ public class AlertAttr {
         }}).setFreemarkerSnippet("${DATA.const_updateTime}")
                 .setIsSearch(true)
                 .setIsTemplate(true)
-                .setIsCondition(true));
+                .setIsCondition(true)
+                .setIsSort(true));
         //if (isExpand == 1) {
         attrList.add(new AlertAttrDefineVo()
                 .setName("const_updateTimeStr")
@@ -391,6 +396,32 @@ public class AlertAttr {
             this.put("groupList", new JSONArray() {{
                 this.add("team");
             }});
+        }}).setIsCondition(true));
+
+        attrList.add(new AlertAttrDefineVo("const_markList", "标签", "select", new ArrayList<String>() {{
+            this.add("like");
+            this.add("notlike");
+            this.add("is-null");
+            this.add("is-not-null");
+        }}, new JSONObject() {{
+            this.put("transfer", true);
+            this.put("dynamicUrl", "/api/rest/alert/mark/search");
+            this.put("valueName", "name");
+            this.put("textName", "name");
+        }}).setIsTemplate(true)
+                .setIsSearch(true)
+                .setFreemarkerSnippet("[<#list DATA.const_markList as mark>\"${mark.name}\"<#if mark_has_next>,</#if></#list>]"));
+
+        attrList.add(new AlertAttrDefineVo("const_markNameList", "标签", "select", new ArrayList<String>() {{
+            this.add("like");
+            this.add("notlike");
+            this.add("is-null");
+            this.add("is-not-null");
+        }}, new JSONObject() {{
+            this.put("transfer", true);
+            this.put("dynamicUrl", "/api/rest/alert/mark/search");
+            this.put("valueName", "name");
+            this.put("textName", "name");
         }}).setIsCondition(true));
 
     }
