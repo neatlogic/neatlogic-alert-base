@@ -146,6 +146,10 @@ public class AlertVo extends BasePageVo {
     private Object prevEventResult;
     @EntityField(name = "是否子告警", type = ApiParamType.INTEGER)
     private int isChild;
+    @EntityField(name = "标签列表", type = ApiParamType.JSONARRAY)
+    private List<AlertMarkVo> markList;
+    @EntityField(name = "标签名称列表", type = ApiParamType.JSONARRAY)
+    private List<String> markNameList;
 
     public void addTeam(AlertTeamVo team) {
         if (teamList == null) {
@@ -161,6 +165,27 @@ public class AlertVo extends BasePageVo {
             return 1;
         }
         return 0;
+    }
+
+    public List<AlertMarkVo> getMarkList() {
+        return markList;
+    }
+
+    public void setMarkList(List<AlertMarkVo> markList) {
+        this.markList = markList;
+    }
+
+    public void setMarkNameList(List<String> markNameList) {
+        this.markNameList = markNameList;
+    }
+
+    public List<String> getMarkNameList() {
+        //如果markNameList不为空，代表markNameList被修改过，以markNameList为准
+        if (markNameList != null) {
+            return markNameList;
+        } else {
+            return markList.stream().map(AlertMarkVo::getName).collect(Collectors.toList());
+        }
     }
 
     public Object getPrevEventResult() {
