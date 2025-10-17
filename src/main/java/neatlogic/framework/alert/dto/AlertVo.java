@@ -183,9 +183,10 @@ public class AlertVo extends BasePageVo {
         //如果markNameList不为空，代表markNameList被修改过，以markNameList为准
         if (markNameList != null) {
             return markNameList;
-        } else {
+        } else if (markList != null) {
             return markList.stream().map(AlertMarkVo::getName).collect(Collectors.toList());
         }
+        return null;
     }
 
     public Object getPrevEventResult() {
