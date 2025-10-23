@@ -102,7 +102,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         AlertEventStatusVo alertEventStatusVo = new AlertEventStatusVo();
         AlertEventPluginVo alertEventPluginVo = alertEventMapper.getAlertEventPluginConfigByName(alertEventHandlerVo.getHandler());
 
-        if (!this.isAsync()) {
+        if (alertEventHandlerVo.getIsAsync().equals(0)) {
             //同步作业，可以修改alertVo信息
             TransactionStatus ts = TransactionUtil.openNewTx();
             try {
@@ -130,10 +130,9 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                     }
                 }
             } catch (AlertEventPluginSuppressException e) {
-                TransactionUtil.rollbackTx(ts);
+                TransactionUtil.commitTx(ts);
                 alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUPPRESS.getValue());
-                alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
-                throw e; // 抛出异常以便上层处理
+                //alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
             } catch (Exception e) {
                 if (e instanceof ApiRuntimeException) {
                     logger.warn(e.getMessage(), e);

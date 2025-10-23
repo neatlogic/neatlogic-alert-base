@@ -67,7 +67,11 @@ public class AlertEventHandlerVo implements Serializable {
     @EntityField(name = "子节点", type = ApiParamType.JSONARRAY)
     private List<AlertEventHandlerVo> handlerList;
     @EntityField(name = "是否异步插件", type = ApiParamType.BOOLEAN)
-    private boolean isAsync;
+    private Integer isAsync;
+    @EntityField(name = "类型id", type = ApiParamType.LONG)
+    private Long typeId;
+    @EntityField(name = "类型名称", type = ApiParamType.STRING)
+    private String typeLabel;
 
     @Override
     public boolean equals(Object o) {
@@ -82,14 +86,34 @@ public class AlertEventHandlerVo implements Serializable {
         return Objects.hashCode(uuid);
     }
 
-    public boolean getIsAsync() {
-        if (StringUtils.isNotBlank(handler)) {
+    public Integer getIsAsync() {
+        if (isAsync == null && StringUtils.isNotBlank(handler)) {
             IAlertEventHandler h = AlertEventHandlerFactory.getHandler(handler);
             if (h != null) {
-                isAsync = h.isAsync();
+                isAsync = h.isAsync() ? 1 : 0;
             }
         }
         return isAsync;
+    }
+
+    public void setIsAsync(Integer isAsync) {
+        this.isAsync = isAsync;
+    }
+
+    public Long getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Long typeId) {
+        this.typeId = typeId;
+    }
+
+    public String getTypeLabel() {
+        return typeLabel;
+    }
+
+    public void setTypeLabel(String typeLabel) {
+        this.typeLabel = typeLabel;
     }
 
     public void addHandler(AlertEventHandlerVo handler) {

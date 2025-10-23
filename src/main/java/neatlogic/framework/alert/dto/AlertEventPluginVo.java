@@ -39,9 +39,19 @@ public class AlertEventPluginVo {
     private JSONObject config;
     @JSONField(serialize = false)
     private String configStr;
+    @EntityField(name = "是否异步", type = ApiParamType.INTEGER)
+    private Integer isAsync;
 
     public AlertEventPluginVo() {
 
+    }
+
+    public Integer getIsAsync() {
+        return isAsync;
+    }
+
+    public void setIsAsync(Integer isAsync) {
+        this.isAsync = isAsync;
     }
 
     public AlertEventPluginVo(String _name, String _label, String _icon, String _description) {

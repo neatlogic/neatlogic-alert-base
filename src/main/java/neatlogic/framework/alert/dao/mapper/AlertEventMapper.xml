@@ -166,6 +166,8 @@
                handler,
                event,
                sort,
+               type_id    as typeId,
+               is_async   as isAsync,
                is_active  as isActive,
                config     as configStr
         from alert_event_handler
@@ -235,6 +237,9 @@
         <result column="handler" property="handler"/>
         <result column="event" property="event"/>
         <result column="sort" property="sort"/>
+        <result column="isAsync" property="isAsync"/>
+        <result column="typeId" property="typeId"/>
+        <result column="typeLabel" property="typeLabel"/>
         <result column="isActive" property="isActive"/>
         <result column="configStr" property="configStr" typeHandler="neatlogic.framework.dao.plugin.CompressHandler"/>
     </resultMap>
@@ -252,8 +257,11 @@
         a.handler,
         a.event,
         a.sort,
+        a.is_async as isAsync,
         a.is_active as isActive,
         a.config as configStr,
+        a.type_id as typeId,
+        (select label from alert_event_handler_type x where x.id = a.type_id) as typeLabel,
         1 AS level
         FROM alert_event_handler a
         <where>
@@ -282,8 +290,11 @@
         b.handler,
         b.event,
         b.sort,
+        b.is_async as isAsync,
         b.is_active as isActive,
         b.config as configStr,
+        b.type_id as typeId,
+        (select label from alert_event_handler_type x where x.id = b.type_id) as typeLabel,
         cte.level + 1 AS level
         FROM alert_event_handler b
         INNER JOIN handler_cte cte ON b.parent_id = cte.id
@@ -338,7 +349,9 @@
          event,
          sort,
          config,
-         is_active)
+         is_active,
+         is_async,
+         type_id)
         values (#{id},
                 #{uuid},
                 #{parentId},
@@ -348,12 +361,16 @@
                 #{event},
                 #{sort},
                 #{configStr,typeHandler=CompressHandler},
-                #{isActive})
+                #{isActive},
+                #{isAsync},
+                #{typeId})
         ON DUPLICATE KEY
             UPDATE name      = #{name},
                    parent_id = #{parentId},
                    config    = #{configStr,typeHandler=CompressHandler},
-                   is_active = #{isActive}
+                   is_active = #{isActive},
+                   is_async  = #{isAsync},
+                   type_id   = #{typeId}
     </insert>
 
     <insert id="insertAlertEventAudit" parameterType="neatlogic.framework.alert.dto.AlertEventHandlerAuditVo">

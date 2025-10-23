@@ -21,9 +21,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.alert.enums.AlertEventStatus;
-import neatlogic.framework.alert.event.AlertEventHandlerFactory;
 import neatlogic.framework.alert.event.AlertEventType;
-import neatlogic.framework.alert.event.IAlertEventHandler;
 import neatlogic.framework.common.config.Config;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
@@ -52,7 +50,7 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
     @EntityField(name = "事件处理器名称", type = ApiParamType.STRING)
     private String handlerName;
     @EntityField(name = "是否异步插件", type = ApiParamType.BOOLEAN)
-    private boolean isAsync;
+    private Integer isAsync;
     @EntityField(name = "事件id", type = ApiParamType.LONG)
     private Long eventHandlerId;
     @EntityField(name = "开始时间", type = ApiParamType.LONG)
@@ -230,14 +228,12 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
         return timeCost;
     }
 
-    public boolean getIsAsync() {
-        if (StringUtils.isNotBlank(handler)) {
-            IAlertEventHandler h = AlertEventHandlerFactory.getHandler(handler);
-            if (h != null) {
-                isAsync = h.isAsync();
-            }
-        }
+    public Integer getIsAsync() {
         return isAsync;
+    }
+
+    public void setIsAsync(Integer isAsync) {
+        this.isAsync = isAsync;
     }
 
     public List<AlertEventHandlerAuditVo> getChildAuditList() {
