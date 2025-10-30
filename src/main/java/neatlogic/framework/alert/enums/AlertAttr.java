@@ -30,6 +30,12 @@ public class AlertAttr {
         return new ArrayList<>(attrList);
     }
 
+    public static List<AlertAttrDefineVo> getColumnConstAttrList() {
+        List<AlertAttrDefineVo> returnList = new ArrayList<>(attrList);
+        returnList.removeIf(d -> !d.isColumn());
+        return returnList;
+    }
+
     public static List<AlertAttrDefineVo> getSearchConstAttrList() {
         List<AlertAttrDefineVo> returnList = new ArrayList<>(attrList);
         returnList.removeIf(d -> !d.isSearch());
@@ -51,12 +57,13 @@ public class AlertAttr {
     private static final List<AlertAttrDefineVo> attrList = new ArrayList<>();
 
     static {
-        attrList.add(new AlertAttrDefineVo("const_id", "id", "text", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_id", "id", "text", new ArrayList<>() {{
             this.add("equal");
             this.add("notequal");
         }}, null)
                 .setFreemarkerSnippet("${DATA.const_id}")
                 .setIsSearch(true)
+                .setIsColumn(true)
                 .setIsTemplate(true)
                 .setIsCondition(true));
 
@@ -67,6 +74,7 @@ public class AlertAttr {
             this.add("is-not-null");
         }}, null).setFreemarkerSnippet("${DATA.const_uniqueKey}")
                 .setIsSearch(true)
+                .setIsColumn(true)
                 .setIsTemplate(true)
                 .setIsCondition(true));
 
@@ -77,6 +85,7 @@ public class AlertAttr {
             this.add("is-not-null");
         }}, new JSONObject()).setWholeRow(true).setFreemarkerSnippet("${DATA.const_title}")
                 .setIsSearch(true)
+                .setIsColumn(true)
                 .setIsTemplate(true)
                 .setIsCondition(true));
 
@@ -96,6 +105,7 @@ public class AlertAttr {
             this.put("textName", "label");
         }}).setFreemarkerSnippet("${DATA.const_level}")
                 .setIsSearch(true)
+                .setIsColumn(true)
                 .setIsTemplate(true)
                 .setIsCondition(true)
                 .setIsSort(true));
@@ -138,6 +148,7 @@ public class AlertAttr {
             this.put("textName", "label");
         }}).setFreemarkerSnippet("${DATA.const_type}")
                 .setIsSearch(true)
+                .setIsColumn(true)
                 .setIsTemplate(true)
                 .setIsCondition(true)
                 .setIsSort(true));
@@ -166,6 +177,7 @@ public class AlertAttr {
             });
         }}).setFreemarkerSnippet("${DATA.const_isClose}")
                 .setIsSearch(true)
+                .setIsColumn(true)
                 .setIsTemplate(true)
                 .setIsCondition(true));
         //if (isExpand == 1) {
@@ -187,9 +199,23 @@ public class AlertAttr {
             this.put("textName", "label");
         }}).setFreemarkerSnippet("${DATA.const_status}")
                 .setIsSearch(true)
+                .setIsColumn(true)
                 .setIsTemplate(true)
                 .setIsCondition(true)
                 .setIsSort(true));
+
+        attrList.add(new AlertAttrDefineVo("const_similarCount", "相似告警数量", "text", new ArrayList<String>() {{
+            this.add("equal");
+            this.add("notequal");
+            this.add("gt");
+            this.add("lt");
+            this.add("gte");
+            this.add("lte");
+            this.add("is-null");
+            this.add("is-not-null");
+        }}, new JSONObject() {{
+            this.put("type", "number");
+        }}).setIsCondition(true));
 
         attrList.add(new AlertAttrDefineVo()
                 .setName("const_statusName")
@@ -208,6 +234,7 @@ public class AlertAttr {
             this.put("format", "yyyy-MM-dd HH:mm");
         }}).setFreemarkerSnippet("${DATA.const_alertTimeStr}")
                 .setIsSearch(true)
+                .setIsColumn(true)
                 .setIsTemplate(true)
                 .setIsCondition(true)
                 .setIsSort(true));
@@ -229,6 +256,7 @@ public class AlertAttr {
             this.put("format", "yyyy-MM-dd HH:mm");
         }}).setFreemarkerSnippet("${DATA.const_updateTime}")
                 .setIsSearch(true)
+                .setIsColumn(true)
                 .setIsTemplate(true)
                 .setIsCondition(true)
                 .setIsSort(true));
@@ -258,6 +286,7 @@ public class AlertAttr {
                 )
                 .setFreemarkerSnippet("${DATA.const_source}")
                 .setIsSearch(true)
+                .setIsColumn(true)
                 .setIsTemplate(true)
                 .setIsCondition(true));
 
@@ -274,6 +303,7 @@ public class AlertAttr {
             }});
         }}).setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userName}\"<#if user_has_next>,</#if></#list>]")
                 .setIsSearch(true)
+                .setIsColumn(true)
                 .setIsTemplate(true));
 
         attrList.add(new AlertAttrDefineVo("const_userUuidList", "处理人uuid", "userselect", new ArrayList<String>() {{
@@ -383,6 +413,7 @@ public class AlertAttr {
             }});
         }}).setFreemarkerSnippet("[<#list DATA.const_teamList as team>\"${team.teamName}\"<#if team_has_next>,</#if></#list>]")
                 .setIsSearch(true)
+                .setIsColumn(true)
                 .setIsTemplate(true));
 
         attrList.add(new AlertAttrDefineVo("const_teamUuidList", "处理组uuid", "userselect", new ArrayList<String>() {{
@@ -410,6 +441,7 @@ public class AlertAttr {
             this.put("textName", "name");
         }}).setIsTemplate(true)
                 .setIsSearch(true)
+                .setIsColumn(false)
                 .setFreemarkerSnippet("[<#list DATA.const_markList as mark>\"${mark.name}\"<#if mark_has_next>,</#if></#list>]"));
 
         attrList.add(new AlertAttrDefineVo("const_markNameList", "标签", "select", new ArrayList<String>() {{

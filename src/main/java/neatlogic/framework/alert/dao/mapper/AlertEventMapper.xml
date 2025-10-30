@@ -84,6 +84,7 @@
         <result column="source" property="source"/>
         <result column="uniqueKey" property="uniqueKey"/>
         <result column="isClose" property="isClose"/>
+        <result column="similarCount" property="similarCount"/>
         <result column="content" property="attrObjStr"/>
         <association property="alertType" javaType="neatlogic.framework.alert.dto.AlertTypeVo">
             <result column="alertTypeName" property="name"/>
@@ -124,6 +125,7 @@
                a.alert_time                                                                          as alertTime,
                a.type,
                a.is_close                                                                            as isClose,
+               a.similar_count                                                                       as similarCount,
                d.id                                                                                  as alertTypeId,
                d.name                                                                                as alertTypeName,
                d.label                                                                               as alertTypeLabel,

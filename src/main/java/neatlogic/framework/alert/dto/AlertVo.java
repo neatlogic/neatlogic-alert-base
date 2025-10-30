@@ -150,6 +150,8 @@ public class AlertVo extends BasePageVo {
     private List<AlertMarkVo> markList;
     @EntityField(name = "标签名称列表", type = ApiParamType.JSONARRAY)
     private List<String> markNameList;
+    @EntityField(name = "相似告警数", type = ApiParamType.INTEGER)
+    private int similarCount;
 
     public void addTeam(AlertTeamVo team) {
         if (teamList == null) {
@@ -158,6 +160,14 @@ public class AlertVo extends BasePageVo {
         if (!teamList.contains(team)) {
             teamList.add(team);
         }
+    }
+
+    public int getSimilarCount() {
+        return similarCount;
+    }
+
+    public void setSimilarCount(int similarCount) {
+        this.similarCount = similarCount;
     }
 
     public int getIsChild() {

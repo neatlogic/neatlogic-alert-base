@@ -59,6 +59,8 @@ public class AlertAttrDefineVo {
     private boolean isTab = false;
     @EntityField(name = "是否支持排序", type = ApiParamType.BOOLEAN)
     private boolean isSort = false;
+    @JSONField(serialize = false) //是否作为表头
+    private boolean isColumn = false;
 
     public boolean isWholeRow() {
         return isWholeRow;
@@ -70,6 +72,11 @@ public class AlertAttrDefineVo {
 
     public boolean getIsSort() {
         return isSort;
+    }
+
+    public AlertAttrDefineVo setIsColumn(boolean isColumn) {
+        this.isColumn = isColumn;
+        return this;
     }
 
     public AlertAttrDefineVo setIsSort(boolean isSort) {
@@ -102,6 +109,10 @@ public class AlertAttrDefineVo {
 
     public boolean isSearch() {
         return isSearch;
+    }
+
+    public boolean isColumn() {
+        return isColumn;
     }
 
     public Integer getIsTop() {
