@@ -107,7 +107,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
             TransactionStatus ts = TransactionUtil.openNewTx();
             try {
                 //如果插件被禁用，直接结束执行
-                if (alertEventPluginVo != null && Objects.equals(0, alertEventPluginVo.getIsActive())) {
+                if ((alertEventPluginVo != null && Objects.equals(0, alertEventPluginVo.getIsActive())) || Objects.equals(0, alertEventHandlerVo.getIsActive())) {
                     throw new AlertEventPluginDisabledException(alertEventHandlerVo.getHandlerName());
                 }
                 //商业版功能：告警屏蔽
@@ -155,7 +155,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                     TransactionStatus ts = TransactionUtil.openNewTx();
                     try {
                         //如果插件被禁用，直接结束执行
-                        if (alertEventPluginVo != null && Objects.equals(0, alertEventPluginVo.getIsActive())) {
+                        if ((alertEventPluginVo != null && Objects.equals(0, alertEventPluginVo.getIsActive())) || Objects.equals(0, alertEventHandlerVo.getIsActive())) {
                             throw new AlertEventPluginDisabledException(alertEventHandlerVo.getHandlerName());
                         }
                         //商业版功能：告警屏蔽
