@@ -363,6 +363,9 @@ public class AlertVo extends BasePageVo {
         if (CollectionUtils.isNotEmpty(teamList)) {
             teamIdList = teamList.stream().map(AlertTeamVo::getTeamUuid).collect(Collectors.toList());
         }
+        if (CollectionUtils.isNotEmpty(teamIdList)) {
+            teamIdList = teamIdList.stream().map(d -> d.replace("team#", "")).collect(Collectors.toList());
+        }
         return teamIdList;
     }
 
@@ -376,6 +379,9 @@ public class AlertVo extends BasePageVo {
     public List<String> getUserIdList() {
         if (CollectionUtils.isNotEmpty(userList)) {
             userIdList = userList.stream().map(AlertUserVo::getUserId).collect(Collectors.toList());
+        }
+        if (CollectionUtils.isNotEmpty(userIdList)) {
+            userIdList = userIdList.stream().map(d -> d.replace("user#", "")).collect(Collectors.toList());
         }
         return userIdList;
     }
