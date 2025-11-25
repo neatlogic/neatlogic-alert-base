@@ -20,4 +20,6 @@ import neatlogic.framework.crossover.ICrossoverService;
  */
 public interface IAlertEmbeddingCrossoverService extends ICrossoverService {
     void saveEmbedding(AlertVo alertVo);
+
+    void deleteEmbedding(Long alertId);
 }
