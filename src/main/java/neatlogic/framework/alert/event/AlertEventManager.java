@@ -26,8 +26,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class AlertEventManager {
@@ -99,7 +97,7 @@ public class AlertEventManager {
         job.execute(alertEventType, _alertEventType -> {
             List<AlertEventHandlerVo> handlerList = alertEventMapper.getAlertEventHandlerByEvent(_alertEventType.getName(), alertVo.getType());
             //只需要激活的插件
-            handlerList = handlerList.stream().filter(d -> Objects.equals(1, d.getIsActive())).collect(Collectors.toList());
+            //handlerList = handlerList.stream().filter(d -> Objects.equals(1, d.getIsActive())).collect(Collectors.toList());
             List<List<AlertEventHandlerVo>> eventHandlerList = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(handlerList)) {
                 int currentSort = -1;

@@ -373,7 +373,8 @@
          start_time,
          config,
          status,
-         server_id)
+         server_id,
+         is_async)
         values (#{id},
                 #{uniqueKey},
                 #{parentId},
@@ -385,7 +386,8 @@
                 now(3),
                 #{configStr,typeHandler=CompressHandler},
                 #{status},
-                #{serverId})
+                #{serverId},
+                #{isAsync})
     </insert>
 
     <update id="updateAlertEventAuditResult" parameterType="neatlogic.framework.alert.dto.AlertAuditVo">

@@ -88,6 +88,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         alertEventHandlerAuditVo.setHandlerName(alertEventHandlerVo.getName());//用事件配的的名称代替handler名称
         alertEventHandlerAuditVo.setStatus(AlertEventStatus.RUNNING.getValue());
         alertEventHandlerAuditVo.setConfig(alertEventHandlerVo.getConfig());
+        alertEventHandlerAuditVo.setIsAsync(alertEventHandlerVo.getIsAsync());
         if (parentAuditId != null) {
             alertEventHandlerAuditVo.setParentId(parentAuditId);
         }
@@ -125,9 +126,11 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                     }
                 }
             } catch (AlertEventPluginSuppressException e) {
-                TransactionUtil.commitTx(ts);
+                TransactionUtil.rollbackTx(ts);
                 alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUPPRESS.getValue());
-                //alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
+            } catch (AlertEventPluginDisabledException e) {
+                TransactionUtil.rollbackTx(ts);
+                alertEventHandlerAuditVo.setStatus(AlertEventStatus.DISABLED.getValue());
             } catch (Exception e) {
                 if (e instanceof ApiRuntimeException) {
                     logger.warn(e.getMessage(), e);
@@ -174,14 +177,16 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                     } catch (AlertEventPluginSuppressException e) {
                         TransactionUtil.rollbackTx(ts);
                         alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUPPRESS.getValue());
-                        alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
-                        throw e; // 抛出异常以便上层处理
-                    } catch (Exception e) {
+                        //alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
+                    } catch (AlertEventPluginDisabledException e) {
                         TransactionUtil.rollbackTx(ts);
+                        alertEventHandlerAuditVo.setStatus(AlertEventStatus.DISABLED.getValue());
+                        //alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
+                    } catch (Exception e) {
                         logger.warn(e.getMessage(), e);
+                        TransactionUtil.rollbackTx(ts);
                         alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
                         alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
-                        throw e; // 抛出异常以便上层处理
                     } finally {
                         alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);
                     }
