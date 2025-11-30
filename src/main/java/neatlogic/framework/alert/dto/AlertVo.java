@@ -21,12 +21,14 @@ import neatlogic.framework.restful.annotation.EntityField;
 import neatlogic.framework.util.Md5Util;
 import neatlogic.framework.util.SnowflakeUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class AlertVo extends BasePageVo {
@@ -656,6 +658,28 @@ public class AlertVo extends BasePageVo {
                 attrObj = JSON.parseObject(attrObjStr);
             } catch (Exception ignored) {
 
+            }
+        }
+        return attrObj;
+    }
+
+    public JSONObject getAttrObj(List<AlertAttrTypeVo> attrTypeList) {
+        if (attrObj == null && StringUtils.isNotBlank(attrObjStr)) {
+            try {
+                attrObj = JSON.parseObject(attrObjStr);
+            } catch (Exception ignored) {
+
+            }
+        }
+        if (MapUtils.isNotEmpty(attrObj)) {
+            List<String> removeKeyList = new ArrayList<>();
+            for (String key : attrObj.keySet()) {
+                if (attrTypeList.stream().noneMatch(d -> Objects.equals(1, d.getIsIndex()) && Objects.equals(d.getName(), key))) {
+                    removeKeyList.add(key);
+                }
+            }
+            for (String key : removeKeyList) {
+                attrObj.remove(key);
             }
         }
         return attrObj;

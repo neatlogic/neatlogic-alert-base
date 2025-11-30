@@ -51,6 +51,8 @@ public class AlertAttrTypeVo extends BasePageVo {
     private int sort;
     @EntityField(name = "是否独立页签展示", type = ApiParamType.INTEGER)
     private Integer isTab;
+    @EntityField(name = "是否保存到ES", type = ApiParamType.INTEGER)
+    private Integer isIndex;
 
     @JSONField(serialize = false)
     private String configStr;
@@ -186,5 +188,13 @@ public class AlertAttrTypeVo extends BasePageVo {
 
     public void setIsNormal(Integer isNormal) {
         this.isNormal = isNormal;
+    }
+
+    public Integer getIsIndex() {
+        return isIndex;
+    }
+
+    public void setIsIndex(Integer isIndex) {
+        this.isIndex = isIndex;
     }
 }
