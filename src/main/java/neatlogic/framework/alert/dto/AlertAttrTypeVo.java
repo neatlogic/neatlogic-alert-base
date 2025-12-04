@@ -53,6 +53,8 @@ public class AlertAttrTypeVo extends BasePageVo {
     private Integer isTab;
     @EntityField(name = "是否保存到ES", type = ApiParamType.INTEGER)
     private Integer isIndex;
+    @EntityField(name = "是否显示", type = ApiParamType.INTEGER)
+    private Integer isShow;
 
     @JSONField(serialize = false)
     private String configStr;
@@ -87,6 +89,14 @@ public class AlertAttrTypeVo extends BasePageVo {
 
     public void setIsTop(Integer isTop) {
         this.isTop = isTop;
+    }
+
+    public Integer getIsShow() {
+        return isShow;
+    }
+
+    public void setIsShow(Integer isShow) {
+        this.isShow = isShow;
     }
 
     public Integer getIsTab() {
