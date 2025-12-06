@@ -109,7 +109,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                 //商业版功能：告警屏蔽
                 IAlertSuppressionCrossoverService suppressionService = CrossoverServiceFactory.tryToGetApi(IAlertSuppressionCrossoverService.class);
                 if (suppressionService != null) {
-                    if (suppressionService.doSuppression(alertVo, alertEventHandlerVo)) {
+                    if (suppressionService.doSuppression(alertVo, alertEventHandlerVo.getTypeId())) {
                         throw new AlertEventPluginSuppressException(alertEventHandlerVo.getHandlerName());
                     }
                 }
@@ -159,7 +159,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                         //商业版功能：告警屏蔽
                         IAlertSuppressionCrossoverService suppressionService = CrossoverServiceFactory.tryToGetApi(IAlertSuppressionCrossoverService.class);
                         if (suppressionService != null) {
-                            if (suppressionService.doSuppression(finalAlertVo, alertEventHandlerVo)) {
+                            if (suppressionService.doSuppression(finalAlertVo, alertEventHandlerVo.getTypeId())) {
                                 throw new AlertEventPluginSuppressException(alertEventHandlerVo.getHandlerName());
                             }
                         }

@@ -12,7 +12,6 @@
 
 package neatlogic.framework.alert.crossover;
 
-import neatlogic.framework.alert.dto.AlertEventHandlerVo;
 import neatlogic.framework.alert.dto.AlertVo;
 import neatlogic.framework.crossover.ICrossoverService;
 import org.springframework.transaction.annotation.Propagation;
@@ -21,5 +20,5 @@ import org.springframework.transaction.annotation.Transactional;
 public interface IAlertSuppressionCrossoverService extends ICrossoverService {
     //要用新事务，因为调用逻辑需要通过异常返回
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    boolean doSuppression(AlertVo alertVo, AlertEventHandlerVo alertEventHandlerVo);
+    boolean doSuppression(AlertVo alertVo, Long alertEventTypeId);
 }
