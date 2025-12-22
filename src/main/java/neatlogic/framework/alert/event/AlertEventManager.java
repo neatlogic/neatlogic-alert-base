@@ -84,7 +84,7 @@ public class AlertEventManager {
                         //不断修改alertVo的值，传递给下一个处理器
                         alertVo = handler.trigger(h, alertVo);
                     } else {
-                        logger.error("告警事件组件{}不存在", h.getHandler());
+                        logger.error("告警事件组件{}不存在，告警id:{}", h.getHandler(), alertVo.getId());
                     }
                 }
             }
