@@ -73,7 +73,7 @@ public class ConditionVo implements Serializable {
     }
 
     public String buildScript() {
-        return "calculate('" + expression + "', data['" + this.getName() + "'], condition['" + this.getUuid() + "'], define['" + this.getName() + "'])";
+        return "calculate('" + expression + "', data['" + this.getName() + "'], condition['" + this.getUuid() + "'], define['" + this.getName() + "'],'" + this.getUuid() + "')";
     }
 
 
