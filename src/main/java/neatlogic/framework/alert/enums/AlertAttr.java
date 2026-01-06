@@ -359,7 +359,7 @@ public class AlertAttr {
                         "]")
                 .setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo().setName("const_teamUserEmailList").setLabel("处理组成员账号")
+        attrList.add(new AlertAttrDefineVo().setName("const_teamUserAccountList").setLabel("处理组成员账号")
                 .setFreemarkerSnippet("[" +
                         "<#list DATA.const_teamList as team>" +
                         "<#list team.userList?default([]) as user>" +
@@ -386,7 +386,7 @@ public class AlertAttr {
                         "</#list>" +
                         "]").setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo().setName("const_teamUserEmailList").setLabel("处理组成员名称")
+        attrList.add(new AlertAttrDefineVo().setName("const_teamUserNameList").setLabel("处理组成员名称")
                 .setFreemarkerSnippet("[" +
                         "<#list DATA.const_teamList as team>" +
                         "<#list team.userList?default([]) as user>" +
