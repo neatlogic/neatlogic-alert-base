@@ -8,12 +8,12 @@ import java.util.List;
 public class ALERT_ACTION_MODIFY extends AuthBase {
     @Override
     public String getAuthDisplayName() {
-        return "告警动作管理权限";
+        return "告警自定义操作管理权限";
     }
 
     @Override
     public String getAuthIntroduction() {
-        return "新增、修改和修改告警动作";
+        return "新增、修改和修改告警自定义操作";
     }
 
     @Override
