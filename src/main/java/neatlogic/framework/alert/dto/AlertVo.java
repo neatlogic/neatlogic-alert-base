@@ -149,6 +149,8 @@ public class AlertVo extends BasePageVo {
     private List<String> markNameList;
     @EntityField(name = "相似告警数", type = ApiParamType.INTEGER)
     private int similarCount;
+    @EntityField(name = "动作列表", type = ApiParamType.JSONARRAY)
+    private List<AlertActionVo> actionList;
 
     public void addTeam(AlertTeamVo team) {
         if (teamList == null) {
@@ -194,6 +196,14 @@ public class AlertVo extends BasePageVo {
             return markList.stream().map(AlertMarkVo::getName).collect(Collectors.toList());
         }
         return null;
+    }
+
+    public List<AlertActionVo> getActionList() {
+        return actionList;
+    }
+
+    public void setActionList(List<AlertActionVo> actionList) {
+        this.actionList = actionList;
     }
 
     public Object getPrevEventResult() {
