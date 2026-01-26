@@ -12,14 +12,12 @@
 
 package neatlogic.framework.alert.crossover;
 
-import neatlogic.framework.alert.dto.AlertVo;
 import neatlogic.framework.crossover.ICrossoverService;
 
 /*
 对告警信息进行向量化处理，用于通过余弦距离检索类似告警
  */
 public interface IAlertEmbeddingCrossoverService extends ICrossoverService {
-    void saveEmbedding(AlertVo alertVo);
 
     void deleteEmbedding(Long alertId);
 }

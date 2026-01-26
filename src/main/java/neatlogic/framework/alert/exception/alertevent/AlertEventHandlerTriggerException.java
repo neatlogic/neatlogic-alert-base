@@ -19,4 +19,8 @@ public class AlertEventHandlerTriggerException extends ApiRuntimeException {
     public AlertEventHandlerTriggerException(Exception e) {
         super(e);
     }
+
+    public AlertEventHandlerTriggerException(String message) {
+        super(message);
+    }
 }
