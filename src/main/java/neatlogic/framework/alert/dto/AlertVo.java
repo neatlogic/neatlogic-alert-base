@@ -13,8 +13,12 @@
 package neatlogic.framework.alert.dto;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.parser.DefaultJSONParser;
+import com.alibaba.fastjson.parser.JSONToken;
+import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.restful.annotation.EntityField;
@@ -24,6 +28,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -93,6 +98,7 @@ public class AlertVo extends BasePageVo {
     @EntityField(name = "处理人", type = ApiParamType.JSONARRAY)
     private List<AlertUserVo> userList;
     @EntityField(name = "处理组", type = ApiParamType.JSONARRAY)
+    @JSONField(deserializeUsing = AlertTeamListDeserializer.class)
     private List<AlertTeamVo> teamList;
     @JSONField(serialize = false)
     private String viewName;//视图唯一标识
@@ -418,6 +424,7 @@ public class AlertVo extends BasePageVo {
         this.teamList = teamList;
     }
 
+
     public String getComment() {
         return comment;
     }
@@ -719,4 +726,33 @@ public class AlertVo extends BasePageVo {
     }
 
 
+    public static class AlertTeamListDeserializer implements ObjectDeserializer {
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
+            Object value = parser.parse();
+            if (!(value instanceof JSONArray jsonArray)) {
+                return null;
+            }
+            List<AlertTeamVo> result = new ArrayList<>();
+            for (Object item : jsonArray) {
+                if (item == null) {
+                    continue;
+                }
+                if (item instanceof String) {
+                    AlertTeamVo teamVo = new AlertTeamVo();
+                    teamVo.setTeamUuid(StringUtils.removeStart((String) item, "team#"));
+                    result.add(teamVo);
+                } else if (item instanceof JSONObject) {
+                    result.add(((JSONObject) item).toJavaObject(AlertTeamVo.class));
+                }
+            }
+            return (T) result;
+        }
+        
+        @Override
+        public int getFastMatchToken() {
+            return JSONToken.LBRACKET;
+        }
+    }
 }
