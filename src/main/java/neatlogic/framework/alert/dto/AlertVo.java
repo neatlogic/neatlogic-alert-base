@@ -157,6 +157,12 @@ public class AlertVo extends BasePageVo {
     private int similarCount;
     @EntityField(name = "动作列表", type = ApiParamType.JSONARRAY)
     private List<AlertActionVo> actionList;
+    @JSONField(serialize = false)
+    private Float similarScoreThreshold;
+    @JSONField(serialize = false)
+    private Integer similarLimit;
+    @JSONField(serialize = false)
+    private Long similarMinuteBefore;
 
     public void addTeam(AlertTeamVo team) {
         if (teamList == null) {
@@ -210,6 +216,30 @@ public class AlertVo extends BasePageVo {
 
     public void setActionList(List<AlertActionVo> actionList) {
         this.actionList = actionList;
+    }
+
+    public Float getSimilarScoreThreshold() {
+        return similarScoreThreshold;
+    }
+
+    public void setSimilarScoreThreshold(Float similarScoreThreshold) {
+        this.similarScoreThreshold = similarScoreThreshold;
+    }
+
+    public Integer getSimilarLimit() {
+        return similarLimit;
+    }
+
+    public void setSimilarLimit(Integer similarLimit) {
+        this.similarLimit = similarLimit;
+    }
+
+    public Long getSimilarMinuteBefore() {
+        return similarMinuteBefore;
+    }
+
+    public void setSimilarMinuteBefore(Long similarMinuteBefore) {
+        this.similarMinuteBefore = similarMinuteBefore;
     }
 
     public Object getPrevEventResult() {
