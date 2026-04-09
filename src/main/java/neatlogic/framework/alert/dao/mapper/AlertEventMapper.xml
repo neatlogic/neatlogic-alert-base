@@ -266,6 +266,9 @@
             <if test="alertType != null">
                 and a.alert_type = #{alertType}
             </if>
+            <if test="handler != null and handler != ''">
+                and a.handler = #{handler}
+            </if>
         </where>
         UNION ALL
         SELECT
