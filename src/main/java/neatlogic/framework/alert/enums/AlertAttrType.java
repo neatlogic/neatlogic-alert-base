@@ -80,6 +80,14 @@ public enum AlertAttrType implements IEnum<JSONObject> {
         this.add("notlike");
         this.add("is-null");
         this.add("is-not-null");
+    }}, null),
+    CSV("csv", "CSV内容", new ArrayList<>() {{
+        this.add("equal");
+        this.add("notequal");
+        this.add("like");
+        this.add("notlike");
+        this.add("is-null");
+        this.add("is-not-null");
     }}, null);
 
     private final String value;
