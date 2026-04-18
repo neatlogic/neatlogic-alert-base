@@ -49,6 +49,8 @@ public class AlertVo extends BasePageVo {
     private String uniqueKey;
     @EntityField(name = "级别", type = ApiParamType.INTEGER)
     private Integer level;
+    @JSONField(serialize = false)
+    private List<Integer> levelList;
     @EntityField(name = "级别名称", type = ApiParamType.STRING)
     private String levelLabel;
     @EntityField(name = "标题", type = ApiParamType.STRING)
@@ -59,10 +61,14 @@ public class AlertVo extends BasePageVo {
     private String typeName;
     @EntityField(name = "来源", type = ApiParamType.STRING)
     private String source;
+    @JSONField(serialize = false)
+    private List<String> sourceList;
     @EntityField(name = "来源名称", type = ApiParamType.STRING)
     private String sourceName;
     @EntityField(name = "状态", type = ApiParamType.STRING)
     private String status;
+    @JSONField(serialize = false)
+    private List<String> statusList;
     @EntityField(name = "状态名称", type = ApiParamType.STRING)
     private String statusName;
     @EntityField(name = "状态颜色", type = ApiParamType.STRING)
@@ -561,6 +567,10 @@ public class AlertVo extends BasePageVo {
         return level;
     }
 
+    public List<Integer> getLevelList() {
+        return levelList;
+    }
+
     /*public String getEntityType() {
         return entityType;
     }
@@ -597,6 +607,10 @@ public class AlertVo extends BasePageVo {
         this.level = level;
     }
 
+    public void setLevelList(List<Integer> levelList) {
+        this.levelList = levelList;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -625,16 +639,32 @@ public class AlertVo extends BasePageVo {
         return source;
     }
 
+    public List<String> getSourceList() {
+        return sourceList;
+    }
+
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public void setSourceList(List<String> sourceList) {
+        this.sourceList = sourceList;
     }
 
     public String getStatus() {
         return status;
     }
 
+    public List<String> getStatusList() {
+        return statusList;
+    }
+
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setStatusList(List<String> statusList) {
+        this.statusList = statusList;
     }
 
     public void generateUniqueKey() {
