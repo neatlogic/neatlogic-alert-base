@@ -29,6 +29,8 @@ public class AlertCatalogVo extends BaseEditorVo {
     private String name;
     @EntityField(name = "是否激活", type = ApiParamType.INTEGER)
     private Integer isActive;
+    @EntityField(name = "父目录id", type = ApiParamType.LONG)
+    private Long parentId;
     @EntityField(name = "授权uuid列表", type = ApiParamType.JSONARRAY)
     private List<String> authList;
     @EntityField(name = "授权列表", type = ApiParamType.JSONARRAY)
@@ -37,6 +39,8 @@ public class AlertCatalogVo extends BaseEditorVo {
     private int sort;
     @EntityField(name = "视图列表", type = ApiParamType.JSONARRAY)
     private List<AlertViewVo> viewList;
+    @EntityField(name = "子目录列表", type = ApiParamType.JSONARRAY)
+    private List<AlertCatalogVo> children;
 
     @JSONField(serialize = false)
     private String userId;
@@ -82,12 +86,28 @@ public class AlertCatalogVo extends BaseEditorVo {
         this.isActive = isActive;
     }
 
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
     public List<AlertViewVo> getViewList() {
         return viewList;
     }
 
     public void setViewList(List<AlertViewVo> viewList) {
         this.viewList = viewList;
+    }
+
+    public List<AlertCatalogVo> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<AlertCatalogVo> children) {
+        this.children = children;
     }
 
     public List<String> getAuthList() {
