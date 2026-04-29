@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="neatlogic.framework.alert.dao.mapper.AlertBreakerMapper">
+    <resultMap id="alertBreakerPolicyResultMap" type="neatlogic.framework.alert.dto.breaker.AlertBreakerPolicyVo">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="handler" property="handler"/>
+        <result column="configStr" property="configStr" typeHandler="neatlogic.framework.dao.plugin.CompressHandler"/>
+        <result column="isActive" property="isActive"/>
+        <result column="description" property="description"/>
+    </resultMap>
+
+    <resultMap id="alertBreakerStateResultMap" type="neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo">
+        <id column="id" property="id"/>
+        <result column="policyId" property="policyId"/>
+        <result column="uniqueKey" property="uniqueKey"/>
+        <result column="state" property="state"/>
+        <result column="windowStart" property="windowStart"/>
+        <result column="windowEnd" property="windowEnd"/>
+        <result column="triggerCount" property="triggerCount"/>
+        <result column="openTime" property="openTime"/>
+        <result column="openUntil" property="openUntil"/>
+        <result column="lastTriggerTime" property="lastTriggerTime"/>
+        <result column="skipCount" property="skipCount"/>
+        <result column="data" property="data"/>
+    </resultMap>
+
+    <resultMap id="alertEventHandlerBreakerPolicyResultMap" type="neatlogic.framework.alert.dto.breaker.AlertEventHandlerBreakerPolicyVo">
+        <id column="id" property="id"/>
+        <result column="eventHandlerId" property="eventHandlerId"/>
+        <result column="policyId" property="policyId"/>
+        <result column="policyName" property="policyName"/>
+        <result column="policyHandler" property="policyHandler"/>
+        <result column="policyConfigStr" property="policyConfigStr" typeHandler="neatlogic.framework.dao.plugin.CompressHandler"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+
+    <resultMap id="alertBreakerAuditResultMap" type="neatlogic.framework.alert.dto.breaker.AlertBreakerAuditVo">
+        <id column="id" property="id"/>
+        <result column="policyId" property="policyId"/>
+        <result column="policyName" property="policyName"/>
+        <result column="policyHandler" property="policyHandler"/>
+        <result column="policyConfigStr" property="policyConfigStr" typeHandler="neatlogic.framework.dao.plugin.CompressHandler"/>
+        <result column="stateId" property="stateId"/>
+        <result column="stateDataStr" property="stateDataStr"/>
+        <result column="alertId" property="alertId"/>
+        <result column="eventHandlerAuditId" property="eventHandlerAuditId"/>
+        <result column="startTime" property="startTime"/>
+        <result column="endTime" property="endTime"/>
+        <result column="status" property="status"/>
+        <result column="error" property="error"/>
+    </resultMap>
+
+    <sql id="searchAlertBreakerPolicyCondition">
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (name like concat('%', #{keyword}, '%') or description like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="handler != null and handler != ''">
+                and handler = #{handler}
+            </if>
+            <if test="isActive != null">
+                and is_active = #{isActive}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getAlertBreakerPolicyById" parameterType="java.lang.Long" resultMap="alertBreakerPolicyResultMap">
+        select id,
+               name,
+               handler,
+               config as configStr,
+               is_active as isActive,
+               description
+        from alert_breaker_policy
+        where id = #{value}
+    </select>
+
+    <select id="searchAlertBreakerPolicy" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerPolicyVo" resultMap="alertBreakerPolicyResultMap">
+        select id,
+               name,
+               handler,
+               config as configStr,
+               is_active as isActive,
+               description
+        from alert_breaker_policy
+        <include refid="searchAlertBreakerPolicyCondition"></include>
+        order by id desc
+        limit #{startNum}, #{pageSize}
+    </select>
+
+    <select id="searchAlertBreakerPolicyCount" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerPolicyVo" resultType="int">
+        select count(1)
+        from alert_breaker_policy
+        <include refid="searchAlertBreakerPolicyCondition"></include>
+    </select>
+
+    <select id="checkAlertBreakerPolicyNameIsExists" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerPolicyVo" resultType="int">
+        select count(1)
+        from alert_breaker_policy
+        where name = #{name}
+          and id != #{id}
+    </select>
+
+    <select id="checkAlertBreakerPolicyIsInUsed" parameterType="java.lang.Long" resultType="int">
+        select count(1)
+        from alert_event_handler_breaker_policy_rel
+        where policy_id = #{value}
+    </select>
+
+    <insert id="insertAlertBreakerPolicy" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerPolicyVo">
+        insert into alert_breaker_policy
+            (id, name, handler, config, is_active, description, fcd, lcd)
+        values
+            (#{id}, #{name}, #{handler}, #{configStr,typeHandler=CompressHandler}, #{isActive}, #{description}, now(3), now(3))
+    </insert>
+
+    <update id="updateAlertBreakerPolicy" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerPolicyVo">
+        update alert_breaker_policy
+        set name = #{name},
+            handler = #{handler},
+            config = #{configStr,typeHandler=CompressHandler},
+            is_active = #{isActive},
+            description = #{description},
+            lcd = now(3)
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAlertBreakerPolicy" parameterType="java.lang.Long">
+        delete from alert_breaker_policy where id = #{value}
+    </delete>
+
+    <select id="getBreakerPolicyListByEventHandlerId" parameterType="java.lang.Long"
+            resultMap="alertEventHandlerBreakerPolicyResultMap">
+        select a.id,
+               a.event_handler_id as eventHandlerId,
+               a.policy_id        as policyId,
+               b.name             as policyName,
+               b.handler          as policyHandler,
+               b.config           as policyConfigStr,
+               a.sort
+        from alert_event_handler_breaker_policy_rel a
+                 left join alert_breaker_policy b on a.policy_id = b.id
+        where a.event_handler_id = #{value}
+        order by a.sort
+    </select>
+
+    <select id="getBreakerPolicyListByEventHandlerIdList" resultMap="alertEventHandlerBreakerPolicyResultMap">
+        select a.id,
+               a.event_handler_id as eventHandlerId,
+               a.policy_id        as policyId,
+               b.name             as policyName,
+               b.handler          as policyHandler,
+               b.config           as policyConfigStr,
+               a.sort
+        from alert_event_handler_breaker_policy_rel a
+                 left join alert_breaker_policy b on a.policy_id = b.id
+        where a.event_handler_id in
+        <foreach collection="list" item="eventHandlerId" open="(" separator="," close=")">
+            #{eventHandlerId}
+        </foreach>
+        order by a.event_handler_id, a.sort
+    </select>
+
+    <insert id="insertEventHandlerBreakerPolicy" parameterType="neatlogic.framework.alert.dto.breaker.AlertEventHandlerBreakerPolicyVo">
+        insert into alert_event_handler_breaker_policy_rel
+            (id, event_handler_id, policy_id, sort)
+        values
+            (#{id}, #{eventHandlerId}, #{policyId}, #{sort})
+    </insert>
+
+    <delete id="deleteEventHandlerBreakerPolicyByEventHandlerId" parameterType="java.lang.Long">
+        delete from alert_event_handler_breaker_policy_rel where event_handler_id = #{value}
+    </delete>
+
+    <insert id="insertAlertBreakerStateIfNotExists" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo">
+        insert ignore into alert_breaker_state
+            (id, policy_id, unique_key, state, trigger_count, skip_count, fcd, lcd)
+        values
+            (#{id}, #{policyId}, #{uniqueKey}, #{state}, 0, 0, now(3), now(3))
+    </insert>
+
+    <select id="getAlertBreakerStateForUpdate" resultMap="alertBreakerStateResultMap">
+        select id,
+               policy_id         as policyId,
+               unique_key        as uniqueKey,
+               state,
+               window_start      as windowStart,
+               window_end        as windowEnd,
+               trigger_count     as triggerCount,
+               open_time         as openTime,
+               open_until        as openUntil,
+               last_trigger_time as lastTriggerTime,
+               skip_count        as skipCount,
+               data
+        from alert_breaker_state
+        where policy_id = #{policyId}
+          and unique_key = #{uniqueKey}
+        for update
+    </select>
+
+    <update id="updateAlertBreakerState" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo">
+        update alert_breaker_state
+        set state = #{state},
+            window_start = #{windowStart},
+            window_end = #{windowEnd},
+            trigger_count = #{triggerCount},
+            open_time = #{openTime},
+            open_until = #{openUntil},
+            last_trigger_time = #{lastTriggerTime},
+            skip_count = #{skipCount},
+            data = #{data},
+            lcd = now(3)
+        where id = #{id}
+    </update>
+
+    <select id="searchAlertBreakerStateCount" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo" resultType="int">
+        select count(1)
+        from alert_breaker_state
+        where policy_id = #{policyId}
+    </select>
+
+    <select id="searchAlertBreakerState" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo" resultMap="alertBreakerStateResultMap">
+        select id,
+               policy_id         as policyId,
+               unique_key        as uniqueKey,
+               state,
+               window_start      as windowStart,
+               window_end        as windowEnd,
+               trigger_count     as triggerCount,
+               open_time         as openTime,
+               open_until        as openUntil,
+               last_trigger_time as lastTriggerTime,
+               skip_count        as skipCount,
+               data
+        from alert_breaker_state
+        where policy_id = #{policyId}
+        order by last_trigger_time desc, id desc
+        limit #{startNum}, #{pageSize}
+    </select>
+
+    <insert id="insertAlertBreakerAudit" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerAuditVo">
+        insert into alert_breaker_audit
+            (id, policy_id, state_id, alert_id, event_handler_audit_id, start_time, end_time, status, error)
+        values
+            (#{id}, #{policyId}, #{stateId}, #{alertId}, #{eventHandlerAuditId}, #{startTime}, #{endTime}, #{status}, #{error})
+    </insert>
+
+    <select id="searchAlertBreakerAuditCount" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerAuditVo" resultType="int">
+        select count(1)
+        from alert_breaker_audit
+        where policy_id = #{policyId}
+    </select>
+
+    <select id="searchAlertBreakerAudit" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerAuditVo" resultMap="alertBreakerAuditResultMap">
+        select a.id,
+               a.policy_id              as policyId,
+               b.name                   as policyName,
+               b.handler                as policyHandler,
+               b.config                 as policyConfigStr,
+               a.state_id               as stateId,
+               c.data                   as stateDataStr,
+               a.alert_id               as alertId,
+               a.event_handler_audit_id as eventHandlerAuditId,
+               a.start_time             as startTime,
+               a.end_time               as endTime,
+               a.status,
+               a.error
+        from alert_breaker_audit a
+                 left join alert_breaker_policy b on a.policy_id = b.id
+                 left join alert_breaker_state c on a.state_id = c.id
+        where a.policy_id = #{policyId}
+        order by a.start_time desc, a.id desc
+        limit #{startNum}, #{pageSize}
+    </select>
+
+    <select id="getAlertBreakerAuditListByEventHandlerAuditIdList" resultMap="alertBreakerAuditResultMap">
+        select a.id,
+               a.policy_id              as policyId,
+               b.name                   as policyName,
+               b.handler                as policyHandler,
+               b.config                 as policyConfigStr,
+               a.state_id               as stateId,
+               c.data                   as stateDataStr,
+               a.alert_id               as alertId,
+               a.event_handler_audit_id as eventHandlerAuditId,
+               a.start_time             as startTime,
+               a.end_time               as endTime,
+               a.status,
+               a.error
+        from alert_breaker_audit a
+                 left join alert_breaker_policy b on a.policy_id = b.id
+                 left join alert_breaker_state c on a.state_id = c.id
+        where a.event_handler_audit_id in
+        <foreach collection="list" item="eventHandlerAuditId" open="(" separator="," close=")">
+            #{eventHandlerAuditId}
+        </foreach>
+        order by a.id
+    </select>
+
+</mapper>

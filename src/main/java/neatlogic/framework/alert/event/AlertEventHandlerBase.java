@@ -12,6 +12,7 @@
 
 package neatlogic.framework.alert.event;
 
+import neatlogic.framework.alert.breaker.AlertBreakerManager;
 import neatlogic.framework.alert.crossover.IAlertSuppressionCrossoverService;
 import neatlogic.framework.alert.dao.mapper.AlertEventMapper;
 import neatlogic.framework.alert.dto.*;
@@ -114,11 +115,15 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                     }
                 }
 
+                if (doBreaker(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo.getId())) {
+                    alertEventStatusVo.setStatus(AlertEventStatus.BREAKED.getValue());
+                } else {
+                    alertVo = myTrigger(alertEventHandlerVo, alertEventPluginVo, alertVo, alertEventHandlerAuditVo, alertEventStatusVo);
+                }
 
-                alertVo = myTrigger(alertEventHandlerVo, alertEventPluginVo, alertVo, alertEventHandlerAuditVo, alertEventStatusVo);
                 TransactionUtil.commitTx(ts);
-                if (alertEventStatusVo.isSkipped()) {
-                    alertEventHandlerAuditVo.setStatus(AlertEventStatus.SKIPPED.getValue());
+                if (alertEventStatusVo.getStatus() != null) {
+                    alertEventHandlerAuditVo.setStatus(alertEventStatusVo.getStatus());
                 } else {
                     //如果审计记录状态不是RUNNING，代表已经在插件内部被修改，这里不再设置状态，以插件修改状态为准
                     if (Objects.equals(alertEventHandlerAuditVo.getStatus(), AlertEventStatus.RUNNING.getValue())) {
@@ -143,6 +148,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                 throw e; // 抛出异常以便上层处理
             } finally {
                 alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);
+                afterBreaker(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo);
             }
         } else {
             //异步作业，不能修改alertVo信息
@@ -163,10 +169,14 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                                 throw new AlertEventPluginSuppressException(alertEventHandlerVo.getHandlerName());
                             }
                         }
-                        myTrigger(alertEventHandlerVo, alertEventPluginVo, finalAlertVo, alertEventHandlerAuditVo, alertEventStatusVo);
+                        if (doBreaker(alertEventHandlerVo, finalAlertVo, alertEventHandlerAuditVo.getId())) {
+                            alertEventStatusVo.setStatus(AlertEventStatus.BREAKED.getValue());
+                        } else {
+                            myTrigger(alertEventHandlerVo, alertEventPluginVo, finalAlertVo, alertEventHandlerAuditVo, alertEventStatusVo);
+                        }
                         TransactionUtil.commitTx(ts);
-                        if (alertEventStatusVo.isSkipped()) {
-                            alertEventHandlerAuditVo.setStatus(AlertEventStatus.SKIPPED.getValue());
+                        if (alertEventStatusVo.getStatus() != null) {
+                            alertEventHandlerAuditVo.setStatus(alertEventStatusVo.getStatus());
                         } else {
                             //如果审计记录状态不是RUNNING，代表已经在插件内部被修改，这里不再设置状态，以插件修改状态为准
                             if (Objects.equals(alertEventHandlerAuditVo.getStatus(), AlertEventStatus.RUNNING.getValue())) {
@@ -189,6 +199,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                         alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
                     } finally {
                         alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);
+                        afterBreaker(alertEventHandlerVo, finalAlertVo, alertEventHandlerAuditVo);
                     }
                 }
             });
@@ -196,6 +207,14 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
 
 
         return alertVo;
+    }
+
+    private boolean doBreaker(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long eventHandlerAuditId) {
+        return AlertBreakerManager.doBreak(alertEventHandlerVo, alertVo, eventHandlerAuditId);
+    }
+
+    private void afterBreaker(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo) {
+        AlertBreakerManager.afterBreak(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo);
     }
 
     protected abstract AlertVo myTrigger(AlertEventHandlerVo alertEventHandlerVo, AlertEventPluginVo alertEventPluginVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo, AlertEventStatusVo alertEventStatusVo) throws AlertEventHandlerTriggerException;

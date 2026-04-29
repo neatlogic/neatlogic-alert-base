@@ -15,6 +15,7 @@ package neatlogic.framework.alert.dto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import neatlogic.framework.alert.dto.breaker.AlertEventHandlerBreakerPolicyVo;
 import neatlogic.framework.alert.event.AlertEventHandlerFactory;
 import neatlogic.framework.alert.event.AlertEventType;
 import neatlogic.framework.alert.event.IAlertEventHandler;
@@ -67,6 +68,8 @@ public class AlertEventHandlerVo implements Serializable {
     private Long typeId;
     @EntityField(name = "类型名称", type = ApiParamType.STRING)
     private String typeLabel;
+    @EntityField(name = "熔断策略列表", type = ApiParamType.JSONARRAY)
+    private List<AlertEventHandlerBreakerPolicyVo> breakerPolicyList;
 
     @Override
     public boolean equals(Object o) {
@@ -109,6 +112,14 @@ public class AlertEventHandlerVo implements Serializable {
 
     public void setTypeLabel(String typeLabel) {
         this.typeLabel = typeLabel;
+    }
+
+    public List<AlertEventHandlerBreakerPolicyVo> getBreakerPolicyList() {
+        return breakerPolicyList;
+    }
+
+    public void setBreakerPolicyList(List<AlertEventHandlerBreakerPolicyVo> breakerPolicyList) {
+        this.breakerPolicyList = breakerPolicyList;
     }
 
     public void addHandler(AlertEventHandlerVo handler) {

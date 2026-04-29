@@ -15,6 +15,7 @@ package neatlogic.framework.alert.dto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import neatlogic.framework.alert.dto.breaker.AlertBreakerAuditVo;
 import neatlogic.framework.alert.enums.AlertEventStatus;
 import neatlogic.framework.alert.event.AlertEventHandlerFactory;
 import neatlogic.framework.alert.event.AlertEventType;
@@ -74,6 +75,8 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
     private long timeCost;
     @EntityField(name = "子记录")
     private List<AlertEventHandlerAuditVo> childAuditList;
+    @EntityField(name = "熔断策略审计")
+    private List<AlertBreakerAuditVo> breakerAuditList;
     @JSONField(serialize = false)
     private Integer serverId;
 
@@ -252,6 +255,14 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
 
     public void setChildAuditList(List<AlertEventHandlerAuditVo> childAuditList) {
         this.childAuditList = childAuditList;
+    }
+
+    public List<AlertBreakerAuditVo> getBreakerAuditList() {
+        return breakerAuditList;
+    }
+
+    public void setBreakerAuditList(List<AlertBreakerAuditVo> breakerAuditList) {
+        this.breakerAuditList = breakerAuditList;
     }
 
     public JSONObject getConfig() {

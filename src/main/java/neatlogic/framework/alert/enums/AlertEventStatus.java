@@ -18,6 +18,7 @@ public enum AlertEventStatus {
     RUNNING("running", "执行中"),
     SUCCEED("succeed", "已成功"),
     SKIPPED("skipped", "已跳过"),
+    BREAKED("breaked", "已熔断"),
     SUPPRESS("suppress", "已屏蔽"),
     DISABLED("disabled", "已禁用"),
     FAILED("failed", "已失败");
