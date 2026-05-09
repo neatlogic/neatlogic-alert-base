@@ -43,6 +43,8 @@ public interface AlertEventMapper {
 
     List<AlertEventHandlerVo> listEventHandler(AlertEventHandlerVo alertEventHandlerVo);
 
+    List<AlertEventHandlerVo> searchEventHandler(AlertEventHandlerVo alertEventHandlerVo);
+
     List<AlertEventHandlerVo> getAlertEventHandlerByEvent(@Param("event") String event, @Param("alertType") Long alertType);
 
     List<AlertEventHandlerVo> getAlertEventHandlerByParentId(Long parentId);

@@ -293,6 +293,38 @@
         ORDER BY sort;
     </select>
 
+    <select id="searchEventHandler"
+            parameterType="neatlogic.framework.alert.dto.AlertEventHandlerVo"
+            resultMap="eventHandlerResultMap">
+        SELECT
+        a.id,
+        a.uuid,
+        a.name,
+        a.alert_type as alertType,
+        a.parent_id as parentId,
+        a.handler,
+        a.event,
+        a.sort,
+        a.is_async as isAsync,
+        a.is_active as isActive,
+        a.config as configStr,
+        a.type_id as typeId,
+        (select label from alert_event_handler_type x where x.id = a.type_id) as typeLabel
+        FROM alert_event_handler a
+        <where>
+            <if test="event != null and event != ''">
+                and a.event = #{event}
+            </if>
+            <if test="alertType != null">
+                and a.alert_type = #{alertType}
+            </if>
+            <if test="handler != null and handler != ''">
+                and a.handler = #{handler}
+            </if>
+        </where>
+        ORDER BY a.sort
+    </select>
+
     <select id="getAlertEventHandlerMaxSort" resultType="java.lang.Integer"
             parameterType="neatlogic.framework.alert.dto.AlertEventHandlerVo">
         select max(sort)

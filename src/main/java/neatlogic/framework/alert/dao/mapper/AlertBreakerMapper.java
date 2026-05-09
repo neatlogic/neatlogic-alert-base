@@ -12,10 +12,7 @@
 
 package neatlogic.framework.alert.dao.mapper;
 
-import neatlogic.framework.alert.dto.breaker.AlertBreakerAuditVo;
-import neatlogic.framework.alert.dto.breaker.AlertBreakerPolicyVo;
-import neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo;
-import neatlogic.framework.alert.dto.breaker.AlertEventHandlerBreakerPolicyVo;
+import neatlogic.framework.alert.dto.breaker.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -49,7 +46,29 @@ public interface AlertBreakerMapper {
 
     AlertBreakerStateVo getAlertBreakerStateForUpdate(@Param("policyId") Long policyId, @Param("uniqueKey") String uniqueKey);
 
+    AlertBreakerStateVo getAlertBreakerStateByIdForUpdate(Long id);
+
+    AlertBreakerStateVo getAlertBreakerStateById(Long id);
+
     void updateAlertBreakerState(AlertBreakerStateVo vo);
+
+    int updateCollectingAlertBreakerStateToFlushing(Long id);
+
+    int insertAlertBreakerCollectItem(AlertBreakerCollectItemVo vo);
+
+    int checkAlertBreakerCollectItemIsExists(@Param("stateId") Long stateId, @Param("alertId") Long alertId);
+
+    int getAlertBreakerCollectItemCountByStateId(Long stateId);
+
+    List<Long> getAlertBreakerCollectAlertIdListByStateId(Long stateId);
+
+    List<Long> getAlertBreakerCollectAlertIdListByStateIdAndBaselineAlertId(@Param("stateId") Long stateId, @Param("baselineAlertId") Long baselineAlertId);
+
+    void deleteAlertBreakerCollectItemByStateId(Long stateId);
+
+    List<AlertBreakerStateVo> getExpiredOpenAlertBreakerStateList(@Param("handler") String handler, @Param("limit") Integer limit);
+
+    List<AlertBreakerStateVo> getCollectingAlertBreakerStateList(@Param("handler") String handler, @Param("lastId") Long lastId, @Param("limit") Integer limit);
 
     int searchAlertBreakerStateCount(AlertBreakerStateVo vo);
 

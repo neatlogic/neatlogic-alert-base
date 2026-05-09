@@ -46,6 +46,7 @@
         <result column="stateId" property="stateId"/>
         <result column="stateDataStr" property="stateDataStr"/>
         <result column="alertId" property="alertId"/>
+        <result column="alertTitle" property="alertTitle"/>
         <result column="eventHandlerAuditId" property="eventHandlerAuditId"/>
         <result column="startTime" property="startTime"/>
         <result column="endTime" property="endTime"/>
@@ -201,6 +202,41 @@
         for update
     </select>
 
+    <select id="getAlertBreakerStateByIdForUpdate" parameterType="java.lang.Long" resultMap="alertBreakerStateResultMap">
+        select id,
+               policy_id         as policyId,
+               unique_key        as uniqueKey,
+               state,
+               window_start      as windowStart,
+               window_end        as windowEnd,
+               trigger_count     as triggerCount,
+               open_time         as openTime,
+               open_until        as openUntil,
+               last_trigger_time as lastTriggerTime,
+               skip_count        as skipCount,
+               data
+        from alert_breaker_state
+        where id = #{value}
+        for update
+    </select>
+
+    <select id="getAlertBreakerStateById" parameterType="java.lang.Long" resultMap="alertBreakerStateResultMap">
+        select id,
+               policy_id         as policyId,
+               unique_key        as uniqueKey,
+               state,
+               window_start      as windowStart,
+               window_end        as windowEnd,
+               trigger_count     as triggerCount,
+               open_time         as openTime,
+               open_until        as openUntil,
+               last_trigger_time as lastTriggerTime,
+               skip_count        as skipCount,
+               data
+        from alert_breaker_state
+        where id = #{value}
+    </select>
+
     <update id="updateAlertBreakerState" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo">
         update alert_breaker_state
         set state = #{state},
@@ -215,6 +251,107 @@
             lcd = now(3)
         where id = #{id}
     </update>
+
+    <update id="updateCollectingAlertBreakerStateToFlushing" parameterType="java.lang.Long">
+        update alert_breaker_state
+        set state = 'FLUSHING',
+            lcd = now(3)
+        where id = #{value}
+          and state = 'COLLECTING'
+          and open_until is not null
+          and open_until &lt;= now(3)
+    </update>
+
+    <insert id="insertAlertBreakerCollectItem" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerCollectItemVo">
+        insert ignore into alert_breaker_collect_item
+            (id, state_id, policy_id, alert_id, fcd)
+        values
+            (#{id}, #{stateId}, #{policyId}, #{alertId}, now(3))
+    </insert>
+
+    <select id="checkAlertBreakerCollectItemIsExists" resultType="int">
+        select count(1)
+        from alert_breaker_collect_item
+        where state_id = #{stateId}
+          and alert_id = #{alertId}
+    </select>
+
+    <select id="getAlertBreakerCollectItemCountByStateId" parameterType="java.lang.Long" resultType="int">
+        select count(1)
+        from alert_breaker_collect_item
+        where state_id = #{value}
+    </select>
+
+    <select id="getAlertBreakerCollectAlertIdListByStateId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select alert_id
+        from alert_breaker_collect_item
+        where state_id = #{value}
+        order by id
+    </select>
+
+    <select id="getAlertBreakerCollectAlertIdListByStateIdAndBaselineAlertId" resultType="java.lang.Long">
+        select alert_id
+        from alert_breaker_collect_item
+        where state_id = #{stateId}
+          and alert_id &gt;= #{baselineAlertId}
+        order by id
+    </select>
+
+    <delete id="deleteAlertBreakerCollectItemByStateId" parameterType="java.lang.Long">
+        delete from alert_breaker_collect_item where state_id = #{value}
+    </delete>
+
+    <select id="getExpiredOpenAlertBreakerStateList" resultMap="alertBreakerStateResultMap">
+        select a.id,
+               a.policy_id         as policyId,
+               a.unique_key        as uniqueKey,
+               a.state,
+               a.window_start      as windowStart,
+               a.window_end        as windowEnd,
+               a.trigger_count     as triggerCount,
+               a.open_time         as openTime,
+               a.open_until        as openUntil,
+               a.last_trigger_time as lastTriggerTime,
+               a.skip_count        as skipCount,
+               a.data
+        from alert_breaker_state a
+                 left join alert_breaker_policy b on a.policy_id = b.id
+        where a.state = 'COLLECTING'
+          and a.open_until is not null
+          and a.open_until &lt;= now(3)
+          and b.is_active = 1
+        <if test="handler != null and handler != ''">
+          and b.handler = #{handler}
+        </if>
+        order by a.open_until, a.id
+        limit #{limit}
+    </select>
+
+    <select id="getCollectingAlertBreakerStateList" resultMap="alertBreakerStateResultMap">
+        select a.id,
+               a.policy_id         as policyId,
+               a.unique_key        as uniqueKey,
+               a.state,
+               a.window_start      as windowStart,
+               a.window_end        as windowEnd,
+               a.trigger_count     as triggerCount,
+               a.open_time         as openTime,
+               a.open_until        as openUntil,
+               a.last_trigger_time as lastTriggerTime,
+               a.skip_count        as skipCount,
+               a.data
+        from alert_breaker_state a
+                 left join alert_breaker_policy b on a.policy_id = b.id
+        where a.state = 'COLLECTING'
+          and a.open_until is not null
+          and b.is_active = 1
+          and a.id &gt; #{lastId}
+        <if test="handler != null and handler != ''">
+          and b.handler = #{handler}
+        </if>
+        order by a.id
+        limit #{limit}
+    </select>
 
     <select id="searchAlertBreakerStateCount" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo" resultType="int">
         select count(1)
@@ -263,6 +400,7 @@
                a.state_id               as stateId,
                c.data                   as stateDataStr,
                a.alert_id               as alertId,
+               d.title                  as alertTitle,
                a.event_handler_audit_id as eventHandlerAuditId,
                a.start_time             as startTime,
                a.end_time               as endTime,
@@ -271,6 +409,7 @@
         from alert_breaker_audit a
                  left join alert_breaker_policy b on a.policy_id = b.id
                  left join alert_breaker_state c on a.state_id = c.id
+                 left join alert d on a.alert_id = d.id
         where a.policy_id = #{policyId}
         order by a.start_time desc, a.id desc
         limit #{startNum}, #{pageSize}

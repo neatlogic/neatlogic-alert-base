@@ -52,10 +52,23 @@ public class AlertBreakerManager {
             }
             AlertBreakerResultVo resultVo = breakerHandler.execute(policyVo, alertVo, eventHandlerVo, eventHandlerAuditId);
             if (resultVo != null && resultVo.isBreaked()) {
+                breakerHandler.collect(policyVo, alertVo, eventHandlerVo, eventHandlerAuditId, resultVo);
                 return true;
             }
         }
         return false;
+    }
+
+    public static void flush(AlertBreakerPolicyVo policyVo, neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo stateVo) {
+        if (policyVo == null || !Objects.equals(policyVo.getIsActive(), 1)) {
+            return;
+        }
+        IAlertBreakerHandler breakerHandler = AlertBreakerHandlerFactory.getHandler(policyVo.getHandler());
+        if (breakerHandler == null) {
+            logger.warn("Alert breaker handler not found: {}", policyVo.getHandler());
+            return;
+        }
+        breakerHandler.flush(policyVo, stateVo);
     }
 
     public static void afterBreak(AlertEventHandlerVo eventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo eventHandlerAuditVo) {

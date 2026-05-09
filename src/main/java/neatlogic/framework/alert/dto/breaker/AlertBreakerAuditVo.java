@@ -37,6 +37,7 @@ public class AlertBreakerAuditVo extends BasePageVo {
     @JSONField(serialize = false)
     private String stateDataStr;
     private Long alertId;
+    private String alertTitle;
     private Long eventHandlerAuditId;
     private Date startTime;
     private Date endTime;
@@ -159,6 +160,14 @@ public class AlertBreakerAuditVo extends BasePageVo {
 
     public void setAlertId(Long alertId) {
         this.alertId = alertId;
+    }
+
+    public String getAlertTitle() {
+        return alertTitle;
+    }
+
+    public void setAlertTitle(String alertTitle) {
+        this.alertTitle = alertTitle;
     }
 
     public Long getEventHandlerAuditId() {
