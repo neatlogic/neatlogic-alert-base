@@ -13,9 +13,13 @@
 package neatlogic.framework.alert.dto.breaker;
 
 import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.alert.dto.AlertVo;
+
+import java.util.List;
 
 public class AlertBreakerFlushResultVo {
     private JSONObject data;
+    private List<AlertVo> alertList;
 
     public JSONObject getData() {
         return data;
@@ -23,5 +27,13 @@ public class AlertBreakerFlushResultVo {
 
     public void setData(JSONObject data) {
         this.data = data;
+    }
+
+    public List<AlertVo> getAlertList() {
+        return alertList;
+    }
+
+    public void setAlertList(List<AlertVo> alertList) {
+        this.alertList = alertList;
     }
 }

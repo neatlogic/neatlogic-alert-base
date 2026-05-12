@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.alert.breaker.AlertBreakerHandlerFactory;
 import neatlogic.framework.alert.breaker.IAlertBreakerHandler;
+import neatlogic.framework.alert.enums.AlertBreakerStatus;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.util.SnowflakeUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +43,7 @@ public class AlertBreakerAuditVo extends BasePageVo {
     private Date startTime;
     private Date endTime;
     private String status;
+    private String statusText;
     private String error;
     private long timeCost;
 
@@ -200,6 +202,17 @@ public class AlertBreakerAuditVo extends BasePageVo {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getStatusText() {
+        if (StringUtils.isBlank(statusText) && StringUtils.isNotBlank(status)) {
+            statusText = AlertBreakerStatus.getText(status);
+        }
+        return statusText;
+    }
+
+    public void setStatusText(String statusText) {
+        this.statusText = statusText;
     }
 
     public String getError() {

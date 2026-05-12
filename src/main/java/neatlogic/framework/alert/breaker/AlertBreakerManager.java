@@ -18,7 +18,11 @@ import neatlogic.framework.alert.dto.AlertEventHandlerVo;
 import neatlogic.framework.alert.dto.AlertVo;
 import neatlogic.framework.alert.dto.breaker.AlertBreakerPolicyVo;
 import neatlogic.framework.alert.dto.breaker.AlertBreakerResultVo;
+import neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo;
 import neatlogic.framework.alert.dto.breaker.AlertEventHandlerBreakerPolicyVo;
+import neatlogic.framework.scheduler.core.IJob;
+import neatlogic.framework.scheduler.core.SchedulerManager;
+import neatlogic.framework.scheduler.dto.JobObject;
 import neatlogic.framework.util.SpringContextUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -29,6 +33,7 @@ import java.util.Objects;
 
 public class AlertBreakerManager {
     private static final Logger logger = LoggerFactory.getLogger(AlertBreakerManager.class);
+    private static final String ALERT_BREAKER_EXPIRE_JOB_CLASS = "neatlogic.module.alert.schedule.handler.AlertBreakerFlushScheduleJob";
 
     private AlertBreakerManager() {
 
@@ -51,6 +56,9 @@ public class AlertBreakerManager {
                 continue;
             }
             AlertBreakerResultVo resultVo = breakerHandler.execute(policyVo, alertVo, eventHandlerVo, eventHandlerAuditId);
+            if (resultVo != null && resultVo.isOpenStarted()) {
+                loadExpireJob(resultVo);
+            }
             if (resultVo != null && resultVo.isBreaked()) {
                 breakerHandler.collect(policyVo, alertVo, eventHandlerVo, eventHandlerAuditId, resultVo);
                 return true;
@@ -71,6 +79,18 @@ public class AlertBreakerManager {
         breakerHandler.flush(policyVo, stateVo);
     }
 
+    public static void recover(AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo) {
+        if (policyVo == null || !Objects.equals(policyVo.getIsActive(), 1)) {
+            return;
+        }
+        IAlertBreakerHandler breakerHandler = AlertBreakerHandlerFactory.getHandler(policyVo.getHandler());
+        if (breakerHandler == null) {
+            logger.warn("Alert breaker handler not found: {}", policyVo.getHandler());
+            return;
+        }
+        breakerHandler.recover(policyVo, stateVo);
+    }
+
     public static void afterBreak(AlertEventHandlerVo eventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo eventHandlerAuditVo) {
         AlertBreakerMapper mapper = SpringContextUtil.getBean(AlertBreakerMapper.class);
         List<AlertEventHandlerBreakerPolicyVo> policyRelList = mapper.getBreakerPolicyListByEventHandlerId(eventHandlerVo.getId());
@@ -89,5 +109,26 @@ public class AlertBreakerManager {
             }
             breakerHandler.after(policyVo, alertVo, eventHandlerVo, eventHandlerAuditVo);
         }
+    }
+
+    public static String buildExpireJobName(Long stateId) {
+        return "ALERT-BREAKER-EXPIRE-" + stateId;
+    }
+
+    private static void loadExpireJob(AlertBreakerResultVo resultVo) {
+        if (resultVo == null || resultVo.getStateId() == null || resultVo.getPolicyId() == null || resultVo.getOpenUntil() == null) {
+            return;
+        }
+        SchedulerManager schedulerManager = SpringContextUtil.getBean(SchedulerManager.class);
+        IJob jobHandler = SchedulerManager.getHandler(ALERT_BREAKER_EXPIRE_JOB_CLASS);
+        if (schedulerManager == null || jobHandler == null) {
+            return;
+        }
+        JobObject jobObject = new JobObject.Builder(buildExpireJobName(resultVo.getStateId()), jobHandler.getGroupName(), jobHandler.getClassName())
+                .addData("stateId", resultVo.getStateId())
+                .addData("policyId", resultVo.getPolicyId())
+                .withBeginTime(resultVo.getOpenUntil())
+                .build();
+        schedulerManager.loadJob(jobObject);
     }
 }

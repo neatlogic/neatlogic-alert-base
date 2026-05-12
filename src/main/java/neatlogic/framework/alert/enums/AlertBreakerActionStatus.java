@@ -14,15 +14,14 @@ package neatlogic.framework.alert.enums;
 
 import neatlogic.framework.util.$;
 
-public enum AlertBreakerStatus {
-    PASS("pass", "通过"),
-    OPEN("open", "已熔断"),
-    FAILED("failed", "异常");
+public enum AlertBreakerActionStatus {
+    SUCCEED("succeed", "成功"),
+    FAILED("failed", "失败");
 
     private final String value;
     private final String text;
 
-    AlertBreakerStatus(String _value, String _text) {
+    AlertBreakerActionStatus(String _value, String _text) {
         this.value = _value;
         this.text = _text;
     }
@@ -36,7 +35,7 @@ public enum AlertBreakerStatus {
     }
 
     public static String getText(String name) {
-        for (AlertBreakerStatus s : AlertBreakerStatus.values()) {
+        for (AlertBreakerActionStatus s : AlertBreakerActionStatus.values()) {
             if (s.getValue().equalsIgnoreCase(name) || s.name().equalsIgnoreCase(name)) {
                 return s.getText();
             }

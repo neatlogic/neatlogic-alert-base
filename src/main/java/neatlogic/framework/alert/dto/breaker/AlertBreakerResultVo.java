@@ -12,10 +12,23 @@
 
 package neatlogic.framework.alert.dto.breaker;
 
+import java.util.Date;
+
 public class AlertBreakerResultVo {
+    private Long policyId;
     private Long stateId;
+    private Date openUntil;
     private boolean isBreaked;
+    private boolean isOpenStarted;
     private String status;
+
+    public Long getPolicyId() {
+        return policyId;
+    }
+
+    public void setPolicyId(Long policyId) {
+        this.policyId = policyId;
+    }
 
     public Long getStateId() {
         return stateId;
@@ -25,12 +38,28 @@ public class AlertBreakerResultVo {
         this.stateId = stateId;
     }
 
+    public Date getOpenUntil() {
+        return openUntil;
+    }
+
+    public void setOpenUntil(Date openUntil) {
+        this.openUntil = openUntil;
+    }
+
     public boolean isBreaked() {
         return isBreaked;
     }
 
     public void setBreaked(boolean breaked) {
         isBreaked = breaked;
+    }
+
+    public boolean isOpenStarted() {
+        return isOpenStarted;
+    }
+
+    public void setOpenStarted(boolean openStarted) {
+        isOpenStarted = openStarted;
     }
 
     public String getStatus() {

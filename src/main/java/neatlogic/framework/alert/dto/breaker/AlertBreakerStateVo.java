@@ -20,6 +20,7 @@ import java.util.Date;
 public class AlertBreakerStateVo extends BasePageVo {
     private Long id;
     private Long policyId;
+    private Long eventHandlerId;
     private String uniqueKey;
     private String state;
     private Date windowStart;
@@ -48,6 +49,14 @@ public class AlertBreakerStateVo extends BasePageVo {
 
     public void setPolicyId(Long policyId) {
         this.policyId = policyId;
+    }
+
+    public Long getEventHandlerId() {
+        return eventHandlerId;
+    }
+
+    public void setEventHandlerId(Long eventHandlerId) {
+        this.eventHandlerId = eventHandlerId;
     }
 
     public String getUniqueKey() {

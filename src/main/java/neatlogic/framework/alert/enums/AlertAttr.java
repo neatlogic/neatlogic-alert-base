@@ -49,6 +49,12 @@ public class AlertAttr {
         return returnList;
     }
 
+    public static List<AlertAttrDefineVo> getAggregateConstAttrList() {
+        List<AlertAttrDefineVo> returnList = new ArrayList<>(attrList);
+        returnList.removeIf(d -> !d.getIsAggregate());
+        return returnList;
+    }
+
     private static final List<AlertAttrDefineVo> attrList = new ArrayList<>();
 
     static {
@@ -450,6 +456,24 @@ public class AlertAttr {
             this.put("valueName", "name");
             this.put("textName", "name");
         }}).setIsCondition(true));
+
+        attrList.add(new AlertAttrDefineVo()
+                .setName("alertCount")
+                .setLabel("聚合告警数量")
+                .setFreemarkerSnippet("${DATA.alertCount}")
+                .setIsAggregate(true));
+
+        attrList.add(new AlertAttrDefineVo()
+                .setName("alertList")
+                .setLabel("聚合告警列表HTML")
+                .setFreemarkerSnippet("${DATA.alertList}")
+                .setIsAggregate(true));
+
+        attrList.add(new AlertAttrDefineVo()
+                .setName("alertItemList")
+                .setLabel("聚合告警明细列表")
+                .setFreemarkerSnippet("${DATA.alertItemList}")
+                .setIsAggregate(true));
 
     }
 }

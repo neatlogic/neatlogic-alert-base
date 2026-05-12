@@ -20,12 +20,12 @@ import neatlogic.framework.alert.enums.AlertEventStatus;
 import neatlogic.framework.alert.exception.alertevent.AlertEventHandlerTriggerException;
 import neatlogic.framework.alert.exception.alertevent.AlertEventPluginDisabledException;
 import neatlogic.framework.alert.exception.alertevent.AlertEventPluginSuppressException;
+import neatlogic.framework.alert.utils.AlertEventHandlerContextBuilder;
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
 import neatlogic.framework.crossover.CrossoverServiceFactory;
 import neatlogic.framework.exception.core.ApiRuntimeException;
 import neatlogic.framework.transaction.util.TransactionUtil;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,38 +39,19 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
     private final Logger logger = LoggerFactory.getLogger(AlertEventHandlerBase.class);
     @Resource
     protected AlertEventMapper alertEventMapper;
-
-
-    private AlertVo getAlertById(AlertVo alertVo) {
-        AlertVo newAlertVo = alertEventMapper.getAlertById(alertVo.getId());
-        if (newAlertVo != null) {
-            //补充完整的处理人信息和处理组信息
-            //补充分组领导
-            newAlertVo.setUserList(alertEventMapper.getAlertUserByAlertId(alertVo.getId()));
-            newAlertVo.setTeamList(alertEventMapper.getAlertTeamByAlertId(alertVo.getId()));
-            if (CollectionUtils.isNotEmpty(newAlertVo.getTeamList())) {
-                for (AlertTeamVo team : newAlertVo.getTeamList()) {
-                    team.setLeaderList(alertEventMapper.getAlertLeaderByTeamId(team.getTeamUuid()));
-                    team.setUserList(alertEventMapper.getAlertUserByTeamId(team.getTeamUuid()));
-                }
-            }
-            //传递上一个事件的执行结果
-            newAlertVo.setPrevEventResult(alertVo.getPrevEventResult());
-            return newAlertVo;
-        }
-        return alertVo;
-    }
+    @Resource
+    private AlertEventHandlerContextBuilder alertEventHandlerContextBuilder;
 
     public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo) {
         //重新获取alertVo，避免alertVo缺失了某些关键属性
-        alertVo = getAlertById(alertVo);
+        alertVo = alertEventHandlerContextBuilder.build(alertVo);
         alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, null);
         return alertVo;
     }
 
     public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long parentAuditId) {
         //重新获取alertVo，避免alertVo缺失了某些关键属性
-        alertVo = getAlertById(alertVo);
+        alertVo = alertEventHandlerContextBuilder.build(alertVo);
         alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, parentAuditId);
         return alertVo;
     }

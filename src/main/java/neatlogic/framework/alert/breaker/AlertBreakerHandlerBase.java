@@ -14,11 +14,13 @@ package neatlogic.framework.alert.breaker;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.alert.breaker.action.AlertBreakerActionManager;
 import neatlogic.framework.alert.dao.mapper.AlertBreakerMapper;
 import neatlogic.framework.alert.dto.AlertEventHandlerAuditVo;
 import neatlogic.framework.alert.dto.AlertEventHandlerVo;
 import neatlogic.framework.alert.dto.AlertVo;
 import neatlogic.framework.alert.dto.breaker.*;
+import neatlogic.framework.alert.enums.AlertBreakerActionTrigger;
 import neatlogic.framework.alert.enums.AlertBreakerState;
 import neatlogic.framework.alert.enums.AlertBreakerStatus;
 import neatlogic.framework.transaction.util.TransactionUtil;
@@ -30,6 +32,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 public abstract class AlertBreakerHandlerBase implements IAlertBreakerHandler {
     private static final Logger logger = LoggerFactory.getLogger(AlertBreakerHandlerBase.class);
@@ -44,14 +47,15 @@ public abstract class AlertBreakerHandlerBase implements IAlertBreakerHandler {
         auditVo.setAlertId(alertVo.getId());
         auditVo.setEventHandlerAuditId(eventHandlerAuditId);
         auditVo.setStartTime(new Date());
+        AlertBreakerResultVo resultVo = new AlertBreakerResultVo();
         try {
             String uniqueKey = myMakeUniqueKey(policyVo, alertVo, eventHandlerVo, eventHandlerAuditId);
-            AlertBreakerResultVo resultVo = new AlertBreakerResultVo();
             if (StringUtils.isBlank(uniqueKey)) {
                 resultVo.setBreaked(false);
                 resultVo.setStatus(AlertBreakerStatus.PASS.getValue());
             } else {
-                AlertBreakerStateVo stateVo = getOrCreateStateForUpdate(policyVo.getId(), uniqueKey);
+                AlertBreakerStateVo stateVo = getOrCreateStateForUpdate(policyVo.getId(), uniqueKey, eventHandlerVo == null ? null : eventHandlerVo.getId());
+                resultVo.setPolicyId(policyVo.getId());
                 resultVo.setStateId(stateVo.getId());
                 Date now = new Date();
                 if (isOpenStateValid(stateVo, now.getTime())) {
@@ -63,6 +67,8 @@ public abstract class AlertBreakerHandlerBase implements IAlertBreakerHandler {
                     applyCheckResult(stateVo, checkResultVo, now);
                     resultVo.setBreaked(checkResultVo != null && checkResultVo.isBreaked());
                     resultVo.setStatus(resultVo.isBreaked() ? AlertBreakerStatus.OPEN.getValue() : AlertBreakerStatus.PASS.getValue());
+                    resultVo.setOpenStarted(resultVo.isBreaked());
+                    resultVo.setOpenUntil(stateVo.getOpenUntil());
                 }
             }
             auditVo.setStateId(resultVo.getStateId());
@@ -70,28 +76,35 @@ public abstract class AlertBreakerHandlerBase implements IAlertBreakerHandler {
             auditVo.setEndTime(new Date());
             alertBreakerMapper.insertAlertBreakerAudit(auditVo);
             TransactionUtil.commitTx(ts);
-            return resultVo;
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
+            TransactionUtil.rollbackTx(ts);
+            TransactionStatus auditTs = TransactionUtil.openNewTx();
             auditVo.setStatus(AlertBreakerStatus.FAILED.getValue());
             auditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
             auditVo.setEndTime(new Date());
             alertBreakerMapper.insertAlertBreakerAudit(auditVo);
-            TransactionUtil.commitTx(ts);
-            AlertBreakerResultVo resultVo = new AlertBreakerResultVo();
+            TransactionUtil.commitTx(auditTs);
             resultVo.setStatus(AlertBreakerStatus.FAILED.getValue());
             resultVo.setBreaked(false);
-            return resultVo;
         }
+        if (resultVo.isOpenStarted()) {
+            AlertBreakerStateVo stateVo = alertBreakerMapper.getAlertBreakerStateById(resultVo.getStateId());
+            AlertBreakerActionManager.execute(policyVo, stateVo, AlertBreakerActionTrigger.OPEN, java.util.Collections.singletonList(alertVo));
+        }
+        return resultVo;
     }
 
-    private AlertBreakerStateVo getOrCreateStateForUpdate(Long policyId, String uniqueKey) {
+    private AlertBreakerStateVo getOrCreateStateForUpdate(Long policyId, String uniqueKey, Long eventHandlerId) {
         AlertBreakerStateVo stateVo = new AlertBreakerStateVo();
         stateVo.setPolicyId(policyId);
+        stateVo.setEventHandlerId(eventHandlerId);
         stateVo.setUniqueKey(uniqueKey);
         stateVo.setState(AlertBreakerState.CLOSED.getValue());
         alertBreakerMapper.insertAlertBreakerStateIfNotExists(stateVo);
-        return alertBreakerMapper.getAlertBreakerStateForUpdate(policyId, uniqueKey);
+        stateVo = alertBreakerMapper.getAlertBreakerStateForUpdate(policyId, uniqueKey);
+        stateVo.setEventHandlerId(eventHandlerId);
+        return stateVo;
     }
 
     private boolean isOpenStateValid(AlertBreakerStateVo stateVo, long nowTime) {
@@ -217,7 +230,7 @@ public abstract class AlertBreakerHandlerBase implements IAlertBreakerHandler {
         try {
             String uniqueKey = myMakeUniqueKey(policyVo, alertVo, eventHandlerVo, eventHandlerAuditVo == null ? null : eventHandlerAuditVo.getId());
             if (StringUtils.isNotBlank(uniqueKey)) {
-                AlertBreakerStateVo stateVo = getOrCreateStateForUpdate(policyVo.getId(), uniqueKey);
+                AlertBreakerStateVo stateVo = getOrCreateStateForUpdate(policyVo.getId(), uniqueKey, eventHandlerVo == null ? null : eventHandlerVo.getId());
                 AlertBreakerAfterResultVo afterResultVo = myAfter(policyVo, alertVo, eventHandlerVo, eventHandlerAuditVo, stateVo, getData(stateVo));
                 applyAfterResult(stateVo, afterResultVo, new Date());
             }
@@ -268,23 +281,42 @@ public abstract class AlertBreakerHandlerBase implements IAlertBreakerHandler {
             return;
         }
 
-        TransactionStatus flushTs = TransactionUtil.openNewTx();
+        AlertBreakerStateVo lockedStateVo = null;
+        JSONObject data = null;
+        AlertBreakerFlushResultVo flushResultVo = null;
         try {
-            AlertBreakerStateVo lockedStateVo = alertBreakerMapper.getAlertBreakerStateByIdForUpdate(stateVo.getId());
+            lockedStateVo = alertBreakerMapper.getAlertBreakerStateById(stateVo.getId());
             if (lockedStateVo == null || !AlertBreakerState.FLUSHING.getValue().equals(lockedStateVo.getState())) {
-                TransactionUtil.commitTx(flushTs);
                 return;
             }
-            JSONObject data = getData(lockedStateVo);
-            AlertBreakerFlushResultVo flushResultVo = myFlush(policyVo, lockedStateVo, data);
+            data = getData(lockedStateVo);
+            flushResultVo = myFlush(policyVo, lockedStateVo, data);
+            AlertBreakerActionManager.execute(policyVo, lockedStateVo, AlertBreakerActionTrigger.AGGREGATE, flushResultVo == null ? null : flushResultVo.getAlertList());
             JSONObject newData = flushResultVo == null || flushResultVo.getData() == null ? data : flushResultVo.getData();
             newData.remove("flushError");
-            closeState(lockedStateVo, newData);
-            TransactionUtil.commitTx(flushTs);
+            closeStateWithRecover(policyVo, lockedStateVo, newData, flushResultVo == null ? null : flushResultVo.getAlertList());
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
-            TransactionUtil.rollbackTx(flushTs);
             closeStateWithFlushError(stateVo.getId(), e);
+            AlertBreakerStateVo currentStateVo = alertBreakerMapper.getAlertBreakerStateById(stateVo.getId());
+            AlertBreakerActionManager.execute(policyVo, currentStateVo, AlertBreakerActionTrigger.RECOVER, flushResultVo == null ? null : flushResultVo.getAlertList());
+        }
+    }
+
+    private void closeStateWithRecover(AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, JSONObject data, List<AlertVo> alertList) {
+        TransactionStatus ts = TransactionUtil.openNewTx();
+        try {
+            AlertBreakerStateVo lockedStateVo = alertBreakerMapper.getAlertBreakerStateByIdForUpdate(stateVo.getId());
+            if (lockedStateVo == null) {
+                TransactionUtil.commitTx(ts);
+                return;
+            }
+            closeState(lockedStateVo, data);
+            TransactionUtil.commitTx(ts);
+            AlertBreakerActionManager.execute(policyVo, lockedStateVo, AlertBreakerActionTrigger.RECOVER, alertList);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            TransactionUtil.rollbackTx(ts);
         }
     }
 
@@ -302,6 +334,32 @@ public abstract class AlertBreakerHandlerBase implements IAlertBreakerHandler {
         alertBreakerMapper.deleteAlertBreakerCollectItemByStateId(stateVo.getId());
     }
 
+    @Override
+    public final void recover(AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo) {
+        if (stateVo == null || stateVo.getId() == null) {
+            return;
+        }
+        TransactionStatus ts = TransactionUtil.openNewTx();
+        AlertBreakerStateVo lockedStateVo = null;
+        try {
+            lockedStateVo = alertBreakerMapper.getAlertBreakerStateByIdForUpdate(stateVo.getId());
+            if (lockedStateVo == null
+                    || !AlertBreakerState.OPEN.getValue().equals(lockedStateVo.getState())
+                    || lockedStateVo.getOpenUntil() == null
+                    || lockedStateVo.getOpenUntil().getTime() > System.currentTimeMillis()) {
+                TransactionUtil.commitTx(ts);
+                return;
+            }
+            closeState(lockedStateVo, getData(lockedStateVo));
+            TransactionUtil.commitTx(ts);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            TransactionUtil.rollbackTx(ts);
+            return;
+        }
+        AlertBreakerActionManager.execute(policyVo, lockedStateVo, AlertBreakerActionTrigger.RECOVER, null);
+    }
+
     private void closeStateWithFlushError(Long stateId, Exception e) {
         if (stateId == null) {
             return;
@@ -314,7 +372,6 @@ public abstract class AlertBreakerHandlerBase implements IAlertBreakerHandler {
                 return;
             }
             JSONObject data = getData(stateVo);
-            data.put("aggregateSent", false);
             data.put("flushError", e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
             closeState(stateVo, data);
             TransactionUtil.commitTx(ts);

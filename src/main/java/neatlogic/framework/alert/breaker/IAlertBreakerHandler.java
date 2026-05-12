@@ -115,4 +115,16 @@ public interface IAlertBreakerHandler {
      * @param stateVo  已到期的熔断状态。
      */
     void flush(AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo);
+
+    /**
+     * 主动恢复已经到期的普通熔断状态。
+     * <p>
+     * 调度任务会在熔断到期后调用该方法。实现类应通过状态抢占或行锁保证多活环境下只有一个节点完成恢复，
+     * 并在恢复成功后触发恢复动作。
+     * </p>
+     *
+     * @param policyVo 熔断策略配置。
+     * @param stateVo  已到期的熔断状态。
+     */
+    void recover(AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo);
 }

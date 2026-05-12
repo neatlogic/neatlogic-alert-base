@@ -12,19 +12,17 @@
 
 package neatlogic.framework.alert.enums;
 
-import neatlogic.framework.util.$;
-
-public enum AlertBreakerStatus {
-    PASS("pass", "通过"),
-    OPEN("open", "已熔断"),
-    FAILED("failed", "异常");
+public enum AlertBreakerActionTrigger {
+    OPEN("OPEN", "熔断时"),
+    AGGREGATE("AGGREGATE", "聚合时"),
+    RECOVER("RECOVER", "熔断恢复时");
 
     private final String value;
     private final String text;
 
-    AlertBreakerStatus(String _value, String _text) {
-        this.value = _value;
-        this.text = _text;
+    AlertBreakerActionTrigger(String value, String text) {
+        this.value = value;
+        this.text = text;
     }
 
     public String getValue() {
@@ -32,15 +30,6 @@ public enum AlertBreakerStatus {
     }
 
     public String getText() {
-        return $.t(text);
-    }
-
-    public static String getText(String name) {
-        for (AlertBreakerStatus s : AlertBreakerStatus.values()) {
-            if (s.getValue().equalsIgnoreCase(name) || s.name().equalsIgnoreCase(name)) {
-                return s.getText();
-            }
-        }
-        return "";
+        return text;
     }
 }

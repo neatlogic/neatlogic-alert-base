@@ -54,6 +54,8 @@ public interface AlertBreakerMapper {
 
     int updateCollectingAlertBreakerStateToFlushing(Long id);
 
+    int updateExpiredOpenAlertBreakerStateToClosed(Long id);
+
     int insertAlertBreakerCollectItem(AlertBreakerCollectItemVo vo);
 
     int checkAlertBreakerCollectItemIsExists(@Param("stateId") Long stateId, @Param("alertId") Long alertId);
@@ -81,4 +83,10 @@ public interface AlertBreakerMapper {
     List<AlertBreakerAuditVo> searchAlertBreakerAudit(AlertBreakerAuditVo vo);
 
     List<AlertBreakerAuditVo> getAlertBreakerAuditListByEventHandlerAuditIdList(List<Long> eventHandlerAuditIdList);
+
+    void insertAlertBreakerActionAudit(AlertBreakerActionAuditVo vo);
+
+    int searchAlertBreakerActionAuditCount(AlertBreakerActionAuditVo vo);
+
+    List<AlertBreakerActionAuditVo> searchAlertBreakerActionAudit(AlertBreakerActionAuditVo vo);
 }

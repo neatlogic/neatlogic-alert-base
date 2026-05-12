@@ -54,6 +54,8 @@ public class AlertAttrDefineVo {
     private boolean isTab = false;
     @EntityField(name = "是否支持排序", type = ApiParamType.BOOLEAN)
     private boolean isSort = false;
+    @EntityField(name = "是否聚合模板属性", type = ApiParamType.BOOLEAN)
+    private boolean isAggregate = false;
     @JSONField(serialize = false) //是否作为表头
     private boolean isColumn = false;
 
@@ -67,6 +69,15 @@ public class AlertAttrDefineVo {
 
     public boolean getIsSort() {
         return isSort;
+    }
+
+    public boolean getIsAggregate() {
+        return isAggregate;
+    }
+
+    public AlertAttrDefineVo setIsAggregate(boolean isAggregate) {
+        this.isAggregate = isAggregate;
+        return this;
     }
 
     public AlertAttrDefineVo setIsColumn(boolean isColumn) {
@@ -204,6 +215,9 @@ public class AlertAttrDefineVo {
 
     public AlertAttrDefineVo setIsTemplate(boolean isTemplate) {
         this.isTemplate = isTemplate;
+        if (isTemplate) {
+            this.isAggregate = true;
+        }
         return this;
     }
 
