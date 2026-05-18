@@ -12,17 +12,19 @@
 
 package neatlogic.framework.alert.event;
 
+import neatlogic.framework.util.$;
+
 public enum AlertEventType {
-    ALERT_INPUT("ALERT_INPUT", "接入告警", "告警接入时，经过转换插件转换后触发此事件，这个时刻可以决定告警是否需要保存到数据库"),
-    ALERT_SAVE("ALERT_SAVE", "创建告警", "以新告警的方式保存时，触发此事件"),
-    ALERT_CONVERGE("ALERT_CONVERGE", "收敛告警", "以收敛告警（存在父告警）的方式被保存时，触发此事件"),
-    ALERT_CONVERGE_IN("ALERT_CONVERGE_IN", "子告警加入", "当父告警有子告警加入时，触发此事件"),
-    ALERT_CONVERGE_OUT("ALERT_CONVERGE_OUT", "子告警移除", "当父告警有子告警移出或被删除时，触发此事件"),
-    ALERT_STATUE_CHANGE("ALERT_STATUS_CHANGE", "更新告警状态", "告警状态发生变化时，触发此事件"),
-    ALERT_CLOSE("ALERT_CLOSE", "关闭告警", "告警关闭时，触发此事件"),
-    ALERT_OPEN("ALERT_OPEN", "打开告警", "告警重新打开时，触发此事件"),
-    ALERT_DELETE("ALERT_DELETE", "删除告警", "告警删除时，触发此事件"),
-    ALERT_SUPPRESS("ALERT_SUPPRESS", "屏蔽告警", "成功触发屏蔽策略时，触发此事件");
+    ALERT_INPUT("ALERT_INPUT", "term.alert.event.inputname", "term.alert.event.inputdesc"),
+    ALERT_SAVE("ALERT_SAVE", "term.alert.event.savename", "term.alert.event.savedesc"),
+    ALERT_CONVERGE("ALERT_CONVERGE", "term.alert.event.convergename", "term.alert.event.convergedesc"),
+    ALERT_CONVERGE_IN("ALERT_CONVERGE_IN", "term.alert.event.convergeinname", "term.alert.event.convergeindesc"),
+    ALERT_CONVERGE_OUT("ALERT_CONVERGE_OUT", "term.alert.event.convergeoutname", "term.alert.event.convergeoutdesc"),
+    ALERT_STATUE_CHANGE("ALERT_STATUS_CHANGE", "term.alert.event.statuschangename", "term.alert.event.statuschangedesc"),
+    ALERT_CLOSE("ALERT_CLOSE", "term.alert.event.alertclosename", "term.alert.event.alertclosedesc"),
+    ALERT_OPEN("ALERT_OPEN", "term.alert.event.alertopenname", "term.alert.event.alertopendesc"),
+    ALERT_DELETE("ALERT_DELETE", "term.alert.event.alertdeletename", "term.alert.event.alertdeletedesc"),
+    ALERT_SUPPRESS("ALERT_SUPPRESS", "term.alert.event.alertsuppressname", "term.alert.event.alertsuppressdesc");
 
     private final String name;
     private final String label;
@@ -39,11 +41,11 @@ public enum AlertEventType {
     }
 
     public String getLabel() {
-        return label;
+        return $.t(label);
     }
 
     public String getDescription() {
-        return description;
+        return $.t(description);
     }
 
     public static AlertEventType get(String name) {
