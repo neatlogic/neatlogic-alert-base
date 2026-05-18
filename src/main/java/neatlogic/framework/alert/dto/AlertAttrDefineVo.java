@@ -16,6 +16,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.restful.annotation.EntityField;
+import neatlogic.framework.util.$;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -222,7 +224,7 @@ public class AlertAttrDefineVo {
     }
 
     public String getLabel() {
-        return label;
+        return StringUtils.isNotBlank(label) ? $.t(label) : label;
     }
 
     public AlertAttrDefineVo setLabel(String label) {

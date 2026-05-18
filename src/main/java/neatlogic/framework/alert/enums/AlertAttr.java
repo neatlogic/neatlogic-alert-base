@@ -68,7 +68,7 @@ public class AlertAttr {
                 .setIsTemplate(true)
                 .setIsCondition(true));
 
-        attrList.add(new AlertAttrDefineVo("const_uniqueKey", "唯一键", "text", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_uniqueKey", "nfae.alertattr", "text", new ArrayList<String>() {{
             this.add("equal");
             this.add("notequal");
             this.add("is-null");
@@ -79,7 +79,7 @@ public class AlertAttr {
                 .setIsTemplate(true)
                 .setIsCondition(true));
 
-        attrList.add(new AlertAttrDefineVo("const_title", "标题", "text", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_title", "common.title", "text", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -90,7 +90,7 @@ public class AlertAttr {
                 .setIsTemplate(true)
                 .setIsCondition(true));
 
-        attrList.add(new AlertAttrDefineVo("const_level", "级别", "select", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_level", "term.cmdb.alertlevel", "select", new ArrayList<String>() {{
             this.add("equal");
             this.add("notequal");
             this.add("gt");
@@ -111,7 +111,7 @@ public class AlertAttr {
                 .setIsCondition(true)
                 .setIsSort(true));
 
-        attrList.add(new AlertAttrDefineVo("const_isChild", "是否子告警", "select", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_isChild", "term.alert.issubalert", "select", new ArrayList<String>() {{
             this.add("equal");
             this.add("notequal");
         }}, new JSONObject() {{
@@ -131,11 +131,11 @@ public class AlertAttr {
         }}).setFreemarkerSnippet("${DATA.const_isChild}")
                 .setIsCondition(true));
 
-        attrList.add(new AlertAttrDefineVo().setName("const_levelLabel").setLabel("级别名称")
+        attrList.add(new AlertAttrDefineVo().setName("const_levelLabel").setLabel("term.alert.levelname")
                 .setFreemarkerSnippet("${DATA.const_levelLabel}")
                 .setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo("const_type", "类型", "select", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_type", "common.type", "select", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -156,10 +156,10 @@ public class AlertAttr {
 
         attrList.add(new AlertAttrDefineVo()
                 .setName("const_typeName")
-                .setLabel("类型名称")
+                .setLabel("common.typename")
                 .setFreemarkerSnippet("${DATA.const_typeName}").setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo("const_isClose", "是否关闭", "select", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_isClose", "page.isclose", "select", new ArrayList<String>() {{
             this.add("equal");
             this.add("notequal");
         }}, new JSONObject() {{
@@ -184,10 +184,10 @@ public class AlertAttr {
         //if (isExpand == 1) {
         attrList.add(new AlertAttrDefineVo()
                 .setName("const_isCloseName")
-                .setLabel("是否关闭名称")
+                .setLabel("term.alert.isclosename")
                 .setFreemarkerSnippet("${DATA.const_isCloseName}").setIsTemplate(true));
         //}
-        attrList.add(new AlertAttrDefineVo("const_status", "状态", "select", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_status", "common.status", "select", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -205,7 +205,7 @@ public class AlertAttr {
                 .setIsCondition(true)
                 .setIsSort(true));
 
-        attrList.add(new AlertAttrDefineVo("const_similarCount", "相似告警数量", "text", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_similarCount", "term.alert.simillaralertcount", "text", new ArrayList<String>() {{
             this.add("equal");
             this.add("notequal");
             this.add("gt");
@@ -220,10 +220,10 @@ public class AlertAttr {
 
         attrList.add(new AlertAttrDefineVo()
                 .setName("const_statusName")
-                .setLabel("状态名称")
+                .setLabel("common.statusname")
                 .setFreemarkerSnippet("${DATA.const_statusName}").setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo("const_alertTime", "创建时间", "datetime", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_alertTime", "common.createtime", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("inworktime");
             this.add("outworktime");
@@ -242,12 +242,12 @@ public class AlertAttr {
 
         attrList.add(new AlertAttrDefineVo()
                 .setName("const_alertTimeStr")
-                .setLabel("创建时间（文本）")
+                .setLabel("term.alert.createtimetext")
                 .setFreemarkerSnippet("${DATA.const_alertTimeStr}")
                 .setIsTemplate(true)
         );
 
-        attrList.add(new AlertAttrDefineVo("const_updateTime", "更新时间", "datetime", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_updateTime", "term.alert.updatetime", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("is-null");
             this.add("is-not-null");
@@ -264,11 +264,11 @@ public class AlertAttr {
         //if (isExpand == 1) {
         attrList.add(new AlertAttrDefineVo()
                 .setName("const_updateTimeStr")
-                .setLabel("更新时间（文本）")
+                .setLabel("term.alert.updatetimetext")
                 .setFreemarkerSnippet("${DATA.const_updateTimeStr}")
                 .setIsTemplate(true));
         //}
-        attrList.add(new AlertAttrDefineVo("const_source", "来源")
+        attrList.add(new AlertAttrDefineVo("const_source", "common.source")
                 .setType("select")
                 .setExpressionList(new ArrayList<String>() {{
                     this.add("like");
@@ -291,7 +291,7 @@ public class AlertAttr {
                 .setIsTemplate(true)
                 .setIsCondition(true));
 
-        attrList.add(new AlertAttrDefineVo("const_userList", "处理人", "userselect", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_userList", "common.worker", "userselect", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -307,7 +307,7 @@ public class AlertAttr {
                 .setIsColumn(true)
                 .setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo("const_userUuidList", "处理人uuid", "userselect", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_userUuidList", "term.alert.workeruuid", "userselect", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -322,27 +322,27 @@ public class AlertAttr {
 
         //if (isExpand == 1) {
         //扩展属性不需要提供控件和条件，一般只是给freemarker使用
-        attrList.add(new AlertAttrDefineVo().setName("const_userAccountList").setLabel("处理人账号")
+        attrList.add(new AlertAttrDefineVo().setName("const_userAccountList").setLabel("term.alert.workeraccount")
                 .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userAccount}\"<#if user_has_next>,</#if></#list>]")
                 .setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo().setName("const_userPhoneList").setLabel("处理人电话")
+        attrList.add(new AlertAttrDefineVo().setName("const_userPhoneList").setLabel("term.alert.workerphone")
                 .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userPhone}\"<#if user_has_next>,</#if></#list>]")
                 .setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo().setName("const_userEmailList").setLabel("处理人邮箱")
+        attrList.add(new AlertAttrDefineVo().setName("const_userEmailList").setLabel("term.alert.workeremail")
                 .setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userEmail}\"<#if user_has_next>,</#if></#list>]")
                 .setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo().setName("const_teamEmailList").setLabel("处理组邮箱")
+        attrList.add(new AlertAttrDefineVo().setName("const_teamEmailList").setLabel("term.alert.workerteamemail")
                 .setFreemarkerSnippet("[<#list DATA.const_teamList as team>\"${team.teamEmail}\"<#if team_has_next>,</#if></#list>]")
                 .setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo().setName("const_teamPhoneList").setLabel("处理组电话")
+        attrList.add(new AlertAttrDefineVo().setName("const_teamPhoneList").setLabel("term.alert.workerteamphone")
                 .setFreemarkerSnippet("[<#list DATA.const_teamList as team>\"${team.teamPhone}\"<#if team_has_next>,</#if></#list>]")
                 .setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo().setName("const_teamAndLeaderPhoneList").setLabel("处理组电话&领导电话")
+        attrList.add(new AlertAttrDefineVo().setName("const_teamAndLeaderPhoneList").setLabel("term.alert.workerteamleaderphone")
                 .setFreemarkerSnippet("[" +
                         "<#list DATA.const_teamList as team>" +
                         "<#if team.teamPhone?? && team.teamPhone?has_content>" +
@@ -365,7 +365,7 @@ public class AlertAttr {
                         "]")
                 .setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo().setName("const_teamUserAccountList").setLabel("处理组成员账号")
+        attrList.add(new AlertAttrDefineVo().setName("const_teamUserAccountList").setLabel("alert.alert.teammemberaccount")
                 .setFreemarkerSnippet("[" +
                         "<#list DATA.const_teamList as team>" +
                         "<#list team.userList?default([]) as user>" +
@@ -374,7 +374,7 @@ public class AlertAttr {
                         "</#list>" +
                         "]").setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo().setName("const_teamUserPhoneList").setLabel("处理组成员电话")
+        attrList.add(new AlertAttrDefineVo().setName("const_teamUserPhoneList").setLabel("term.alert.workerteamaccountphone")
                 .setFreemarkerSnippet("[" +
                         "<#list DATA.const_teamList as team>" +
                         "<#list team.userList?default([]) as user>" +
@@ -383,7 +383,7 @@ public class AlertAttr {
                         "</#list>" +
                         "]").setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo().setName("const_teamUserEmailList").setLabel("处理组成员邮箱")
+        attrList.add(new AlertAttrDefineVo().setName("const_teamUserEmailList").setLabel("term.alert.workerteammemberemail")
                 .setFreemarkerSnippet("[" +
                         "<#list DATA.const_teamList as team>" +
                         "<#list team.userList?default([]) as user>" +
@@ -392,7 +392,7 @@ public class AlertAttr {
                         "</#list>" +
                         "]").setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo().setName("const_teamUserNameList").setLabel("处理组成员名称")
+        attrList.add(new AlertAttrDefineVo().setName("const_teamUserNameList").setLabel("alert.term.workerteammembername")
                 .setFreemarkerSnippet("[" +
                         "<#list DATA.const_teamList as team>" +
                         "<#list team.userList?default([]) as user>" +
@@ -401,7 +401,7 @@ public class AlertAttr {
                         "</#list>" +
                         "]").setIsTemplate(true));
         //}
-        attrList.add(new AlertAttrDefineVo("const_teamList", "处理组", "userselect", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_teamList", "term.alert.workerteam", "userselect", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -417,7 +417,7 @@ public class AlertAttr {
                 .setIsColumn(true)
                 .setIsTemplate(true));
 
-        attrList.add(new AlertAttrDefineVo("const_teamUuidList", "处理组uuid", "userselect", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_teamUuidList", "term.alert.workerteamuuid", "userselect", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -430,7 +430,7 @@ public class AlertAttr {
             }});
         }}).setIsCondition(true));
 
-        attrList.add(new AlertAttrDefineVo("const_markList", "标签", "select", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_markList", "common.tag", "select", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -445,7 +445,7 @@ public class AlertAttr {
                 .setIsColumn(false)
                 .setFreemarkerSnippet("[<#list DATA.const_markList as mark>\"${mark.name}\"<#if mark_has_next>,</#if></#list>]"));
 
-        attrList.add(new AlertAttrDefineVo("const_markNameList", "标签", "select", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_markNameList", "common.tag", "select", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");
             this.add("is-null");
@@ -459,19 +459,19 @@ public class AlertAttr {
 
         attrList.add(new AlertAttrDefineVo()
                 .setName("alertCount")
-                .setLabel("聚合告警数量")
+                .setLabel("term.alert.aggregatecount")
                 .setFreemarkerSnippet("${DATA.alertCount}")
                 .setIsAggregate(true));
 
         attrList.add(new AlertAttrDefineVo()
                 .setName("alertList")
-                .setLabel("聚合告警列表HTML")
+                .setLabel("term.alert.aggregatealertlisthtml")
                 .setFreemarkerSnippet("${DATA.alertList}")
                 .setIsAggregate(true));
 
         attrList.add(new AlertAttrDefineVo()
                 .setName("alertItemList")
-                .setLabel("聚合告警明细列表")
+                .setLabel("term.alert.aggregatealertitemlist")
                 .setFreemarkerSnippet("${DATA.alertItemList}")
                 .setIsAggregate(true));
 
