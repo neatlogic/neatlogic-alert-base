@@ -17,8 +17,16 @@ import neatlogic.framework.crossover.ICrossoverService;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface IAlertSuppressionCrossoverService extends ICrossoverService {
     //要用新事务，因为调用逻辑需要通过异常返回
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     boolean doSuppression(AlertVo alertVo, Long alertEventTypeId);
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    void deleteSuppressionAuditByAlertId(Long alertId);
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    void deleteSuppressionAuditByAlertIdList(List<Long> alertIdList);
 }
