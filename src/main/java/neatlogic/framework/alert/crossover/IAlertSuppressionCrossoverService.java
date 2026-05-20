@@ -25,6 +25,9 @@ public interface IAlertSuppressionCrossoverService extends ICrossoverService {
     boolean doSuppression(AlertVo alertVo, Long alertEventTypeId);
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    boolean doSuppression(AlertVo alertVo, Long alertEventTypeId, String event, String eventHandler);
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     void deleteSuppressionAuditByAlertId(Long alertId);
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

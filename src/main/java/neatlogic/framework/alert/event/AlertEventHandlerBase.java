@@ -26,6 +26,7 @@ import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
 import neatlogic.framework.crossover.CrossoverServiceFactory;
 import neatlogic.framework.exception.core.ApiRuntimeException;
 import neatlogic.framework.transaction.util.TransactionUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                 //商业版功能：告警屏蔽
                 IAlertSuppressionCrossoverService suppressionService = CrossoverServiceFactory.tryToGetApi(IAlertSuppressionCrossoverService.class);
                 if (suppressionService != null) {
-                    if (suppressionService.doSuppression(alertVo, alertEventHandlerVo.getTypeId())) {
+                    if (suppressionService.doSuppression(alertVo, alertEventHandlerVo.getTypeId(), alertEventHandlerVo.getEvent(), getEventHandlerAuditName(alertEventHandlerVo))) {
                         throw new AlertEventPluginSuppressException(alertEventHandlerVo.getHandlerName());
                     }
                 }
@@ -146,7 +147,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                         //商业版功能：告警屏蔽
                         IAlertSuppressionCrossoverService suppressionService = CrossoverServiceFactory.tryToGetApi(IAlertSuppressionCrossoverService.class);
                         if (suppressionService != null) {
-                            if (suppressionService.doSuppression(finalAlertVo, alertEventHandlerVo.getTypeId())) {
+                            if (suppressionService.doSuppression(finalAlertVo, alertEventHandlerVo.getTypeId(), alertEventHandlerVo.getEvent(), getEventHandlerAuditName(alertEventHandlerVo))) {
                                 throw new AlertEventPluginSuppressException(alertEventHandlerVo.getHandlerName());
                             }
                         }
@@ -188,6 +189,13 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
 
 
         return alertVo;
+    }
+
+    private String getEventHandlerAuditName(AlertEventHandlerVo alertEventHandlerVo) {
+        if (StringUtils.isNotBlank(alertEventHandlerVo.getName())) {
+            return alertEventHandlerVo.getName();
+        }
+        return alertEventHandlerVo.getHandlerName();
     }
 
     private boolean doBreaker(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long eventHandlerAuditId) {
