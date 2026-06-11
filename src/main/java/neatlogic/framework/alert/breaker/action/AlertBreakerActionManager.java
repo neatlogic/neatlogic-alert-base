@@ -15,6 +15,7 @@ package neatlogic.framework.alert.breaker.action;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.alert.dto.AlertVo;
+import neatlogic.framework.alert.dto.breaker.AlertBreakerActionAuditVo;
 import neatlogic.framework.alert.dto.breaker.AlertBreakerActionVo;
 import neatlogic.framework.alert.dto.breaker.AlertBreakerPolicyVo;
 import neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo;
@@ -33,36 +34,56 @@ public class AlertBreakerActionManager {
     private AlertBreakerActionManager() {
     }
 
-    public static void execute(AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, AlertBreakerActionTrigger trigger, List<AlertVo> alertList) {
-        List<AlertBreakerActionVo> actionList = getActionList(policyVo, trigger);
-        if (CollectionUtils.isEmpty(actionList)) {
-            return;
-        }
-        for (AlertBreakerActionVo actionVo : actionList) {
-            if (actionVo == null || Objects.equals(actionVo.getIsActive(), 0)) {
-                continue;
-            }
-            IAlertBreakerActionHandler handler = AlertBreakerActionHandlerFactory.getHandler(actionVo.getHandler());
-            if (handler == null) {
-                logger.warn("Alert breaker action handler not found: {}", actionVo.getHandler());
-                continue;
-            }
-            if (handler.supportTrigger() != null && !handler.supportTrigger().contains(trigger)) {
-                logger.warn("Alert breaker action handler {} does not support trigger {}", actionVo.getHandler(), trigger);
-                continue;
-            }
-            execute(handler, actionVo, policyVo, stateVo, trigger, alertList);
-        }
+    public static List<AlertBreakerActionAuditVo> execute(AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, AlertBreakerActionTrigger trigger, List<AlertVo> alertList) {
+        return execute(policyVo, stateVo, trigger, alertList, null);
     }
 
-    private static void execute(IAlertBreakerActionHandler handler, AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, AlertBreakerActionTrigger trigger, List<AlertVo> alertList) {
-        if (trigger == AlertBreakerActionTrigger.OPEN) {
-            handler.triggerOpen(actionVo, policyVo, stateVo, CollectionUtils.isEmpty(alertList) ? null : alertList.get(0));
-        } else if (trigger == AlertBreakerActionTrigger.AGGREGATE) {
-            handler.triggerAggregate(actionVo, policyVo, stateVo, alertList);
-        } else if (trigger == AlertBreakerActionTrigger.RECOVER) {
-            handler.triggerRecover(actionVo, policyVo, stateVo, alertList);
+    public static List<AlertBreakerActionAuditVo> execute(AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, AlertBreakerActionTrigger trigger, List<AlertVo> alertList, Long breakerAuditId) {
+        List<AlertBreakerActionAuditVo> auditList = new ArrayList<>();
+        List<AlertBreakerActionVo> actionList;
+        try {
+            actionList = getActionList(policyVo, trigger);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            return auditList;
         }
+        if (CollectionUtils.isEmpty(actionList)) {
+            return auditList;
+        }
+        for (AlertBreakerActionVo actionVo : actionList) {
+            try {
+                if (actionVo == null || Objects.equals(actionVo.getIsActive(), 0)) {
+                    continue;
+                }
+                IAlertBreakerActionHandler handler = AlertBreakerActionHandlerFactory.getHandler(actionVo.getHandler());
+                if (handler == null) {
+                    logger.warn("Alert breaker action handler not found: {}", actionVo.getHandler());
+                    continue;
+                }
+                if (handler.supportTrigger() != null && !handler.supportTrigger().contains(trigger)) {
+                    logger.warn("Alert breaker action handler {} does not support trigger {}", actionVo.getHandler(), trigger);
+                    continue;
+                }
+                AlertBreakerActionAuditVo auditVo = execute(handler, actionVo, policyVo, stateVo, trigger, alertList, breakerAuditId);
+                if (auditVo != null) {
+                    auditList.add(auditVo);
+                }
+            } catch (Exception e) {
+                logger.warn(e.getMessage(), e);
+            }
+        }
+        return auditList;
+    }
+
+    private static AlertBreakerActionAuditVo execute(IAlertBreakerActionHandler handler, AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, AlertBreakerActionTrigger trigger, List<AlertVo> alertList, Long breakerAuditId) {
+        if (trigger == AlertBreakerActionTrigger.OPEN) {
+            return handler.triggerOpen(actionVo, policyVo, stateVo, CollectionUtils.isEmpty(alertList) ? null : alertList.get(0), breakerAuditId);
+        } else if (trigger == AlertBreakerActionTrigger.AGGREGATE) {
+            return handler.triggerAggregate(actionVo, policyVo, stateVo, alertList, breakerAuditId);
+        } else if (trigger == AlertBreakerActionTrigger.RECOVER) {
+            return handler.triggerRecover(actionVo, policyVo, stateVo, alertList, breakerAuditId);
+        }
+        return null;
     }
 
     private static List<AlertBreakerActionVo> getActionList(AlertBreakerPolicyVo policyVo, AlertBreakerActionTrigger trigger) {

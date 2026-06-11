@@ -20,9 +20,11 @@ import neatlogic.framework.alert.dto.breaker.AlertBreakerPolicyVo;
 import neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo;
 import neatlogic.framework.alert.enums.AlertBreakerActionStatus;
 import neatlogic.framework.alert.enums.AlertBreakerActionTrigger;
+import neatlogic.framework.transaction.util.TransactionUtil;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionStatus;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -35,22 +37,23 @@ public abstract class AlertBreakerActionHandlerBase implements IAlertBreakerActi
     protected AlertBreakerMapper alertBreakerMapper;
 
     @Override
-    public final void triggerOpen(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, AlertVo alertVo) {
-        executeWithAudit(actionVo, policyVo, stateVo, AlertBreakerActionTrigger.OPEN, () -> myTriggerOpen(actionVo, policyVo, stateVo, alertVo));
+    public final AlertBreakerActionAuditVo triggerOpen(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, AlertVo alertVo, Long breakerAuditId) {
+        return executeWithAudit(actionVo, policyVo, stateVo, AlertBreakerActionTrigger.OPEN, breakerAuditId, () -> myTriggerOpen(actionVo, policyVo, stateVo, alertVo));
     }
 
     @Override
-    public final void triggerAggregate(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, List<AlertVo> alertList) {
-        executeWithAudit(actionVo, policyVo, stateVo, AlertBreakerActionTrigger.AGGREGATE, () -> myTriggerAggregate(actionVo, policyVo, stateVo, alertList));
+    public final AlertBreakerActionAuditVo triggerAggregate(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, List<AlertVo> alertList, Long breakerAuditId) {
+        return executeWithAudit(actionVo, policyVo, stateVo, AlertBreakerActionTrigger.AGGREGATE, breakerAuditId, () -> myTriggerAggregate(actionVo, policyVo, stateVo, alertList));
     }
 
     @Override
-    public final void triggerRecover(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, List<AlertVo> alertList) {
-        executeWithAudit(actionVo, policyVo, stateVo, AlertBreakerActionTrigger.RECOVER, () -> myTriggerRecover(actionVo, policyVo, stateVo, alertList));
+    public final AlertBreakerActionAuditVo triggerRecover(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, List<AlertVo> alertList, Long breakerAuditId) {
+        return executeWithAudit(actionVo, policyVo, stateVo, AlertBreakerActionTrigger.RECOVER, breakerAuditId, () -> myTriggerRecover(actionVo, policyVo, stateVo, alertList));
     }
 
-    private void executeWithAudit(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, AlertBreakerActionTrigger trigger, ActionExecutor executor) {
+    private AlertBreakerActionAuditVo executeWithAudit(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, AlertBreakerActionTrigger trigger, Long breakerAuditId, ActionExecutor executor) {
         AlertBreakerActionAuditVo auditVo = new AlertBreakerActionAuditVo();
+        auditVo.setBreakerAuditId(breakerAuditId);
         auditVo.setPolicyId(policyVo == null ? null : policyVo.getId());
         auditVo.setStateId(stateVo == null ? null : stateVo.getId());
         auditVo.setTrigger(trigger == null ? null : trigger.getValue());
@@ -58,16 +61,65 @@ public abstract class AlertBreakerActionHandlerBase implements IAlertBreakerActi
         auditVo.setActionName(actionVo == null ? null : actionVo.getName());
         auditVo.setActionHandler(actionVo == null ? null : actionVo.getHandler());
         auditVo.setStartTime(new Date());
+        TransactionStatus actionTs = null;
         try {
+            // 熔断动作可能调用集成等带事务的能力，必须和事件主事务隔离。
+            actionTs = TransactionUtil.openNewTx();
             executor.execute();
-            auditVo.setStatus(AlertBreakerActionStatus.SUCCEED.getValue());
+            if (commitTx(actionTs)) {
+                auditVo.setStatus(AlertBreakerActionStatus.SUCCEED.getValue());
+            } else {
+                rollbackTx(actionTs);
+                auditVo.setStatus(AlertBreakerActionStatus.FAILED.getValue());
+                auditVo.setError("Commit alert breaker action transaction failed");
+            }
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
+            rollbackTx(actionTs);
             auditVo.setStatus(AlertBreakerActionStatus.FAILED.getValue());
             auditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
         } finally {
             auditVo.setEndTime(new Date());
+            saveActionAudit(auditVo);
+        }
+        return auditVo;
+    }
+
+    private void saveActionAudit(AlertBreakerActionAuditVo auditVo) {
+        TransactionStatus auditTs = null;
+        try {
+            auditTs = TransactionUtil.openNewTx();
             alertBreakerMapper.insertAlertBreakerActionAudit(auditVo);
+            if (!commitTx(auditTs)) {
+                rollbackTx(auditTs);
+            }
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            rollbackTx(auditTs);
+        }
+    }
+
+    private boolean commitTx(TransactionStatus ts) {
+        if (ts == null || ts.isCompleted()) {
+            return true;
+        }
+        try {
+            TransactionUtil.commitTx(ts);
+            return true;
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            return false;
+        }
+    }
+
+    private void rollbackTx(TransactionStatus ts) {
+        if (ts == null || ts.isCompleted()) {
+            return;
+        }
+        try {
+            TransactionUtil.rollbackTx(ts);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
         }
     }
 

@@ -41,14 +41,15 @@ public abstract class AlertBreakerHandlerBase implements IAlertBreakerHandler {
 
     @Override
     public final AlertBreakerResultVo execute(AlertBreakerPolicyVo policyVo, AlertVo alertVo, AlertEventHandlerVo eventHandlerVo, Long eventHandlerAuditId) {
-        TransactionStatus ts = TransactionUtil.openNewTx();
         AlertBreakerAuditVo auditVo = new AlertBreakerAuditVo();
-        auditVo.setPolicyId(policyVo.getId());
-        auditVo.setAlertId(alertVo.getId());
+        auditVo.setPolicyId(policyVo == null ? null : policyVo.getId());
+        auditVo.setAlertId(alertVo == null ? null : alertVo.getId());
         auditVo.setEventHandlerAuditId(eventHandlerAuditId);
         auditVo.setStartTime(new Date());
         AlertBreakerResultVo resultVo = new AlertBreakerResultVo();
+        TransactionStatus ts = null;
         try {
+            ts = TransactionUtil.openNewTx();
             String uniqueKey = myMakeUniqueKey(policyVo, alertVo, eventHandlerVo, eventHandlerAuditId);
             if (StringUtils.isBlank(uniqueKey)) {
                 resultVo.setBreaked(false);
@@ -75,24 +76,71 @@ public abstract class AlertBreakerHandlerBase implements IAlertBreakerHandler {
             auditVo.setStatus(resultVo.getStatus());
             auditVo.setEndTime(new Date());
             alertBreakerMapper.insertAlertBreakerAudit(auditVo);
-            TransactionUtil.commitTx(ts);
+            if (!commitTx(ts)) {
+                rollbackTx(ts);
+                resultVo.setStatus(AlertBreakerStatus.FAILED.getValue());
+                resultVo.setBreaked(false);
+                resultVo.setOpenStarted(false);
+                saveFailedAlertBreakerAudit(auditVo, new RuntimeException("Commit alert breaker transaction failed"));
+            }
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
-            TransactionUtil.rollbackTx(ts);
-            TransactionStatus auditTs = TransactionUtil.openNewTx();
-            auditVo.setStatus(AlertBreakerStatus.FAILED.getValue());
-            auditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
-            auditVo.setEndTime(new Date());
-            alertBreakerMapper.insertAlertBreakerAudit(auditVo);
-            TransactionUtil.commitTx(auditTs);
+            rollbackTx(ts);
+            saveFailedAlertBreakerAudit(auditVo, e);
             resultVo.setStatus(AlertBreakerStatus.FAILED.getValue());
             resultVo.setBreaked(false);
+            resultVo.setOpenStarted(false);
         }
         if (resultVo.isOpenStarted()) {
-            AlertBreakerStateVo stateVo = alertBreakerMapper.getAlertBreakerStateById(resultVo.getStateId());
-            AlertBreakerActionManager.execute(policyVo, stateVo, AlertBreakerActionTrigger.OPEN, java.util.Collections.singletonList(alertVo));
+            try {
+                AlertBreakerStateVo stateVo = alertBreakerMapper.getAlertBreakerStateById(resultVo.getStateId());
+                AlertBreakerActionManager.execute(policyVo, stateVo, AlertBreakerActionTrigger.OPEN, java.util.Collections.singletonList(alertVo), auditVo.getId());
+            } catch (Exception e) {
+                logger.warn(e.getMessage(), e);
+            }
         }
         return resultVo;
+    }
+
+    private void saveFailedAlertBreakerAudit(AlertBreakerAuditVo auditVo, Exception exception) {
+        TransactionStatus auditTs = null;
+        try {
+            auditTs = TransactionUtil.openNewTx();
+            auditVo.setStatus(AlertBreakerStatus.FAILED.getValue());
+            auditVo.setError(exception.getMessage() == null ? ExceptionUtils.getStackTrace(exception) : exception.getMessage());
+            auditVo.setEndTime(new Date());
+            alertBreakerMapper.insertAlertBreakerAudit(auditVo);
+            if (!commitTx(auditTs)) {
+                rollbackTx(auditTs);
+            }
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            rollbackTx(auditTs);
+        }
+    }
+
+    private boolean commitTx(TransactionStatus ts) {
+        if (ts == null || ts.isCompleted()) {
+            return true;
+        }
+        try {
+            TransactionUtil.commitTx(ts);
+            return true;
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            return false;
+        }
+    }
+
+    private void rollbackTx(TransactionStatus ts) {
+        if (ts == null || ts.isCompleted()) {
+            return;
+        }
+        try {
+            TransactionUtil.rollbackTx(ts);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
     }
 
     private AlertBreakerStateVo getOrCreateStateForUpdate(Long policyId, String uniqueKey, Long eventHandlerId) {

@@ -18,8 +18,6 @@ import neatlogic.framework.alert.dao.mapper.AlertEventMapper;
 import neatlogic.framework.alert.dto.*;
 import neatlogic.framework.alert.enums.AlertEventStatus;
 import neatlogic.framework.alert.exception.alertevent.AlertEventHandlerTriggerException;
-import neatlogic.framework.alert.exception.alertevent.AlertEventPluginDisabledException;
-import neatlogic.framework.alert.exception.alertevent.AlertEventPluginSuppressException;
 import neatlogic.framework.alert.utils.AlertEventHandlerContextBuilder;
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadpool.CachedThreadPool;
@@ -78,117 +76,97 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         //记录当前时间的真正开始时间，后续可能需要使用
         alertEventHandlerAuditVo.setStartTime(new Date());
         alertEventMapper.insertAlertEventAudit(alertEventHandlerAuditVo);
-        AlertEventStatusVo alertEventStatusVo = new AlertEventStatusVo();
         AlertEventPluginVo alertEventPluginVo = alertEventMapper.getAlertEventPluginConfigByName(alertEventHandlerVo.getHandler());
 
         if (alertEventHandlerVo.getIsAsync().equals(0)) {
-            //同步作业，可以修改alertVo信息
-            TransactionStatus ts = TransactionUtil.openNewTx();
-            try {
-                //如果插件被禁用，直接结束执行
-                if ((alertEventPluginVo != null && Objects.equals(0, alertEventPluginVo.getIsActive())) || Objects.equals(0, alertEventHandlerVo.getIsActive())) {
-                    throw new AlertEventPluginDisabledException(alertEventHandlerVo.getHandlerName());
-                }
-                //商业版功能：告警屏蔽
-                IAlertSuppressionCrossoverService suppressionService = CrossoverServiceFactory.tryToGetApi(IAlertSuppressionCrossoverService.class);
-                if (suppressionService != null) {
-                    if (suppressionService.doSuppression(alertVo, alertEventHandlerVo.getTypeId(), alertEventHandlerVo.getEvent(), getEventHandlerAuditName(alertEventHandlerVo))) {
-                        throw new AlertEventPluginSuppressException(alertEventHandlerVo.getHandlerName());
-                    }
-                }
-
-                if (doBreaker(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo.getId())) {
-                    alertEventStatusVo.setStatus(AlertEventStatus.BREAKED.getValue());
-                } else {
-                    alertVo = myTrigger(alertEventHandlerVo, alertEventPluginVo, alertVo, alertEventHandlerAuditVo, alertEventStatusVo);
-                }
-
-                TransactionUtil.commitTx(ts);
-                if (alertEventStatusVo.getStatus() != null) {
-                    alertEventHandlerAuditVo.setStatus(alertEventStatusVo.getStatus());
-                } else {
-                    //如果审计记录状态不是RUNNING，代表已经在插件内部被修改，这里不再设置状态，以插件修改状态为准
-                    if (Objects.equals(alertEventHandlerAuditVo.getStatus(), AlertEventStatus.RUNNING.getValue())) {
-                        alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
-                    }
-                }
-            } catch (AlertEventPluginSuppressException e) {
-                TransactionUtil.rollbackTx(ts);
-                alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUPPRESS.getValue());
-            } catch (AlertEventPluginDisabledException e) {
-                TransactionUtil.rollbackTx(ts);
-                alertEventHandlerAuditVo.setStatus(AlertEventStatus.DISABLED.getValue());
-            } catch (Exception e) {
-                if (e instanceof ApiRuntimeException) {
-                    logger.warn(e.getMessage(), e);
-                } else {
-                    logger.error(e.getMessage(), e);
-                }
-                TransactionUtil.rollbackTx(ts);
-                alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
-                alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
-                throw e; // 抛出异常以便上层处理
-            } finally {
-                alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);
-                afterBreaker(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo);
-            }
+            alertVo = executeEventHandler(alertEventHandlerVo, alertEventPluginVo, alertVo, alertEventHandlerAuditVo, true);
         } else {
             //异步作业，不能修改alertVo信息
             AlertVo finalAlertVo = alertVo;
             CachedThreadPool.execute(new NeatLogicThread("ALERT-EVENT-HANDLER-" + finalAlertVo.getId()) {
                 @Override
                 protected void execute() {
-                    TransactionStatus ts = TransactionUtil.openNewTx();
-                    try {
-                        //如果插件被禁用，直接结束执行
-                        if ((alertEventPluginVo != null && Objects.equals(0, alertEventPluginVo.getIsActive())) || Objects.equals(0, alertEventHandlerVo.getIsActive())) {
-                            throw new AlertEventPluginDisabledException(alertEventHandlerVo.getHandlerName());
-                        }
-                        //商业版功能：告警屏蔽
-                        IAlertSuppressionCrossoverService suppressionService = CrossoverServiceFactory.tryToGetApi(IAlertSuppressionCrossoverService.class);
-                        if (suppressionService != null) {
-                            if (suppressionService.doSuppression(finalAlertVo, alertEventHandlerVo.getTypeId(), alertEventHandlerVo.getEvent(), getEventHandlerAuditName(alertEventHandlerVo))) {
-                                throw new AlertEventPluginSuppressException(alertEventHandlerVo.getHandlerName());
-                            }
-                        }
-                        if (doBreaker(alertEventHandlerVo, finalAlertVo, alertEventHandlerAuditVo.getId())) {
-                            alertEventStatusVo.setStatus(AlertEventStatus.BREAKED.getValue());
-                        } else {
-                            myTrigger(alertEventHandlerVo, alertEventPluginVo, finalAlertVo, alertEventHandlerAuditVo, alertEventStatusVo);
-                        }
-                        TransactionUtil.commitTx(ts);
-                        if (alertEventStatusVo.getStatus() != null) {
-                            alertEventHandlerAuditVo.setStatus(alertEventStatusVo.getStatus());
-                        } else {
-                            //如果审计记录状态不是RUNNING，代表已经在插件内部被修改，这里不再设置状态，以插件修改状态为准
-                            if (Objects.equals(alertEventHandlerAuditVo.getStatus(), AlertEventStatus.RUNNING.getValue())) {
-                                alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
-                            }
-                        }
-
-                    } catch (AlertEventPluginSuppressException e) {
-                        TransactionUtil.rollbackTx(ts);
-                        alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUPPRESS.getValue());
-                        //alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
-                    } catch (AlertEventPluginDisabledException e) {
-                        TransactionUtil.rollbackTx(ts);
-                        alertEventHandlerAuditVo.setStatus(AlertEventStatus.DISABLED.getValue());
-                        //alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
-                    } catch (Exception e) {
-                        logger.warn(e.getMessage(), e);
-                        TransactionUtil.rollbackTx(ts);
-                        alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
-                        alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
-                    } finally {
-                        alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);
-                        afterBreaker(alertEventHandlerVo, finalAlertVo, alertEventHandlerAuditVo);
-                    }
+                    executeEventHandler(alertEventHandlerVo, alertEventPluginVo, finalAlertVo, alertEventHandlerAuditVo, false);
                 }
             });
         }
 
 
         return alertVo;
+    }
+
+    private AlertVo executeEventHandler(AlertEventHandlerVo alertEventHandlerVo, AlertEventPluginVo alertEventPluginVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo, boolean isThrowException) {
+        try {
+            PreCheckResult preCheckResult = preCheck(alertEventHandlerVo, alertEventPluginVo, alertVo, alertEventHandlerAuditVo.getId());
+            if (preCheckResult.isCompleted()) {
+                alertEventHandlerAuditVo.setStatus(preCheckResult.getStatus());
+                return alertVo;
+            }
+            alertVo = executeMainEventTransaction(alertEventHandlerVo, alertEventPluginVo, alertVo, alertEventHandlerAuditVo, isThrowException);
+            return alertVo;
+        } catch (Exception e) {
+            if (e instanceof ApiRuntimeException) {
+                logger.warn(e.getMessage(), e);
+            } else {
+                logger.error(e.getMessage(), e);
+            }
+            alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
+            alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
+            if (isThrowException) {
+                throw e;
+            }
+            return alertVo;
+        } finally {
+            updateEventHandlerAudit(alertEventHandlerAuditVo);
+            afterBreaker(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo);
+        }
+    }
+
+    private PreCheckResult preCheck(AlertEventHandlerVo alertEventHandlerVo, AlertEventPluginVo alertEventPluginVo, AlertVo alertVo, Long eventHandlerAuditId) {
+        // 前置阶段不打开事件主事务，避免熔断、屏蔽等旁路能力污染插件事务。
+        if ((alertEventPluginVo != null && Objects.equals(0, alertEventPluginVo.getIsActive())) || Objects.equals(0, alertEventHandlerVo.getIsActive())) {
+            return PreCheckResult.completed(AlertEventStatus.DISABLED.getValue());
+        }
+        IAlertSuppressionCrossoverService suppressionService = CrossoverServiceFactory.tryToGetApi(IAlertSuppressionCrossoverService.class);
+        if (suppressionService != null && suppressionService.doSuppression(alertVo, alertEventHandlerVo.getTypeId(), alertEventHandlerVo.getEvent(), getEventHandlerAuditName(alertEventHandlerVo))) {
+            return PreCheckResult.completed(AlertEventStatus.SUPPRESS.getValue());
+        }
+        if (doBreaker(alertEventHandlerVo, alertVo, eventHandlerAuditId)) {
+            return PreCheckResult.completed(AlertEventStatus.BREAKED.getValue());
+        }
+        return PreCheckResult.pass();
+    }
+
+    private AlertVo executeMainEventTransaction(AlertEventHandlerVo alertEventHandlerVo, AlertEventPluginVo alertEventPluginVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo, boolean isThrowException) {
+        TransactionStatus ts = TransactionUtil.openNewTx();
+        AlertEventStatusVo alertEventStatusVo = new AlertEventStatusVo();
+        try {
+            alertVo = myTrigger(alertEventHandlerVo, alertEventPluginVo, alertVo, alertEventHandlerAuditVo, alertEventStatusVo);
+            if (!commitTx(ts)) {
+                alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
+                alertEventHandlerAuditVo.setError("Commit alert event handler transaction failed");
+                return alertVo;
+            }
+            if (alertEventStatusVo.getStatus() != null) {
+                alertEventHandlerAuditVo.setStatus(alertEventStatusVo.getStatus());
+            } else if (Objects.equals(alertEventHandlerAuditVo.getStatus(), AlertEventStatus.RUNNING.getValue())) {
+                alertEventHandlerAuditVo.setStatus(AlertEventStatus.SUCCEED.getValue());
+            }
+            return alertVo;
+        } catch (Exception e) {
+            rollbackTx(ts);
+            if (e instanceof ApiRuntimeException) {
+                logger.warn(e.getMessage(), e);
+            } else {
+                logger.error(e.getMessage(), e);
+            }
+            alertEventHandlerAuditVo.setStatus(AlertEventStatus.FAILED.getValue());
+            alertEventHandlerAuditVo.setError(e.getMessage() == null ? ExceptionUtils.getStackTrace(e) : e.getMessage());
+            if (isThrowException) {
+                throw e;
+            }
+            return alertVo;
+        }
     }
 
     private String getEventHandlerAuditName(AlertEventHandlerVo alertEventHandlerVo) {
@@ -198,12 +176,77 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         return alertEventHandlerVo.getHandlerName();
     }
 
+    private boolean commitTx(TransactionStatus ts) {
+        if (ts == null || ts.isCompleted()) {
+            return true;
+        }
+        try {
+            TransactionUtil.commitTx(ts);
+            return true;
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            return false;
+        }
+    }
+
+    private void rollbackTx(TransactionStatus ts) {
+        if (ts == null || ts.isCompleted()) {
+            return;
+        }
+        try {
+            TransactionUtil.rollbackTx(ts);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
+    }
+
+    private void updateEventHandlerAudit(AlertEventHandlerAuditVo alertEventHandlerAuditVo) {
+        try {
+            alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
+    }
+
     private boolean doBreaker(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long eventHandlerAuditId) {
-        return AlertBreakerManager.doBreak(alertEventHandlerVo, alertVo, eventHandlerAuditId);
+        try {
+            return AlertBreakerManager.doBreak(alertEventHandlerVo, alertVo, eventHandlerAuditId);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+            return false;
+        }
     }
 
     private void afterBreaker(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo) {
-        AlertBreakerManager.afterBreak(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo);
+        try {
+            AlertBreakerManager.afterBreak(alertEventHandlerVo, alertVo, alertEventHandlerAuditVo);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
+        }
+    }
+
+    private static class PreCheckResult {
+        private final String status;
+
+        private PreCheckResult(String status) {
+            this.status = status;
+        }
+
+        private static PreCheckResult completed(String status) {
+            return new PreCheckResult(status);
+        }
+
+        private static PreCheckResult pass() {
+            return new PreCheckResult(null);
+        }
+
+        private boolean isCompleted() {
+            return status != null;
+        }
+
+        private String getStatus() {
+            return status;
+        }
     }
 
     protected abstract AlertVo myTrigger(AlertEventHandlerVo alertEventHandlerVo, AlertEventPluginVo alertEventPluginVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo, AlertEventStatusVo alertEventStatusVo) throws AlertEventHandlerTriggerException;

@@ -23,6 +23,7 @@ import neatlogic.framework.util.SnowflakeUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
+import java.util.List;
 
 public class AlertBreakerAuditVo extends BasePageVo {
     private Long id;
@@ -45,6 +46,7 @@ public class AlertBreakerAuditVo extends BasePageVo {
     private String status;
     private String statusText;
     private String error;
+    private List<AlertBreakerActionAuditVo> actionAuditList;
     private long timeCost;
 
     public Long getId() {
@@ -221,6 +223,14 @@ public class AlertBreakerAuditVo extends BasePageVo {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public List<AlertBreakerActionAuditVo> getActionAuditList() {
+        return actionAuditList;
+    }
+
+    public void setActionAuditList(List<AlertBreakerActionAuditVo> actionAuditList) {
+        this.actionAuditList = actionAuditList;
     }
 
     public long getTimeCost() {

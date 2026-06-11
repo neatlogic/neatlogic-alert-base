@@ -13,6 +13,7 @@
 package neatlogic.framework.alert.breaker.action;
 
 import neatlogic.framework.alert.dto.AlertVo;
+import neatlogic.framework.alert.dto.breaker.AlertBreakerActionAuditVo;
 import neatlogic.framework.alert.dto.breaker.AlertBreakerActionVo;
 import neatlogic.framework.alert.dto.breaker.AlertBreakerPolicyVo;
 import neatlogic.framework.alert.dto.breaker.AlertBreakerStateVo;
@@ -38,7 +39,7 @@ public interface IAlertBreakerActionHandler {
      * @param stateVo 熔断状态。
      * @param alertVo 本次触发熔断的告警。
      */
-    void triggerOpen(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, AlertVo alertVo);
+    AlertBreakerActionAuditVo triggerOpen(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, AlertVo alertVo, Long breakerAuditId);
 
     /**
      * 熔断聚合处理时触发。
@@ -48,7 +49,7 @@ public interface IAlertBreakerActionHandler {
      * @param stateVo 熔断状态。
      * @param alertList 熔断期间收集到的告警列表。
      */
-    void triggerAggregate(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, List<AlertVo> alertList);
+    AlertBreakerActionAuditVo triggerAggregate(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, List<AlertVo> alertList, Long breakerAuditId);
 
     /**
      * 熔断恢复时触发。
@@ -58,5 +59,5 @@ public interface IAlertBreakerActionHandler {
      * @param stateVo 熔断状态。
      * @param alertList 如果恢复来自聚合处理，则为聚合告警列表；普通恢复可能为空。
      */
-    void triggerRecover(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, List<AlertVo> alertList);
+    AlertBreakerActionAuditVo triggerRecover(AlertBreakerActionVo actionVo, AlertBreakerPolicyVo policyVo, AlertBreakerStateVo stateVo, List<AlertVo> alertList, Long breakerAuditId);
 }

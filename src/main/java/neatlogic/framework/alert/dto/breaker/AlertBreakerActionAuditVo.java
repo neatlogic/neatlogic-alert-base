@@ -21,6 +21,7 @@ import java.util.Date;
 
 public class AlertBreakerActionAuditVo extends BasePageVo {
     private Long id;
+    private Long breakerAuditId;
     private Long policyId;
     private Long stateId;
     private String trigger;
@@ -43,6 +44,14 @@ public class AlertBreakerActionAuditVo extends BasePageVo {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getBreakerAuditId() {
+        return breakerAuditId;
+    }
+
+    public void setBreakerAuditId(Long breakerAuditId) {
+        this.breakerAuditId = breakerAuditId;
     }
 
     public Long getPolicyId() {

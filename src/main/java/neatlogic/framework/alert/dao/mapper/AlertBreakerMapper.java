@@ -86,6 +86,8 @@ public interface AlertBreakerMapper {
 
     void insertAlertBreakerActionAudit(AlertBreakerActionAuditVo vo);
 
+    List<AlertBreakerActionAuditVo> getAlertBreakerActionAuditListByBreakerAuditIdList(List<Long> breakerAuditIdList);
+
     int searchAlertBreakerActionAuditCount(AlertBreakerActionAuditVo vo);
 
     List<AlertBreakerActionAuditVo> searchAlertBreakerActionAudit(AlertBreakerActionAuditVo vo);

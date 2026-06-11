@@ -40,29 +40,45 @@ public class AlertBreakerManager {
     }
 
     public static boolean doBreak(AlertEventHandlerVo eventHandlerVo, AlertVo alertVo, Long eventHandlerAuditId) {
-        AlertBreakerMapper mapper = SpringContextUtil.getBean(AlertBreakerMapper.class);
-        List<AlertEventHandlerBreakerPolicyVo> policyRelList = mapper.getBreakerPolicyListByEventHandlerId(eventHandlerVo.getId());
-        if (CollectionUtils.isEmpty(policyRelList)) {
-            return false;
-        }
-        for (AlertEventHandlerBreakerPolicyVo policyRel : policyRelList) {
-            AlertBreakerPolicyVo policyVo = mapper.getAlertBreakerPolicyById(policyRel.getPolicyId());
-            if (policyVo == null || !Objects.equals(policyVo.getIsActive(), 1)) {
-                continue;
+        try {
+            AlertBreakerMapper mapper = SpringContextUtil.getBean(AlertBreakerMapper.class);
+            List<AlertEventHandlerBreakerPolicyVo> policyRelList = mapper.getBreakerPolicyListByEventHandlerId(eventHandlerVo.getId());
+            if (CollectionUtils.isEmpty(policyRelList)) {
+                return false;
             }
-            IAlertBreakerHandler breakerHandler = AlertBreakerHandlerFactory.getHandler(policyVo.getHandler());
-            if (breakerHandler == null) {
-                logger.warn("Alert breaker handler not found: {}", policyVo.getHandler());
-                continue;
+            for (AlertEventHandlerBreakerPolicyVo policyRel : policyRelList) {
+                try {
+                    AlertBreakerPolicyVo policyVo = mapper.getAlertBreakerPolicyById(policyRel.getPolicyId());
+                    if (policyVo == null || !Objects.equals(policyVo.getIsActive(), 1)) {
+                        continue;
+                    }
+                    IAlertBreakerHandler breakerHandler = AlertBreakerHandlerFactory.getHandler(policyVo.getHandler());
+                    if (breakerHandler == null) {
+                        logger.warn("Alert breaker handler not found: {}", policyVo.getHandler());
+                        continue;
+                    }
+                    AlertBreakerResultVo resultVo = breakerHandler.execute(policyVo, alertVo, eventHandlerVo, eventHandlerAuditId);
+                    if (resultVo != null && resultVo.isOpenStarted()) {
+                        try {
+                            loadExpireJob(resultVo);
+                        } catch (Exception e) {
+                            logger.warn(e.getMessage(), e);
+                        }
+                    }
+                    if (resultVo != null && resultVo.isBreaked()) {
+                        try {
+                            breakerHandler.collect(policyVo, alertVo, eventHandlerVo, eventHandlerAuditId, resultVo);
+                        } catch (Exception e) {
+                            logger.warn(e.getMessage(), e);
+                        }
+                        return true;
+                    }
+                } catch (Exception e) {
+                    logger.warn(e.getMessage(), e);
+                }
             }
-            AlertBreakerResultVo resultVo = breakerHandler.execute(policyVo, alertVo, eventHandlerVo, eventHandlerAuditId);
-            if (resultVo != null && resultVo.isOpenStarted()) {
-                loadExpireJob(resultVo);
-            }
-            if (resultVo != null && resultVo.isBreaked()) {
-                breakerHandler.collect(policyVo, alertVo, eventHandlerVo, eventHandlerAuditId, resultVo);
-                return true;
-            }
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
         }
         return false;
     }
@@ -92,22 +108,30 @@ public class AlertBreakerManager {
     }
 
     public static void afterBreak(AlertEventHandlerVo eventHandlerVo, AlertVo alertVo, AlertEventHandlerAuditVo eventHandlerAuditVo) {
-        AlertBreakerMapper mapper = SpringContextUtil.getBean(AlertBreakerMapper.class);
-        List<AlertEventHandlerBreakerPolicyVo> policyRelList = mapper.getBreakerPolicyListByEventHandlerId(eventHandlerVo.getId());
-        if (CollectionUtils.isEmpty(policyRelList)) {
-            return;
-        }
-        for (AlertEventHandlerBreakerPolicyVo policyRel : policyRelList) {
-            AlertBreakerPolicyVo policyVo = mapper.getAlertBreakerPolicyById(policyRel.getPolicyId());
-            if (policyVo == null || !Objects.equals(policyVo.getIsActive(), 1)) {
-                continue;
+        try {
+            AlertBreakerMapper mapper = SpringContextUtil.getBean(AlertBreakerMapper.class);
+            List<AlertEventHandlerBreakerPolicyVo> policyRelList = mapper.getBreakerPolicyListByEventHandlerId(eventHandlerVo.getId());
+            if (CollectionUtils.isEmpty(policyRelList)) {
+                return;
             }
-            IAlertBreakerHandler breakerHandler = AlertBreakerHandlerFactory.getHandler(policyVo.getHandler());
-            if (breakerHandler == null) {
-                logger.warn("Alert breaker handler not found: {}", policyVo.getHandler());
-                continue;
+            for (AlertEventHandlerBreakerPolicyVo policyRel : policyRelList) {
+                try {
+                    AlertBreakerPolicyVo policyVo = mapper.getAlertBreakerPolicyById(policyRel.getPolicyId());
+                    if (policyVo == null || !Objects.equals(policyVo.getIsActive(), 1)) {
+                        continue;
+                    }
+                    IAlertBreakerHandler breakerHandler = AlertBreakerHandlerFactory.getHandler(policyVo.getHandler());
+                    if (breakerHandler == null) {
+                        logger.warn("Alert breaker handler not found: {}", policyVo.getHandler());
+                        continue;
+                    }
+                    breakerHandler.after(policyVo, alertVo, eventHandlerVo, eventHandlerAuditVo);
+                } catch (Exception e) {
+                    logger.warn(e.getMessage(), e);
+                }
             }
-            breakerHandler.after(policyVo, alertVo, eventHandlerVo, eventHandlerAuditVo);
+        } catch (Exception e) {
+            logger.warn(e.getMessage(), e);
         }
     }
 

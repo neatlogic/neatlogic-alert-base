@@ -57,6 +57,7 @@
 
     <resultMap id="alertBreakerActionAuditResultMap" type="neatlogic.framework.alert.dto.breaker.AlertBreakerActionAuditVo">
         <id column="id" property="id"/>
+        <result column="breakerAuditId" property="breakerAuditId"/>
         <result column="policyId" property="policyId"/>
         <result column="stateId" property="stateId"/>
         <result column="trigger" property="trigger"/>
@@ -491,15 +492,18 @@
 
     <insert id="insertAlertBreakerActionAudit" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerActionAuditVo">
         insert into alert_breaker_action_audit
-            (id, policy_id, state_id, `trigger`, action_uuid, action_name, action_handler, start_time, end_time, status, error)
+            (id, breaker_audit_id, policy_id, state_id, `trigger`, action_uuid, action_name, action_handler, start_time, end_time, status, error)
         values
-            (#{id}, #{policyId}, #{stateId}, #{trigger}, #{actionUuid}, #{actionName}, #{actionHandler}, #{startTime}, #{endTime}, #{status}, #{error})
+            (#{id}, #{breakerAuditId}, #{policyId}, #{stateId}, #{trigger}, #{actionUuid}, #{actionName}, #{actionHandler}, #{startTime}, #{endTime}, #{status}, #{error})
     </insert>
 
     <sql id="searchAlertBreakerActionAuditCondition">
         <where>
             <if test="policyId != null">
                 and policy_id = #{policyId}
+            </if>
+            <if test="breakerAuditId != null">
+                and breaker_audit_id = #{breakerAuditId}
             </if>
             <if test="stateId != null">
                 and state_id = #{stateId}
@@ -524,6 +528,7 @@
 
     <select id="searchAlertBreakerActionAudit" parameterType="neatlogic.framework.alert.dto.breaker.AlertBreakerActionAuditVo" resultMap="alertBreakerActionAuditResultMap">
         select id,
+               breaker_audit_id as breakerAuditId,
                policy_id      as policyId,
                state_id       as stateId,
                `trigger`,
@@ -538,6 +543,27 @@
         <include refid="searchAlertBreakerActionAuditCondition"></include>
         order by start_time desc, id desc
         limit #{startNum}, #{pageSize}
+    </select>
+
+    <select id="getAlertBreakerActionAuditListByBreakerAuditIdList" resultMap="alertBreakerActionAuditResultMap">
+        select id,
+               breaker_audit_id as breakerAuditId,
+               policy_id        as policyId,
+               state_id         as stateId,
+               `trigger`,
+               action_uuid      as actionUuid,
+               action_name      as actionName,
+               action_handler   as actionHandler,
+               start_time       as startTime,
+               end_time         as endTime,
+               status,
+               error
+        from alert_breaker_action_audit
+        where breaker_audit_id in
+        <foreach collection="list" item="breakerAuditId" open="(" separator="," close=")">
+            #{breakerAuditId}
+        </foreach>
+        order by start_time, id
     </select>
 
 </mapper>
