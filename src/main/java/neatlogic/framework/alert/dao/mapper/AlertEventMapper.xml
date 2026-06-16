@@ -61,6 +61,7 @@
         <result column="title" property="title"/>
         <result column="updateTime" property="updateTime"/>
         <result column="alertTime" property="alertTime"/>
+        <result column="closeTime" property="closeTime"/>
         <result column="type" property="type"/>
         <result column="alertTypeLabel" property="typeName"/>
         <result column="status" property="status"/>
@@ -108,6 +109,7 @@
                a.title,
                a.update_time                                                                         as updateTime,
                a.alert_time                                                                          as alertTime,
+               a.close_time                                                                          as closeTime,
                a.type,
                a.is_close                                                                            as isClose,
                a.similar_count                                                                       as similarCount,

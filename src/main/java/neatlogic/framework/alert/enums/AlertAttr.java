@@ -187,6 +187,25 @@ public class AlertAttr {
                 .setLabel("term.alert.isclosename")
                 .setFreemarkerSnippet("${DATA.const_isCloseName}").setIsTemplate(true));
         //}
+        attrList.add(new AlertAttrDefineVo("const_closeTime", "关闭时间", "datetime", new ArrayList<String>() {{
+            this.add("range");
+            this.add("is-null");
+            this.add("is-not-null");
+        }}, new JSONObject() {{
+            this.put("transfer", true);
+            this.put("type", "datetimerange");
+            this.put("format", "yyyy-MM-dd HH:mm");
+        }}).setFreemarkerSnippet("${DATA.const_closeTimeStr}")
+                .setIsColumn(true)
+                .setIsTemplate(true)
+                .setIsSort(true));
+
+        attrList.add(new AlertAttrDefineVo()
+                .setName("const_closeTimeStr")
+                .setLabel("关闭时间文本")
+                .setFreemarkerSnippet("${DATA.const_closeTimeStr}")
+                .setIsTemplate(true));
+
         attrList.add(new AlertAttrDefineVo("const_status", "common.status", "select", new ArrayList<String>() {{
             this.add("like");
             this.add("notlike");

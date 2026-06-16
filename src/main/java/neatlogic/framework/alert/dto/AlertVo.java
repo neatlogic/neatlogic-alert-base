@@ -83,6 +83,10 @@ public class AlertVo extends BasePageVo {
     private Date alertTime;
     @EntityField(name = "创建时间文本", type = ApiParamType.STRING)
     private String alertTimeStr;
+    @EntityField(name = "关闭时间", type = ApiParamType.LONG)
+    private Date closeTime;
+    @EntityField(name = "关闭时间文本", type = ApiParamType.STRING)
+    private String closeTimeStr;
     @EntityField(name = "是否关闭", type = ApiParamType.INTEGER)
     private int isClose = 0;
     @EntityField(name = "是否关闭文案", type = ApiParamType.STRING)
@@ -696,6 +700,14 @@ public class AlertVo extends BasePageVo {
         this.alertTime = alertTime;
     }
 
+    public Date getCloseTime() {
+        return closeTime;
+    }
+
+    public void setCloseTime(Date closeTime) {
+        this.closeTime = closeTime;
+    }
+
     public String getAlertTimeStr() {
         if (alertTime != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -710,6 +722,14 @@ public class AlertVo extends BasePageVo {
             updateTimeStr = sdf.format(updateTime);
         }
         return updateTimeStr;
+    }
+
+    public String getCloseTimeStr() {
+        if (closeTime != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            closeTimeStr = sdf.format(closeTime);
+        }
+        return closeTimeStr;
     }
 
 
