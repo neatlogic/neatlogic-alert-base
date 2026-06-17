@@ -97,6 +97,7 @@
             <id column="alertMarkUuid" property="uuid"/>
             <result column="alertMarkName" property="name"/>
             <result column="alertMarkStyle" property="style"/>
+            <result column="alertMarkIsShow" property="isShow"/>
         </collection>
     </resultMap>
 
@@ -133,7 +134,8 @@
                (select name from team x where x.uuid = at.team_uuid)                                 as alertTeamName,
                am.name                                                                               as alertMarkName,
                am.uuid                                                                               as alertMarkUuid,
-               am.style                                                                              as alertMarkStyle
+               am.style                                                                              as alertMarkStyle,
+               am.is_show                                                                            as alertMarkIsShow
         from alert a
                  left join alert_attr b on a.id = b.alert_id
                  left join alert_level c on a.level = c.level

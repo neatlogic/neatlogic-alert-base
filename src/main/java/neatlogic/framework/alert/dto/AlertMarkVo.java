@@ -17,9 +17,12 @@ import neatlogic.framework.util.Md5Util;
 import org.apache.commons.lang3.StringUtils;
 
 public class AlertMarkVo extends BasePageVo {
+    private static final long serialVersionUID = 1L;
+
     private String uuid;
     private String name;
     private String style;
+    private Integer isShow;
 
     public String getUuid() {
         if (StringUtils.isBlank(uuid) && StringUtils.isNotBlank(name)) {
@@ -46,5 +49,13 @@ public class AlertMarkVo extends BasePageVo {
 
     public void setStyle(String style) {
         this.style = style;
+    }
+
+    public Integer getIsShow() {
+        return isShow;
+    }
+
+    public void setIsShow(Integer isShow) {
+        this.isShow = isShow;
     }
 }
