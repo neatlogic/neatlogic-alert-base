@@ -23,6 +23,7 @@ import neatlogic.framework.alert.dto.breaker.AlertEventHandlerBreakerPolicyVo;
 import neatlogic.framework.scheduler.core.IJob;
 import neatlogic.framework.scheduler.core.SchedulerManager;
 import neatlogic.framework.scheduler.dto.JobObject;
+import neatlogic.framework.scheduler.enums.JobLoadTriggerType;
 import neatlogic.framework.util.SpringContextUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -153,6 +154,6 @@ public class AlertBreakerManager {
                 .addData("policyId", resultVo.getPolicyId())
                 .withBeginTime(resultVo.getOpenUntil())
                 .build();
-        schedulerManager.loadJob(jobObject);
+        schedulerManager.loadJob(jobObject, JobLoadTriggerType.INITIAL_CREATE);
     }
 }
