@@ -58,7 +58,7 @@ public class AlertAttr {
     private static final List<AlertAttrDefineVo> attrList = new ArrayList<>();
 
     static {
-        attrList.add(new AlertAttrDefineVo("const_id", "id", "text", new ArrayList<>() {{
+        attrList.add(new AlertAttrDefineVo("const_id", "common.id", "text", new ArrayList<>() {{
             this.add("equal");
             this.add("notequal");
         }}, null)
@@ -187,7 +187,7 @@ public class AlertAttr {
                 .setLabel("term.alert.isclosename")
                 .setFreemarkerSnippet("${DATA.const_isCloseName}").setIsTemplate(true));
         //}
-        attrList.add(new AlertAttrDefineVo("const_closeTime", "关闭时间", "datetime", new ArrayList<String>() {{
+        attrList.add(new AlertAttrDefineVo("const_closeTime", "term.alert.closetime", "datetime", new ArrayList<String>() {{
             this.add("range");
             this.add("is-null");
             this.add("is-not-null");
@@ -202,7 +202,7 @@ public class AlertAttr {
 
         attrList.add(new AlertAttrDefineVo()
                 .setName("const_closeTimeStr")
-                .setLabel("关闭时间文本")
+                .setLabel("term.alert.closetimetext")
                 .setFreemarkerSnippet("${DATA.const_closeTimeStr}")
                 .setIsTemplate(true));
 
