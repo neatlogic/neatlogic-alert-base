@@ -449,6 +449,9 @@
         <if test="parentId != null">
             ,parent_id = #{parentId}
         </if>
+        <if test="uniqueKey != null and uniqueKey != ''">
+            ,unique_key = #{uniqueKey}
+        </if>
         where id = #{id}
     </update>
 
