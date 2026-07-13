@@ -31,6 +31,12 @@ public enum AlertAttrType implements IEnum<JSONObject> {
         this.add("is-null");
         this.add("is-not-null");
     }}, null),
+    BOOLEAN("boolean", "布尔值", new ArrayList<>() {{
+        this.add("equal");
+        this.add("notequal");
+        this.add("is-null");
+        this.add("is-not-null");
+    }}, null),
     TEXT("text", "文本", new ArrayList<>() {{
         this.add("equal");
         this.add("notequal");
