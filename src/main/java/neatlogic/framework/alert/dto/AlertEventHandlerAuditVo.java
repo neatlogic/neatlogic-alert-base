@@ -37,6 +37,10 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
     private String uniqueKey;
     @EntityField(name = "告警id", type = ApiParamType.LONG)
     private Long alertId;
+    @EntityField(name = "告警标题", type = ApiParamType.STRING)
+    private String alertTitle;
+    @EntityField(name = "告警是否存在", type = ApiParamType.INTEGER)
+    private Integer isAlertExists;
     @EntityField(name = "父id", type = ApiParamType.LONG)
     private Long parentId;
     @EntityField(name = "事件", type = ApiParamType.STRING)
@@ -75,6 +79,8 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
     private long timeCost;
     @EntityField(name = "子记录")
     private List<AlertEventHandlerAuditVo> childAuditList;
+    @EntityField(name = "是否存在子记录", type = ApiParamType.INTEGER)
+    private Integer hasChild;
     @EntityField(name = "熔断策略审计")
     private List<AlertBreakerAuditVo> breakerAuditList;
     @JSONField(serialize = false)
@@ -150,6 +156,22 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
 
     public void setAlertId(Long alertId) {
         this.alertId = alertId;
+    }
+
+    public String getAlertTitle() {
+        return alertTitle;
+    }
+
+    public void setAlertTitle(String alertTitle) {
+        this.alertTitle = alertTitle;
+    }
+
+    public Integer getIsAlertExists() {
+        return isAlertExists;
+    }
+
+    public void setIsAlertExists(Integer isAlertExists) {
+        this.isAlertExists = isAlertExists;
     }
 
     public String getEvent() {
@@ -255,6 +277,14 @@ public class AlertEventHandlerAuditVo extends BasePageVo {
 
     public void setChildAuditList(List<AlertEventHandlerAuditVo> childAuditList) {
         this.childAuditList = childAuditList;
+    }
+
+    public Integer getHasChild() {
+        return hasChild;
+    }
+
+    public void setHasChild(Integer hasChild) {
+        this.hasChild = hasChild;
     }
 
     public List<AlertBreakerAuditVo> getBreakerAuditList() {
