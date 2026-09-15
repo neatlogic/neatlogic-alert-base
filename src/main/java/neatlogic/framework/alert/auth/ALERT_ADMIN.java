@@ -2,15 +2,16 @@ package neatlogic.framework.alert.auth;
 
 import neatlogic.framework.auth.core.AuthBase;
 
+/** 权限名称与说明使用国际化键，权限标识及校验规则保持不变。 */
 public class ALERT_ADMIN extends AuthBase {
     @Override
     public String getAuthDisplayName() {
-        return "告警管理员权限";
+        return "auth.alert_admin.name";
     }
 
     @Override
     public String getAuthIntroduction() {
-        return "可以对所有告警进行状态修改、关闭、删除等操作";
+        return "auth.alert_admin.description";
     }
 
     @Override

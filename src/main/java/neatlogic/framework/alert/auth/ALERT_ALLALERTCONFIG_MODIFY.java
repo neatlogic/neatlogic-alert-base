@@ -5,15 +5,16 @@ import neatlogic.framework.auth.core.AuthBase;
 import java.util.Collections;
 import java.util.List;
 
+/** 权限名称与说明使用国际化键，权限标识及校验规则保持不变。 */
 public class ALERT_ALLALERTCONFIG_MODIFY extends AuthBase {
     @Override
     public String getAuthDisplayName() {
-        return "所有告警配置管理权限";
+        return "auth.alert_allalertconfig_modify.name";
     }
 
     @Override
     public String getAuthIntroduction() {
-        return "修改所有告警页面的显示属性、条件和排序配置";
+        return "auth.alert_allalertconfig_modify.description";
     }
 
     @Override

@@ -2,15 +2,16 @@ package neatlogic.framework.alert.auth;
 
 import neatlogic.framework.auth.core.AuthBase;
 
+/** 权限名称与说明使用国际化键，权限标识及校验规则保持不变。 */
 public class ALERT_BATCH_DELETE extends AuthBase {
     @Override
     public String getAuthDisplayName() {
-        return "批量删除告警权限";
+        return "auth.alert_batch_delete.name";
     }
 
     @Override
     public String getAuthIntroduction() {
-        return "可以对命中高级搜索规则的告警进行批量删除";
+        return "auth.alert_batch_delete.description";
     }
 
     @Override
