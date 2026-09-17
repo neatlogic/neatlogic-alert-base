@@ -1,7 +1,6 @@
 package neatlogic.framework.alert.auth;
 
 import neatlogic.framework.auth.core.AuthBase;
-
 import java.util.Collections;
 import java.util.List;
 
