@@ -26,6 +26,7 @@ public class AlertIntervalJobVo extends BasePageVo {
     private Date startTime;
     private Integer repeatCount;
     private Integer intervalMinute;
+    private Integer intervalSecond;
     private Long parentAuditId;
     private JSONObject config;
     @JSONField(serialize = false)
@@ -77,6 +78,14 @@ public class AlertIntervalJobVo extends BasePageVo {
 
     public void setIntervalMinute(Integer intervalMinute) {
         this.intervalMinute = intervalMinute;
+    }
+
+    public Integer getIntervalSecond() {
+        return intervalSecond;
+    }
+
+    public void setIntervalSecond(Integer intervalSecond) {
+        this.intervalSecond = intervalSecond;
     }
 
     public JSONObject getConfig() {
