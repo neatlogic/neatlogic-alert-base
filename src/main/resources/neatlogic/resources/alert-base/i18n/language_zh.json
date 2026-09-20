@@ -1,0 +1,146 @@
+{
+  "alert": {
+    "alert": {
+      "teammemberaccount": "处理组成员账号"
+    },
+    "term": {
+      "workerteammembername": "处理组成员名称"
+    }
+  },
+  "auth": {
+    "alert_action_modify": {
+      "description": "新增、修改和修改告警自定义操作",
+      "name": "告警自定义操作管理权限"
+    },
+    "alert_admin": {
+      "description": "可以对所有告警进行状态修改、关闭、删除等操作",
+      "name": "告警管理员权限"
+    },
+    "alert_allalertconfig_modify": {
+      "description": "修改所有告警页面的显示属性、条件和排序配置",
+      "name": "所有告警配置管理权限"
+    },
+    "alert_attr_modify": {
+      "description": "新增、修改和修改告警扩展属性",
+      "name": "告警扩展属性管理权限"
+    },
+    "alert_base": {
+      "description": "使用统一告警平台模块",
+      "name": "统一告警平台基础权限"
+    },
+    "alert_batch_delete": {
+      "description": "可以对命中高级搜索规则的告警进行批量删除",
+      "name": "批量删除告警权限"
+    },
+    "alert_breaker_modify": {
+      "description": "新增、修改和删除告警熔断策略",
+      "name": "告警熔断策略管理权限"
+    },
+    "alert_event_modify": {
+      "description": "新增、修改和修改告警事件",
+      "name": "告警事件管理权限"
+    },
+    "alert_event_plugin_modify": {
+      "description": "修改告警事件插件配置",
+      "name": "告警事件插件管理权限"
+    },
+    "alert_export": {
+      "description": "导出告警数据",
+      "name": "告警导出权限"
+    },
+    "alert_index": {
+      "description": "拥有此权限可以单独重建单个告警的索引",
+      "name": "重建告警索引权限"
+    },
+    "alert_level_modify": {
+      "description": "新增、修改和修改告警级别",
+      "name": "告警级别管理权限"
+    },
+    "alert_mark_modify": {
+      "description": "新增、修改和修改告警标签",
+      "name": "告警标签管理权限"
+    },
+    "alert_notify_template_modify": {
+      "description": "新增、修改和修改通知模板管理",
+      "name": "通知模板管理权限"
+    },
+    "alert_rule_modify": {
+      "description": "新增、修改和修改告警特征",
+      "name": "告警特征管理权限"
+    },
+    "alert_source_modify": {
+      "description": "新增、修改和修改告警来源",
+      "name": "告警来源管理权限"
+    },
+    "alert_status_modify": {
+      "description": "可以对告警状态进行添加、修改和删除",
+      "name": "告警状态管理权限"
+    },
+    "alert_type_modify": {
+      "description": "新增、修改和修改告警类型",
+      "name": "告警类型管理权限"
+    },
+    "alert_view_modify": {
+      "description": "新增、修改和修改告警视图",
+      "name": "告警视图管理权限"
+    }
+  },
+  "nfae": {
+    "alertattr": "唯一键"
+  },
+  "term": {
+    "alert": {
+      "aggregatealertitemlist": "聚合告警明细列表",
+      "aggregatealertlisthtml": "聚合告警列表HTML",
+      "aggregatecount": "聚合告警数量",
+      "alarmhealthstatus": "告警健康状态",
+      "category": "分类",
+      "closetime": "关闭时间",
+      "closetimetext": "关闭时间文本",
+      "createtimetext": "创建时间（文本）",
+      "event": {
+        "alertclosedesc": "告警关闭时，触发此事件",
+        "alertclosename": "关闭告警",
+        "alertdeletedesc": "告警删除时，触发此事件",
+        "alertdeletename": "删除告警",
+        "alertopendesc": "告警重新打开时，触发此事件",
+        "alertopenname": "打开告警",
+        "alertsuppressdesc": "成功触发屏蔽策略时，触发此事件",
+        "alertsuppressname": "屏蔽告警",
+        "convergedesc": "以收敛告警（存在父告警）的方式被保存时，触发此事件",
+        "convergeindesc": "当父告警有子告警加入时，触发此事件",
+        "convergeinname": "子告警加入",
+        "convergename": "收敛告警",
+        "convergeoutdesc": "当父告警有子告警移出或被删除时，触发此事件",
+        "convergeoutname": "子告警移除",
+        "inputdesc": "告警接入时，经过转换插件转换后触发此事件，这个时刻可以决定告警是否需要保存到数据库",
+        "inputname": "接入告警",
+        "savedesc": "以新告警的方式保存时，触发此事件",
+        "savename": "创建告警",
+        "statuschangedesc": "告警状态发生变化时，触发此事件",
+        "statuschangename": "更新告警状态"
+      },
+      "isclosename": "是否关闭名称",
+      "issubalert": "是否子告警",
+      "levelname": "级别名称",
+      "param": {
+        "name": "名称",
+        "uniquekey": "唯一标识"
+      },
+      "simillaralertcount": "相似告警数量",
+      "updatetime": "更新时间",
+      "updatetimetext": "更新时间（文本）",
+      "workeraccount": "处理人账号",
+      "workeremail": "处理人邮箱",
+      "workerphone": "处理人电话",
+      "workerteam": "处理组",
+      "workerteamaccountphone": "处理组成员电话",
+      "workerteamemail": "处理组邮箱",
+      "workerteamleaderphone": "处理组电话&领导电话",
+      "workerteammemberemail": "处理组成员邮箱",
+      "workerteamphone": "处理组电话",
+      "workerteamuuid": "处理组uuid",
+      "workeruuid": "处理人uuid"
+    }
+  }
+}

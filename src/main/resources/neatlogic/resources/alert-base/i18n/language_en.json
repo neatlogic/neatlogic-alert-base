@@ -1,0 +1,146 @@
+{
+  "alert": {
+    "alert": {
+      "teammemberaccount": "Processing group member accounts"
+    },
+    "term": {
+      "workerteammembername": "Processing group member names"
+    }
+  },
+  "auth": {
+    "alert_action_modify": {
+      "description": "Add and modify alert custom actions.",
+      "name": "Alert Custom Action Management Permission"
+    },
+    "alert_admin": {
+      "description": "Modify status, close, delete, and perform other operations on all alerts.",
+      "name": "Alert Administration Permission"
+    },
+    "alert_allalertconfig_modify": {
+      "description": "Modify display attributes, filters, and sorting settings on the All Alerts page.",
+      "name": "All Alerts Configuration Management Permission"
+    },
+    "alert_attr_modify": {
+      "description": "Add and modify alert extended attributes.",
+      "name": "Alert Extended Attribute Management Permission"
+    },
+    "alert_base": {
+      "description": "Use the unified alert platform module.",
+      "name": "Unified Alert Platform Access Permission"
+    },
+    "alert_batch_delete": {
+      "description": "Delete alerts matching advanced search rules in batches.",
+      "name": "Alert Batch Deletion Permission"
+    },
+    "alert_breaker_modify": {
+      "description": "Add, modify, and delete alert circuit breaker policies.",
+      "name": "Alert Circuit Breaker Policy Management Permission"
+    },
+    "alert_event_modify": {
+      "description": "Add and modify alert events.",
+      "name": "Alert Event Management Permission"
+    },
+    "alert_event_plugin_modify": {
+      "description": "Modify alert event plugin configuration.",
+      "name": "Alert Event Plugin Management Permission"
+    },
+    "alert_export": {
+      "description": "Export alert data.",
+      "name": "Alert Export Permission"
+    },
+    "alert_index": {
+      "description": "Rebuild the index for an individual alert.",
+      "name": "Alert Index Rebuild Permission"
+    },
+    "alert_level_modify": {
+      "description": "Add and modify alert levels.",
+      "name": "Alert Level Management Permission"
+    },
+    "alert_mark_modify": {
+      "description": "Add and modify alert tags.",
+      "name": "Alert Tag Management Permission"
+    },
+    "alert_notify_template_modify": {
+      "description": "Add and modify notification templates.",
+      "name": "Notification Template Management Permission"
+    },
+    "alert_rule_modify": {
+      "description": "Add and modify alert signatures.",
+      "name": "Alert Signature Management Permission"
+    },
+    "alert_source_modify": {
+      "description": "Add and modify alert sources.",
+      "name": "Alert Source Management Permission"
+    },
+    "alert_status_modify": {
+      "description": "Add, modify, and delete alert statuses.",
+      "name": "Alert Status Management Permission"
+    },
+    "alert_type_modify": {
+      "description": "Add and modify alert types.",
+      "name": "Alert Type Management Permission"
+    },
+    "alert_view_modify": {
+      "description": "Add and modify alert views.",
+      "name": "Alert View Management Permission"
+    }
+  },
+  "nfae": {
+    "alertattr": "Unique Key"
+  },
+  "term": {
+    "alert": {
+      "aggregatealertitemlist": "Aggregate Alarm Detail List",
+      "aggregatealertlisthtml": "Aggregate alarm list HTML",
+      "aggregatecount": "Aggregate alarm quantity",
+      "alarmhealthstatus": "Alarm Health Status",
+      "category": "Category",
+      "closetime": "Close Time",
+      "closetimetext": "Close Time (Text)",
+      "createtimetext": "Creation Time (Text)",
+      "event": {
+        "alertclosedesc": "When the alarm is closed, trigger this event",
+        "alertclosename": "Close Alarm",
+        "alertdeletedesc": "When the alarm is deleted, this event is triggered",
+        "alertdeletename": "Delete Alarm",
+        "alertopendesc": "When the alarm is reopened, trigger this event",
+        "alertopenname": "Open Alarm",
+        "alertsuppressdesc": "When the blocking strategy is successfully triggered, this event is triggered",
+        "alertsuppressname": "Block Alarms",
+        "convergedesc": "When saved as a convergence alarm (with parent alarm present), this event is triggered",
+        "convergeindesc": "When a parent alarm has a child alarm added, this event is triggered",
+        "convergeinname": "Add Sub Alarm",
+        "convergename": "Convergence Alarm",
+        "convergeoutdesc": "When a parent alarm has a child alarm removed or deleted, this event is triggered",
+        "convergeoutname": "Sub Alarm Removal",
+        "inputdesc": "When the alarm is connected, this event is triggered after being converted by the conversion plugin. At this moment, it can be determined whether the alarm needs to be saved to the database",
+        "inputname": "Access Alarm",
+        "savedesc": "When saving as a new alarm, trigger this event",
+        "savename": "Create Alarm",
+        "statuschangedesc": "When the alarm status changes, trigger this event",
+        "statuschangename": "Update Alarm Status"
+      },
+      "isclosename": "Do you want to close the name",
+      "issubalert": "Sub Alarm",
+      "levelname": "Level Name",
+      "param": {
+        "name": "Name",
+        "uniquekey": "Unique Key"
+      },
+      "simillaralertcount": "Number of similar alarms",
+      "updatetime": "Update Time",
+      "updatetimetext": "Update Time (Text)",
+      "workeraccount": "Processor account",
+      "workeremail": "Processor's email",
+      "workerphone": "Handler's phone",
+      "workerteam": "Treatment Group",
+      "workerteamaccountphone": "Handling group members' phone numbers",
+      "workerteamemail": "Processing group email",
+      "workerteamleaderphone": "Handling group calls&leader calls",
+      "workerteammemberemail": "Handling group members' email addresses",
+      "workerteamphone": "Handling group phone calls",
+      "workerteamuuid": "Processing group uuid",
+      "workeruuid": "Processing person's uuid"
+    }
+  }
+}
