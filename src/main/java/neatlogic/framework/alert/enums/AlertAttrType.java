@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum AlertAttrType implements IEnum<JSONObject> {
-    NUMBER("number", "数字", new ArrayList<>() {{
+    NUMBER("number", "alert.attrtype.number", new ArrayList<>() {{
         this.add("equal");
         this.add("notequal");
         this.add("gt");
@@ -31,13 +31,13 @@ public enum AlertAttrType implements IEnum<JSONObject> {
         this.add("is-null");
         this.add("is-not-null");
     }}, null),
-    BOOLEAN("boolean", "布尔值", new ArrayList<>() {{
+    BOOLEAN("boolean", "alert.attrtype.boolean", new ArrayList<>() {{
         this.add("equal");
         this.add("notequal");
         this.add("is-null");
         this.add("is-not-null");
     }}, null),
-    TEXT("text", "文本", new ArrayList<>() {{
+    TEXT("text", "alert.attrtype.text", new ArrayList<>() {{
         this.add("equal");
         this.add("notequal");
         this.add("like");
@@ -46,7 +46,7 @@ public enum AlertAttrType implements IEnum<JSONObject> {
         this.add("is-not-null");
     }}, null),
 
-    ENUM("enum", "枚举", new ArrayList<>() {{
+    ENUM("enum", "alert.attrtype.enum", new ArrayList<>() {{
         this.add("equal");
         this.add("notequal");
         this.add("like");
@@ -64,12 +64,12 @@ public enum AlertAttrType implements IEnum<JSONObject> {
         this.put("valueName", "value");
         this.put("textName", "text");
     }}),
-    DATETIME("datetime", "日期时间", new ArrayList<>() {{
+    DATETIME("datetime", "alert.attrtype.datetime", new ArrayList<>() {{
         this.add("range");
         this.add("is-null");
         this.add("is-not-null");
     }}, null),
-    HTML("html", "html内容", new ArrayList<>() {
+    HTML("html", "alert.attrtype.html", new ArrayList<>() {
         {
             this.add("equal");
             this.add("notequal");
@@ -79,7 +79,7 @@ public enum AlertAttrType implements IEnum<JSONObject> {
             this.add("is-not-null");
         }
     }, null),
-    JSON("json", "json内容", new ArrayList<>() {{
+    JSON("json", "alert.attrtype.json", new ArrayList<>() {{
         this.add("equal");
         this.add("notequal");
         this.add("like");
@@ -87,7 +87,7 @@ public enum AlertAttrType implements IEnum<JSONObject> {
         this.add("is-null");
         this.add("is-not-null");
     }}, null),
-    CSV("csv", "csv内容", new ArrayList<>() {{
+    CSV("csv", "alert.attrtype.csv", new ArrayList<>() {{
         this.add("equal");
         this.add("notequal");
         this.add("like");

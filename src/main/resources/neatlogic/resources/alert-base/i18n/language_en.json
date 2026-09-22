@@ -3,6 +3,16 @@
     "alert": {
       "teammemberaccount": "Processing group member accounts"
     },
+    "attrtype": {
+      "boolean": "Boolean",
+      "csv": "CSV Content",
+      "datetime": "Date and Time",
+      "enum": "Enum",
+      "html": "HTML Content",
+      "json": "JSON Content",
+      "number": "Number",
+      "text": "Text"
+    },
     "breakeractionstatus": {
       "failed": "Failed",
       "succeed": "Succeeded"

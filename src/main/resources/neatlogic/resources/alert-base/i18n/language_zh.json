@@ -3,6 +3,16 @@
     "alert": {
       "teammemberaccount": "处理组成员账号"
     },
+    "attrtype": {
+      "boolean": "布尔值",
+      "csv": "CSV内容",
+      "datetime": "日期时间",
+      "enum": "枚举",
+      "html": "HTML内容",
+      "json": "JSON内容",
+      "number": "数字",
+      "text": "文本"
+    },
     "breakeractionstatus": {
       "failed": "失败",
       "succeed": "成功"
