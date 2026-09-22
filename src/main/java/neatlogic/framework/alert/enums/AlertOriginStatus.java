@@ -15,9 +15,9 @@ package neatlogic.framework.alert.enums;
 import neatlogic.framework.util.$;
 
 public enum AlertOriginStatus {
-    IGNORED("ignored", "已忽略"),
-    SUCCEED("succeed", "上报成功"),
-    FAILED("failed", "上报失败");
+    IGNORED("ignored", "alert.originstatus.ignored"),
+    SUCCEED("succeed", "alert.originstatus.succeed"),
+    FAILED("failed", "alert.originstatus.failed");
 
     private final String value;
     private final String text;

@@ -15,11 +15,11 @@ package neatlogic.framework.alert.enums;
 import neatlogic.framework.util.$;
 
 public enum AlertStatus {
-    NEW("new", "新告警", "green", null),
-    CONFIRMED("confirmed", "已确认", "lime", null),
-    PROCESSING("processing", "处理中", null, "processing"),
-    RESOLVED("resolved", "已处理", "#2db7f5", null),
-    CLOSED("closed", "已关闭", null, "default");
+    NEW("new", "alert.status.new", "green", null),
+    CONFIRMED("confirmed", "alert.status.confirmed", "lime", null),
+    PROCESSING("processing", "alert.status.processing", null, "processing"),
+    RESOLVED("resolved", "alert.status.resolved", "#2db7f5", null),
+    CLOSED("closed", "alert.status.closed", null, "default");
 
     private final String value;
     private final String text;

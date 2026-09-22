@@ -15,8 +15,8 @@ package neatlogic.framework.alert.enums;
 import neatlogic.framework.util.$;
 
 public enum AlertBreakerActionStatus {
-    SUCCEED("succeed", "成功"),
-    FAILED("failed", "失败");
+    SUCCEED("succeed", "alert.breakeractionstatus.succeed"),
+    FAILED("failed", "alert.breakeractionstatus.failed");
 
     private final String value;
     private final String text;

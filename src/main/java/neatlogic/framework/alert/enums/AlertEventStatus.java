@@ -15,13 +15,13 @@ package neatlogic.framework.alert.enums;
 import neatlogic.framework.util.$;
 
 public enum AlertEventStatus {
-    RUNNING("running", "执行中"),
-    SUCCEED("succeed", "已成功"),
-    SKIPPED("skipped", "已跳过"),
-    BREAKED("breaked", "已熔断"),
-    SUPPRESS("suppress", "已屏蔽"),
-    DISABLED("disabled", "已禁用"),
-    FAILED("failed", "已失败");
+    RUNNING("running", "alert.eventstatus.running"),
+    SUCCEED("succeed", "alert.eventstatus.succeed"),
+    SKIPPED("skipped", "alert.eventstatus.skipped"),
+    BREAKED("breaked", "alert.eventstatus.breaked"),
+    SUPPRESS("suppress", "alert.eventstatus.suppress"),
+    DISABLED("disabled", "alert.eventstatus.disabled"),
+    FAILED("failed", "alert.eventstatus.failed");
 
     private final String value;
     private final String text;

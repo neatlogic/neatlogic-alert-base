@@ -15,9 +15,9 @@ package neatlogic.framework.alert.enums;
 import neatlogic.framework.util.$;
 
 public enum AlertBreakerStatus {
-    PASS("pass", "通过"),
-    OPEN("open", "已熔断"),
-    FAILED("failed", "异常");
+    PASS("pass", "alert.breakerstatus.pass"),
+    OPEN("open", "alert.breakerstatus.open"),
+    FAILED("failed", "alert.breakerstatus.failed");
 
     private final String value;
     private final String text;

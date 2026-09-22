@@ -3,6 +3,36 @@
     "alert": {
       "teammemberaccount": "Processing group member accounts"
     },
+    "breakeractionstatus": {
+      "failed": "Failed",
+      "succeed": "Succeeded"
+    },
+    "breakerstatus": {
+      "failed": "Error",
+      "open": "Circuit Breaker Triggered",
+      "pass": "Passed"
+    },
+    "eventstatus": {
+      "breaked": "Circuit Breaker Triggered",
+      "disabled": "Disabled",
+      "failed": "Failed",
+      "running": "Running",
+      "skipped": "Skipped",
+      "succeed": "Succeeded",
+      "suppress": "Suppressed"
+    },
+    "originstatus": {
+      "failed": "Report Failed",
+      "ignored": "Ignored",
+      "succeed": "Reported Successfully"
+    },
+    "status": {
+      "closed": "Closed",
+      "confirmed": "Confirmed",
+      "new": "New Alert",
+      "processing": "Processing",
+      "resolved": "Resolved"
+    },
     "term": {
       "workerteammembername": "Processing group member names"
     }

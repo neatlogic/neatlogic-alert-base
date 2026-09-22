@@ -3,6 +3,36 @@
     "alert": {
       "teammemberaccount": "处理组成员账号"
     },
+    "breakeractionstatus": {
+      "failed": "失败",
+      "succeed": "成功"
+    },
+    "breakerstatus": {
+      "failed": "异常",
+      "open": "已熔断",
+      "pass": "通过"
+    },
+    "eventstatus": {
+      "breaked": "已熔断",
+      "disabled": "已禁用",
+      "failed": "已失败",
+      "running": "执行中",
+      "skipped": "已跳过",
+      "succeed": "已成功",
+      "suppress": "已屏蔽"
+    },
+    "originstatus": {
+      "failed": "上报失败",
+      "ignored": "已忽略",
+      "succeed": "上报成功"
+    },
+    "status": {
+      "closed": "已关闭",
+      "confirmed": "已确认",
+      "new": "新告警",
+      "processing": "处理中",
+      "resolved": "已处理"
+    },
     "term": {
       "workerteammembername": "处理组成员名称"
     }
