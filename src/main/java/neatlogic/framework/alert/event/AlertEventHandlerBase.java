@@ -44,22 +44,20 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
     public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo) {
         //重新获取alertVo，避免alertVo缺失了某些关键属性
         alertVo = alertEventHandlerContextBuilder.build(alertVo);
-        alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, null);
+        alertVo = this.prepareAndDispatchEvent(alertEventHandlerVo, alertVo, null);
         return alertVo;
     }
 
     public final AlertVo trigger(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long parentAuditId) {
         //重新获取alertVo，避免alertVo缺失了某些关键属性
         alertVo = alertEventHandlerContextBuilder.build(alertVo);
-        alertVo = this.executeWithTransaction(alertEventHandlerVo, alertVo, parentAuditId);
+        alertVo = this.prepareAndDispatchEvent(alertEventHandlerVo, alertVo, parentAuditId);
         return alertVo;
     }
 
 
-    private AlertVo executeWithTransaction(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long parentAuditId) {
-        /*
-        由于eventHandler存在嵌套调用的行为，例如condition，因此每次调用trigger都是调用新的事务
-         */
+    /** 先独立提交初始审计，再按原配置同步执行或投递异步任务。 */
+    private AlertVo prepareAndDispatchEvent(AlertEventHandlerVo alertEventHandlerVo, AlertVo alertVo, Long parentAuditId) {
         AlertEventHandlerAuditVo alertEventHandlerAuditVo = new AlertEventHandlerAuditVo();
         alertEventHandlerAuditVo.setAlertId(alertVo.getId());
         alertEventHandlerAuditVo.setUniqueKey(alertVo.getUniqueKey());
@@ -75,7 +73,7 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         }
         //记录当前时间的真正开始时间，后续可能需要使用
         alertEventHandlerAuditVo.setStartTime(new Date());
-        alertEventMapper.insertAlertEventAudit(alertEventHandlerAuditVo);
+        insertEventHandlerAudit(alertEventHandlerAuditVo);
         AlertEventPluginVo alertEventPluginVo = alertEventMapper.getAlertEventPluginConfigByName(alertEventHandlerVo.getHandler());
 
         if (alertEventHandlerVo.getIsAsync().equals(0)) {
@@ -95,7 +93,28 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         return alertVo;
     }
 
+    /** 编排阶段挂起调用方事务，完成审计和熔断后处理后再恢复，避免继承父事务超时。 */
     private AlertVo executeEventHandler(AlertEventHandlerVo alertEventHandlerVo, AlertEventPluginVo alertEventPluginVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo, boolean isThrowException) {
+        TransactionStatus scope = TransactionUtil.openNonTx();
+        boolean completed = false;
+        try {
+            AlertVo result = executeEventWithoutCallerTransaction(alertEventHandlerVo, alertEventPluginVo, alertVo, alertEventHandlerAuditVo, isThrowException);
+            completed = true;
+            return result;
+        } finally {
+            // 正常结束空作用域仍需触发事务同步；异常清理不能覆盖插件原异常。
+            if (completed) {
+                if (!commitTx(scope)) {
+                    rollbackTx(scope);
+                }
+            } else {
+                rollbackTx(scope);
+            }
+        }
+    }
+
+    /** 前置检查、插件执行、最终审计保持原顺序，各阶段不加入调用方事务。 */
+    private AlertVo executeEventWithoutCallerTransaction(AlertEventHandlerVo alertEventHandlerVo, AlertEventPluginVo alertEventPluginVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo, boolean isThrowException) {
         try {
             PreCheckResult preCheckResult = preCheck(alertEventHandlerVo, alertEventPluginVo, alertVo, alertEventHandlerAuditVo.getId());
             if (preCheckResult.isCompleted()) {
@@ -137,8 +156,12 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         return PreCheckResult.pass();
     }
 
+    /** 仅为需要事务的插件开启独立事务；无事务插件沿用编排阶段的无事务环境。 */
     private AlertVo executeMainEventTransaction(AlertEventHandlerVo alertEventHandlerVo, AlertEventPluginVo alertEventPluginVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo, boolean isThrowException) {
-        TransactionStatus ts = TransactionUtil.openNewTx();
+        TransactionStatus ts = null;
+        if (isTransactionRequired()) {
+            ts = TransactionUtil.openNewTx();
+        }
         AlertEventStatusVo alertEventStatusVo = new AlertEventStatusVo();
         try {
             alertVo = myTrigger(alertEventHandlerVo, alertEventPluginVo, alertVo, alertEventHandlerAuditVo, alertEventStatusVo);
@@ -166,6 +189,9 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
                 throw e;
             }
             return alertVo;
+        } finally {
+            // 已提交或回滚时不再处理；提交失败或非普通异常时仍须清理插件事务。
+            rollbackTx(ts);
         }
     }
 
@@ -200,11 +226,29 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         }
     }
 
-    private void updateEventHandlerAudit(AlertEventHandlerAuditVo alertEventHandlerAuditVo) {
+    /** 初始审计必须独立提交成功，防止异步更新等待调用方持有的插入锁。 */
+    private void insertEventHandlerAudit(AlertEventHandlerAuditVo alertEventHandlerAuditVo) {
+        TransactionStatus ts = TransactionUtil.openNewTx();
         try {
+            alertEventMapper.insertAlertEventAudit(alertEventHandlerAuditVo);
+            // 提交异常直接向上抛出，不启动没有持久化审计记录的插件。
+            TransactionUtil.commitTx(ts);
+        } finally {
+            rollbackTx(ts);
+        }
+    }
+
+    /** 最终审计使用独立短事务，不随插件失败或调用方回滚丢失。 */
+    private void updateEventHandlerAudit(AlertEventHandlerAuditVo alertEventHandlerAuditVo) {
+        TransactionStatus ts = null;
+        try {
+            ts = TransactionUtil.openNewTx();
             alertEventMapper.updateAlertEventHandlerAudit(alertEventHandlerAuditVo);
+            TransactionUtil.commitTx(ts);
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
+        } finally {
+            rollbackTx(ts);
         }
     }
 
@@ -247,6 +291,11 @@ public abstract class AlertEventHandlerBase implements IAlertEventHandler {
         private String getStatus() {
             return status;
         }
+    }
+
+    /** 默认由基类为插件开启独立事务；慢外部调用插件可覆盖为无事务执行。 */
+    protected boolean isTransactionRequired() {
+        return true;
     }
 
     protected abstract AlertVo myTrigger(AlertEventHandlerVo alertEventHandlerVo, AlertEventPluginVo alertEventPluginVo, AlertVo alertVo, AlertEventHandlerAuditVo alertEventHandlerAuditVo, AlertEventStatusVo alertEventStatusVo) throws AlertEventHandlerTriggerException;
