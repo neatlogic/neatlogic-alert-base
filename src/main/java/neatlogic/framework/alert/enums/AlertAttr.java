@@ -15,6 +15,8 @@ package neatlogic.framework.alert.enums;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.alert.dto.AlertAttrDefineVo;
+import neatlogic.framework.common.constvalue.GroupSearch;
+import neatlogic.framework.common.constvalue.UserType;
 import neatlogic.framework.common.dto.ValueTextVo;
 
 import java.util.ArrayList;
@@ -319,7 +321,15 @@ public class AlertAttr {
             this.put("transfer", true);
             this.put("multiple", true);
             this.put("groupList", new JSONArray() {{
-                this.add("user");
+                this.add(GroupSearch.USER.getValue());
+                this.add(GroupSearch.COMMON.getValue());
+            }});
+            // 视图人员条件使用系统动态用户，排除默认展示但不支持查询的“所有人”。
+            this.put("includeList", new JSONArray() {{
+                this.add(GroupSearch.COMMON.getValuePlugin() + UserType.LOGIN_USER.getValue());
+            }});
+            this.put("excludeList", new JSONArray() {{
+                this.add(GroupSearch.COMMON.getValuePlugin() + UserType.ALL.getValue());
             }});
         }}).setFreemarkerSnippet("[<#list DATA.const_userList as user>\"${user.userName}\"<#if user_has_next>,</#if></#list>]")
                 .setIsSearch(true)
