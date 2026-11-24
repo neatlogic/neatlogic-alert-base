@@ -39,6 +39,10 @@ public interface IAlertEventHandler {
     //定义哪些父插件可以添加此插件
     Set<String> supportParentHandler();
 
+    /** 在保存事件配置前校验插件专属约束，顶层与嵌套插件共用。 */
+    default void validateConfig(AlertEventHandlerVo alertEventHandlerVo) {
+    }
+
 
     //某些组件可能有子组件，这时需要分拆出自组件的配置，方便调用，不是所有组件都需要返回
     /*default List<AlertEventHandlerConfigVo> getHandlerConfig(AlertEventHandlerVo alertEventHandlerVo) {

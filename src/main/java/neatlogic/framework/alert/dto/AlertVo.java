@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class AlertVo extends BasePageVo {
+public class AlertVo extends BasePageVo implements Cloneable {
     @EntityField(name = "id", type = ApiParamType.LONG)
     private Long id;
     @JSONField(serialize = false)
@@ -260,6 +260,15 @@ public class AlertVo extends BasePageVo {
         this.prevEventResult = prevEventResult;
     }
 
+    /** 为接入链创建浅副本，插件替换变更字段时保留原对象和运行时上下文。 */
+    public AlertVo copyForEvent() {
+        try {
+            return (AlertVo) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     public Long getDeleteBatch() {
         return deleteBatch;
     }
@@ -454,6 +463,8 @@ public class AlertVo extends BasePageVo {
 
     public void setUserList(List<AlertUserVo> userList) {
         this.userList = userList;
+        // 链路插件替换处理人后，重新生成带前缀的 UUID。
+        this.userUuidList = null;
     }
 
     public List<AlertTeamVo> getTeamList() {
@@ -462,6 +473,8 @@ public class AlertVo extends BasePageVo {
 
     public void setTeamList(List<AlertTeamVo> teamList) {
         this.teamList = teamList;
+        // 链路插件替换处理组后，重新生成带前缀的 UUID。
+        this.teamUuidList = null;
     }
 
 
