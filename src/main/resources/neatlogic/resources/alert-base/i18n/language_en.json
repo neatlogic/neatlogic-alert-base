@@ -45,6 +45,9 @@
     },
     "term": {
       "workerteammembername": "Processing group member names"
+    },
+    "uniquekey": {
+      "emptyattribute": "The unique key attribute {1} for alert {0} is missing or empty after applying signature rules."
     }
   },
   "auth": {

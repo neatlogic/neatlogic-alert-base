@@ -45,6 +45,9 @@
     },
     "term": {
       "workerteammembername": "处理组成员名称"
+    },
+    "uniquekey": {
+      "emptyattribute": "告警 {0} 的唯一键属性 {1} 缺少值或经过特征替换后为空。"
     }
   },
   "auth": {
